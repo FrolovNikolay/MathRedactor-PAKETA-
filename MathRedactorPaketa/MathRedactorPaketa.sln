@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathValidator", "MathRedactorPaketa\MathValidator\MathValidator.vcxproj", "{025C5E30-BE20-48CD-AAC9-33AEE1F1B827}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathRedactor", "MathRedactorPaketa\MathRedactor\MathRedactor.vcxproj", "{7034676C-B086-4D85-BF97-AED5FA8ED3E6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathTranslator", "MathRedactorPaketa\MathTranslator\MathTranslator.vcxproj", "{58993401-CB0B-4BB4-8A30-43F79D73ECC7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinPlotter", "MathRedactorPaketa\WinPlotter\WinPlotter.vcxproj", "{E885EA24-FE24-4340-B743-22EE813F287D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{025C5E30-BE20-48CD-AAC9-33AEE1F1B827}.Debug|Win32.ActiveCfg = Debug|Win32
+		{025C5E30-BE20-48CD-AAC9-33AEE1F1B827}.Debug|Win32.Build.0 = Debug|Win32
+		{025C5E30-BE20-48CD-AAC9-33AEE1F1B827}.Release|Win32.ActiveCfg = Release|Win32
+		{025C5E30-BE20-48CD-AAC9-33AEE1F1B827}.Release|Win32.Build.0 = Release|Win32
+		{7034676C-B086-4D85-BF97-AED5FA8ED3E6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7034676C-B086-4D85-BF97-AED5FA8ED3E6}.Debug|Win32.Build.0 = Debug|Win32
+		{7034676C-B086-4D85-BF97-AED5FA8ED3E6}.Release|Win32.ActiveCfg = Release|Win32
+		{7034676C-B086-4D85-BF97-AED5FA8ED3E6}.Release|Win32.Build.0 = Release|Win32
+		{58993401-CB0B-4BB4-8A30-43F79D73ECC7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{58993401-CB0B-4BB4-8A30-43F79D73ECC7}.Debug|Win32.Build.0 = Debug|Win32
+		{58993401-CB0B-4BB4-8A30-43F79D73ECC7}.Release|Win32.ActiveCfg = Release|Win32
+		{58993401-CB0B-4BB4-8A30-43F79D73ECC7}.Release|Win32.Build.0 = Release|Win32
+		{E885EA24-FE24-4340-B743-22EE813F287D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E885EA24-FE24-4340-B743-22EE813F287D}.Debug|Win32.Build.0 = Debug|Win32
+		{E885EA24-FE24-4340-B743-22EE813F287D}.Release|Win32.ActiveCfg = Release|Win32
+		{E885EA24-FE24-4340-B743-22EE813F287D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,1 @@
+\frac{ x^{2} - \sin y*y } { -5 * \cos (5x + \sin z + h) } - 5 * x

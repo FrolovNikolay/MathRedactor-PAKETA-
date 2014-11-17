@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7034676C-B086-4D85-BF97-AED5FA8ED3E6}</ProjectGuid>
+    <RootNamespace>MathRedactor</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="CommandHandler.cpp" />
+    <ClCompile Include="EditWindow.cpp" />
+    <ClCompile Include="FractionSymbol.cpp" />
+    <ClCompile Include="IndexSymbol.cpp" />
+    <ClCompile Include="instruments.cpp" />
+    <ClCompile Include="ItemSelector.cpp" />
+    <ClCompile Include="LineOfSymbols.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="RootSymbol.cpp" />
+    <ClCompile Include="SigmaSymbol.cpp" />
+    <ClCompile Include="SimpleSymbol.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CommandHandler.h" />
+    <ClInclude Include="EditWindow.h" />
+    <ClInclude Include="FractionSymbol.h" />
+    <ClInclude Include="instruments.h" />
+    <ClInclude Include="ItemSelector.h" />
+    <ClInclude Include="LineOfSymbols.h" />
+    <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="RibbonIDs.h" />
+    <ClInclude Include="RootSymbol.h" />
+    <ClInclude Include="SimpleSymbol.h" />
+    <ClInclude Include="Symbol.h" />
+    <ClInclude Include="SigmaSymbol.h" />
+    <ClInclude Include="IndexSymbol.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="RibbonMarkup.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RibbonResource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Res\fraction.bmp" />
+    <Image Include="Res\lowerIndex.bmp" />
+    <Image Include="Res\sigma.bmp" />
+    <Image Include="Res\sqrt.bmp" />
+    <Image Include="Res\upperIndex.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RibbonUI.bin" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

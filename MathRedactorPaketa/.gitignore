@@ -1,0 +1,12 @@
+Debug/
+Release/
+*.sdf
+*.suo
+MathRedactorPaketa/MathRedactor/Debug/
+MathRedactorPaketa/MathRedactor/Release/
+MathRedactorPaketa/MathTranslator/Debug/
+MathRedactorPaketa/MathTranslator/Release/
+MathRedactorPaketa/WinPlotter/Debug/
+MathRedactorPaketa/WinPlotter/Release/
+MathRedactorPaketa/MathValidator/Debug/
+MathRedactorPaketa/MathValidator/Release/

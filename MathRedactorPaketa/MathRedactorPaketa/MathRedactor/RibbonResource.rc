@@ -1,0 +1,58 @@
+// ******************************************************************************
+// * This is an automatically generated file containing the ribbon resource for *
+// * your application.                                                          *
+// ******************************************************************************
+
+#include ".\RibbonIDs.h"
+
+STRINGTABLE 
+BEGIN
+    ID_CMD_SIGMA_LabelTitle_RESID L"\x0421\x0443\x043c\x043c\x0430" /* LabelTitle ID_CMD_SIGMA_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_SIGMA_LargeImages_RESID    BITMAP    "Res\sigma.bmp" /* LargeImages ID_CMD_SIGMA_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_FRACTION_LabelTitle_RESID L"\x0414\x0440\x043e\x0431\x044c" /* LabelTitle ID_CMD_FRACTION_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_FRACTION_LargeImages_RESID    BITMAP    "Res\fraction.bmp" /* LargeImages ID_CMD_FRACTION_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_UPPER_INDEX_LabelTitle_RESID L"\x0412\x0435\x0440\x0445\x043d\x0438\x0439 \x0438\x043d\x0434\x0435\x043a\x0441" /* LabelTitle ID_CMD_UPPER_INDEX_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_UPPER_INDEX_LargeImages_RESID    BITMAP    "Res\upperIndex.bmp" /* LargeImages ID_CMD_UPPER_INDEX_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_LOWER_INDEX_LabelTitle_RESID L"\x041d\x0438\x0436\x043d\x0438\x0439 \x0438\x043d\x0434\x0435\x043a\x0441" /* LabelTitle ID_CMD_LOWER_INDEX_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_LOWER_INDEX_LargeImages_RESID    BITMAP    "Res\lowerIndex.bmp" /* LargeImages ID_CMD_LOWER_INDEX_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_SQRT_LabelTitle_RESID L"\x041a\x043e\x0440\x0435\x043d\x044c" /* LabelTitle ID_CMD_SQRT_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_SQRT_LargeImages_RESID    BITMAP    "Res\sqrt.bmp" /* LargeImages ID_CMD_SQRT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    cmdTabSymbols_LabelTitle_RESID L"\x0421\x0438\x043c\x0432\x043e\x043b\x044b" /* LabelTitle cmdTabSymbols_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    cmdGroupSetOperations_LabelTitle_RESID L"\x041e\x043f\x0435\x0440\x0430\x0446\x0438\x0438 \x043d\x0430\x0434 \x043c\x043d\x043e\x0436\x0435\x0441\x0442\x0432\x0430\x043c\x0438" /* LabelTitle cmdGroupSetOperations_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    cmdGroupNumberOperations_LabelTitle_RESID L"'\x041e\x043f\x0435\x0440\x0430\x0446\x0438\x0438 \x043d\x0430\x0434 \x0447\x0438\x0441\x043b\x0430\x043c\x0438" /* LabelTitle cmdGroupNumberOperations_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    InternalCmd2_LabelTitle_RESID L"Label:InternalCmd2" /* LabelTitle InternalCmd2_LabelTitle_RESID: (null) */
+END
+
+APPLICATION_RIBBON    UIFILE    "RibbonUI.bin"
