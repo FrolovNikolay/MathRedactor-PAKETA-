@@ -38,7 +38,9 @@ public:
 	// Добавляет отрезок, соединяющий две вершины
 	void AddSegment(int firstIndex, int secondIndex)
 	{
-		if( firstIndex >= Points.size() || secondIndex >= Points.size() ) {
+		if( firstIndex >= static_cast<int>( Points.size() ) || 
+			secondIndex >= static_cast<int>( Points.size() ) ) 
+		{
 			throw CModel<T>::OutOfRange();
 		} else {
 			Segments.push_back(CSegmentIndex(firstIndex, secondIndex));
@@ -48,7 +50,9 @@ public:
 	// Добавляет треугольник, соединяющий три вершины
 	void AddTriangle(int firstIndex, int secondIndex, int thirdIndex)
 	{
-		if (firstIndex >= Points.size() || secondIndex >= Points.size() || thirdIndex >= Points.size()) {
+		if( firstIndex >= static_cast<int>( Points.size() ) || 
+			secondIndex >= static_cast<int>( Points.size() ) || 
+			thirdIndex >= static_cast<int>( Points.size() ) ) {
 			throw CModel<T>::OutOfRange();
 		}
 		else {

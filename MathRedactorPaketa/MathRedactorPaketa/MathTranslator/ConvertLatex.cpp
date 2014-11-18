@@ -15,7 +15,7 @@ shared_ptr<MathObj> CConvertLatex::ConvertFromLatex( const string& input )
 	// Стартовое состояние лексера - TT_SPACE, т.к. оно игнорируется парсером и принимает любые символы
 	shared_ptr<CLatexState> state (new CLatexSingleState( TT_SPACE ));
 
-	for( int i = 0; i < input.length( ); ++i ) {
+	for( int i = 0; i < static_cast<int>( input.length( ) ); ++i ) {
 		shared_ptr<CLatexState> nextState = state->Accept( input[i] );
 		parser.TryParse( state );
 		state = nextState;

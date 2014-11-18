@@ -1,4 +1,4 @@
-﻿#include"MathML.h"
+#include"MathML.h"
 
 void CTreeBuilder::Push( TiXmlElement* elem )
 {

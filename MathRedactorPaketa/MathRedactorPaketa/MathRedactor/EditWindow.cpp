@@ -59,7 +59,7 @@ void CEditWindow::AddSymbol( CSymbol* symbol )
 {
 	std::vector<CLineOfSymbols*> substrings;
 	symbol->GetSubstrings( substrings );
-	for( int i = 0; i < substrings.size(); ++i ) {
+	for( int i = 0; i < static_cast<int>( substrings.size() ); ++i ) {
 		substrings[i]->SetParent( caret.GetLine() );
 	}
 
@@ -159,7 +159,7 @@ void CEditWindow::MoveCaretTo( int x, int y )
 	int symbolIdx = 0;
 
 	int currentY = 0;
-	for( lineIdx = 0; lineIdx < content.size(); ++lineIdx ) {
+	for( lineIdx = 0; lineIdx < static_cast<int>( content.size() ); ++lineIdx ) {
 		currentY += content[lineIdx].GetHeight();
 		if( currentY >= movedY ) {
 			break;
@@ -266,7 +266,7 @@ void CEditWindow::OnWmPaint( )
 	// Фон текста прозрачный, для выделения
 	::SetBkMode( memDC, TRANSPARENT );
 
-	for( int i = 0; i < content.size( ); ++i ) {
+	for( int i = 0; i < static_cast<int>( content.size( ) ); ++i ) {
 		content[i].Draw( memDC, posX, posY );
 		posY += content[i].GetHeight();
 	}
@@ -307,10 +307,10 @@ void CEditWindow::OnWmHScroll( WPARAM wParam, LPARAM lParam )
 			scrollInfo.nPos = min( scrollInfo.nPos + 1, scrollInfo.nMax );
 			break;
 		case SB_PAGELEFT:
-			scrollInfo.nPos = max( scrollInfo.nPos - scrollInfo.nPage, scrollInfo.nMin );
+			scrollInfo.nPos = max( static_cast<int>( scrollInfo.nPos - scrollInfo.nPage ), static_cast<int>( scrollInfo.nMin ) );
 			break;
 		case SB_PAGERIGHT:
-			scrollInfo.nPos = min( scrollInfo.nPos + scrollInfo.nPage, scrollInfo.nMax );
+			scrollInfo.nPos = min( static_cast<int>( scrollInfo.nPos + scrollInfo.nPage ), static_cast<int>( scrollInfo.nMax ) );
 			break;
 		case SB_THUMBTRACK:
 			scrollInfo.nPos = scrollInfo.nTrackPos;
@@ -345,10 +345,10 @@ void CEditWindow::OnWmVScroll( WPARAM wParam, LPARAM lParam )
 			scrollInfo.nPos = min( scrollInfo.nPos + 1, scrollInfo.nMax );
 			break;
 		case SB_PAGEUP:
-			scrollInfo.nPos = max( scrollInfo.nPos - scrollInfo.nPage, scrollInfo.nMin );
+			scrollInfo.nPos = max( static_cast<int>( scrollInfo.nPos - scrollInfo.nPage ), static_cast<int>( scrollInfo.nMin ) );
 			break;
 		case SB_PAGEDOWN:
-			scrollInfo.nPos = min( scrollInfo.nPos + scrollInfo.nPage, scrollInfo.nMax );
+			scrollInfo.nPos = min( static_cast<int>( scrollInfo.nPos + scrollInfo.nPage ), static_cast<int>( scrollInfo.nMax ) );
 			break;
 		case SB_THUMBTRACK:
 			scrollInfo.nPos = scrollInfo.nTrackPos;
@@ -502,7 +502,7 @@ CLineOfSymbols* CEditWindow::isLineBase( CLineOfSymbols* currentBaseLine, int x,
 		if( substings.size() == 0 ) {
 			return currentBaseLine;
 		} else {
-			for( int i = 0; i < substings.size(); ++i ) {
+			for( int i = 0; i < static_cast<int>( substings.size() ); ++i ) {
 				if( isLineContainPoint(substings[i], x, y) ) {
 					return isLineBase( substings[i], x, y );
 				}
@@ -565,7 +565,7 @@ bool CEditWindow::isSymbolAllowed( wchar_t symbol ) const
 // если нет - вернет -1
 int CEditWindow::getBaseLineIndex( const CLineOfSymbols* line ) const
 {
-	for( int i = 0; i < content.size(); ++i ) {
+	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
 		if( line == &content[i] ) {
 			return i;
 		}
@@ -582,7 +582,7 @@ void CEditWindow::recalculateHorzScrollParams() const
 
 	int width = 0;
 
-	for( int i = 0; i < content.size(); ++i ) {
+	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
 		width = max( content[i].GetWidth(), width );
 	}
 
@@ -611,7 +611,7 @@ void CEditWindow::recalculateVertScrollParams() const
 
 	int height = 0;
 
-	for( int i = 0; i < content.size(); ++i ) {
+	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
 		height += content[i].GetHeight();
 	}
 
@@ -665,7 +665,7 @@ void CEditWindow::CCaret::Show()
 {
 	moveToNewCoordinates();
 	if( !shown ) {
-		shown = ::ShowCaret( window->windowHandle );
+		shown = ( ::ShowCaret( window->windowHandle ) != 0 );
 	}
 }
 
@@ -749,7 +749,7 @@ void CEditWindow::CCaret::moveRight()
 	if( line->Length() > index ) {
 		++index;
 		moveToNewCoordinates();
-	} else if( lineIndex >= 0 && lineIndex + 1 < window->content.size() ) {
+	} else if( lineIndex >= 0 && lineIndex + 1 < static_cast<int>( window->content.size() ) ) {
 		line = &( window->content[lineIndex + 1] );
 		index = 0;
 		moveToNewCoordinates();

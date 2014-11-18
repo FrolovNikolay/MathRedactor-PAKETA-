@@ -41,7 +41,7 @@ CLineOfSymbols& CLineOfSymbols::operator=( const CLineOfSymbols& src )
 
 CLineOfSymbols::~CLineOfSymbols( )
 {
-	for( int i = 0; i < arrayOfSymbolPtrs.size( ); ++i ) {
+	for( int i = 0; i < static_cast<int>( arrayOfSymbolPtrs.size( ) ); ++i ) {
 		delete arrayOfSymbolPtrs[i];
 	}
 }
@@ -52,7 +52,7 @@ void CLineOfSymbols::Push( CSymbol* symbol, int index )
 		//TODO: add an error or exception
 		return;
 	}
-	if( index >= arrayOfSymbolPtrs.size() ) {
+	if( index >= static_cast<int>( arrayOfSymbolPtrs.size() ) ) {
 		arrayOfSymbolPtrs.push_back( symbol );
 	} else {
 		arrayOfSymbolPtrs.insert( arrayOfSymbolPtrs.begin() + index, symbol );
@@ -85,7 +85,7 @@ void CLineOfSymbols::Draw( HDC displayHandle, int posX, int posY ) const
 	oldFont = (HFONT)::SelectObject( displayHandle, font );
 
 	//Отрисовка
-	for( int i = 0; i < arrayOfSymbolPtrs.size( ); ++i ) {
+	for( int i = 0; i < static_cast<int>( arrayOfSymbolPtrs.size() ); ++i ) {
 		assert( arrayOfSymbolPtrs[i] != 0 );
 		arrayOfSymbolPtrs[i]->Draw( displayHandle, posX, posY + baselineOffset, simpleSymbolHeight );
 		posX += arrayOfSymbolPtrs[i]->CalculateWidth( displayHandle );
@@ -118,7 +118,7 @@ int CLineOfSymbols::CalculateWidth( HDC displayHandle ) const
 	oldFont = (HFONT)::SelectObject( displayHandle, font );
 
 	int result = 0;
-	for( int i = 0; i < arrayOfSymbolPtrs.size( ); ++i ) {
+	for( int i = 0; i < static_cast<int>( arrayOfSymbolPtrs.size() ); ++i ) {
 		assert( arrayOfSymbolPtrs[i] != 0 );
 		result += arrayOfSymbolPtrs[i]->CalculateWidth( displayHandle );
 	}

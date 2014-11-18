@@ -131,28 +131,48 @@ void CWinPlotter::PaintObject()
 	HBRUSH currentBrush = ( HBRUSH )::SelectObject( currentDC, pointBrush );
 	// Вершины
 	for (auto point = renderedObject.Points.begin(); point != renderedObject.Points.end(); point++) {
-		Ellipse( currentDC, point->X - 1, point->Y - 1, point->X + 1, point->Y + 1);
+		Ellipse( currentDC, static_cast<int>( point->X - 1 ), static_cast<int>( point->Y - 1 ), 
+			static_cast<int>( point->X + 1 ), static_cast<int>( point->Y + 1 ) );
 	}
 
 	// Отрезки
 	for( auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++ ) {
-		MoveToEx( currentDC, renderedObject.Points[segment->First].X, renderedObject.Points[segment->First].Y, 0 );
-		LineTo( currentDC, renderedObject.Points[segment->Second].X, renderedObject.Points[segment->Second].Y );
+		MoveToEx( currentDC, 
+			static_cast<int>( renderedObject.Points[segment->First].X ), 
+			static_cast<int>( renderedObject.Points[segment->First].Y ), 
+			0 );
+		LineTo( currentDC, 
+			static_cast<int>( renderedObject.Points[segment->Second].X ), 
+			static_cast<int>( renderedObject.Points[segment->Second].Y ) );
 	}
 	// Треугольники
 	for( auto triangle = renderedObject.Triangles.begin(); triangle != renderedObject.Triangles.end(); triangle++ ) {
-		MoveToEx( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y, 0 );
-		LineTo( currentDC, renderedObject.Points[triangle->Second].X, renderedObject.Points[triangle->Second].Y );
-		LineTo( currentDC, renderedObject.Points[triangle->Third].X, renderedObject.Points[triangle->Third].Y );
-		LineTo( currentDC, renderedObject.Points[triangle->First].X, renderedObject.Points[triangle->First].Y );
+		MoveToEx( currentDC, 
+			static_cast<int>( renderedObject.Points[triangle->First].X ), 
+			static_cast<int>( renderedObject.Points[triangle->First].Y ), 
+			0 );
+		LineTo( currentDC, 
+			static_cast<int>( renderedObject.Points[triangle->Second].X ), 
+			static_cast<int>( renderedObject.Points[triangle->Second].Y ) );
+		LineTo( currentDC, 
+			static_cast<int>( renderedObject.Points[triangle->Third].X ), 
+			static_cast<int>( renderedObject.Points[triangle->Third].Y ) );
+		LineTo( currentDC, 
+			static_cast<int>( renderedObject.Points[triangle->First].X ), 
+			static_cast<int>( renderedObject.Points[triangle->First].Y ) );
 	}
 
 	// Кисть для осей координат
 	HPEN axisPen = ::CreatePen(PS_SOLID, 1, RGB(41, 128, 185));
 	currentPen = (HPEN)::SelectObject(currentDC, axisPen);
 	for (auto segment = axisRenderedObject.Segments.begin(); segment != axisRenderedObject.Segments.end(); segment++) {
-		MoveToEx(currentDC, axisRenderedObject.Points[segment->First].X, axisRenderedObject.Points[segment->First].Y, 0);
-		LineTo(currentDC, axisRenderedObject.Points[segment->Second].X, axisRenderedObject.Points[segment->Second].Y);
+		MoveToEx(currentDC, 
+			static_cast<int>( axisRenderedObject.Points[segment->First].X ),
+			static_cast<int>( axisRenderedObject.Points[segment->First].Y ), 
+			0 );
+		LineTo( currentDC, 
+			static_cast<int>( axisRenderedObject.Points[segment->Second].X ), 
+			static_cast<int>( axisRenderedObject.Points[segment->Second].Y ) );
 	}
 
 	::DeleteObject( pointBrush );

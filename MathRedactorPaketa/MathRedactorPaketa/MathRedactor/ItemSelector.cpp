@@ -238,7 +238,7 @@ void CItemSelector::isLineBase( CLineOfSymbols* currentBaseLine, int x, int y )
 			baseLine = currentBaseLine;
 			return;
 		} else {
-			for( int i = 0; i < substings.size(); ++i ) {
+			for( int i = 0; i < static_cast<int>( substings.size() ); ++i ) {
 				if( isLineContainPoint(substings[i], x, y) ) {
 					isLineBase( substings[i], x, y );
 					return;
@@ -254,7 +254,7 @@ void CItemSelector::isLineBase( CLineOfSymbols* currentBaseLine, int x, int y )
 void CItemSelector::getItemInfo( int x, int y, int& lineIdx, int& symbolIdx ) const
 {
 	int currentY = 0;
-	for( lineIdx = 0; lineIdx < content.size(); ++lineIdx ) {
+	for( lineIdx = 0; lineIdx < static_cast<int>( content.size() ); ++lineIdx ) {
 		currentY += content[lineIdx].GetHeight();
 		if( currentY >= y ) {
 			break;

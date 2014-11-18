@@ -169,7 +169,7 @@ LRESULT __stdcall CWinMain::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		case WM_KEYUP:
 			return wnd->OnKeyUp( wParam, lParam );
 		case WM_MOUSEWHEEL:
-			wnd->winPlotter.zoom( GET_WHEEL_DELTA_WPARAM( wParam ) * wnd->MouseWheelSens );
+			wnd->winPlotter.zoom( static_cast<LONG>( GET_WHEEL_DELTA_WPARAM( wParam ) * wnd->MouseWheelSens ) );
 			return 0;
 	}
 
@@ -386,10 +386,10 @@ void CWinMain::TakeFormula()
 		winPlotter.testObject.Clear();
 		const std::vector< C3DPoint >& points = builder.GetPoints();
 		const std::vector< std::pair< int, int > >& segmentsIds = builder.GetSegments();
-		for( int j = 0; j < points.size(); j++ ) {
+		for( int j = 0; j < static_cast<int>( points.size() ); j++ ) {
 			winPlotter.testObject.AddPoint( points[j] );
 		}
-		for( int j = 0; j < segmentsIds.size(); j++ ) {
+		for( int j = 0; j < static_cast<int>( segmentsIds.size() ); j++ ) {
 			winPlotter.testObject.AddSegment( segmentsIds[j].first, segmentsIds[j].second );
 		}
 		winPlotter.moveX( 0 );

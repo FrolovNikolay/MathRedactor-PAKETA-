@@ -26,7 +26,8 @@ namespace {
 	}
 
 	bool IsParameterT( const std::string& text, int i ) {
-		return( text[i] == 't' && ( i == 0 || text[i - 1] != 'r' ) && ( i + 1 < text.size() || text[i + 1] != 'g' ) );
+		return( text[i] == 't' && ( i == 0 || text[i - 1] != 'r' ) 
+			&& ( i + 1 < static_cast<int>( text.size() ) || text[i + 1] != 'g' ) );
 	}
 
 	bool IsParameterL( const std::string& text, int i ) {
@@ -38,7 +39,7 @@ namespace {
 		int nonParametricDimension = GetSpaceDimension( text ) - 1;
 		bool tParameterFound = false;
 		bool lParameterFound = false;
-		for( int i = 0; i < text.size(); ++i ) { 
+		for( int i = 0; i < static_cast<int>( text.size() ); ++i ) {
 			if( IsParameterT( text, i ) ) {
 				tParameterFound = true;
 			}
@@ -55,7 +56,7 @@ namespace {
 	void CheckEquationsCorrectness( const std::vector<std::string>& equations )
 	{
 		std::string variables = "xyz";
-		for( int i = 0; i < equations.size(); ++i ) {
+		for( int i = 0; i < static_cast<int>( equations.size() ); ++i ) {
 			assert( variables.find( equations[i][0] ) != std::string::npos );
 			assert( equations[i][1] == '=' );
 		}
@@ -65,8 +66,8 @@ namespace {
 	{
 		std::vector<char> res;
 		std::string variables = "xyz";
-		for( int i = 0; i < equations.size(); ++i ) {
-			for( int j = 2; j < equations[i].size(); ++j ) {
+		for( int i = 0; i < static_cast<int>( equations.size() ); ++i ) {
+			for( int j = 2; j < static_cast<int>( equations[i].size() ); ++j ) {
 				if( IsParameterL( equations[i], j ) ) {
 					res.push_back( 'l' );
 				} else if( IsParameterT( equations[i], j ) ) {
@@ -108,7 +109,7 @@ namespace {
 		assert( left < right );
 		std::string operators = "-+/*^";
 
-		for( int i = 0; i < operators.size(); ++i ) {
+		for( int i = 0; i < static_cast<int>( operators.size() ); ++i ) {
 			int balance = 0;
 			for( int j = right - 1; j >= left; --j ) {
 				if( equation[j] == '(' ) {
@@ -152,7 +153,7 @@ namespace {
 		FUNC types[] = {SIN, COS, TG, CTG, SQRT, UNARY_MINUS};
 
 		for( int i = 0; i < 6; ++i ) {
-			if( left + functionNames[i].size() < right 
+			if( left + static_cast<int>( functionNames[i].size() ) < right
 				&& equation.substr( left, functionNames[i].size() ) == functionNames[i] ) 
 			{
 				return new CFunction( ParseOperator( equation, left + functionNames[i].size(), right ), types[i] );
@@ -178,7 +179,7 @@ namespace {
 		try {
 			double value = std::stod( equation.substr( left, right - left ) );
 			return new CConstant( value );
-		} catch( const std::invalid_argument& ex ) {
+		} catch( const std::invalid_argument& ) {
 			return 0;
 		}
 	}
@@ -229,7 +230,7 @@ CFormula ParseFormula( const std::string& text ) {
 	int plotDimension = GetPlotDimension( text );
 	std::vector<std::string> equations( 1 );
 	std::string spaces = " \t\n\r";
-	for( int i = 0; i < text.size(); ++i ) {
+	for( int i = 0; i < static_cast<int>( text.size() ); ++i ) {
 		if( spaces.find( text[i] ) != std::string::npos ) {
 			continue;
 		}
@@ -242,7 +243,7 @@ CFormula ParseFormula( const std::string& text ) {
 	CheckEquationsCorrectness( equations );
 	std::vector<char> variables = GetEquationsVariables( equations );
 	CFormula formula( spaceDimension, plotDimension, variables );
-	for( int i = 0; i < equations.size(); ++i ) {
+	for( int i = 0; i < static_cast<int>( equations.size() ); ++i ) {
 		formula.AddEquation( ParseEquation( equations[i] ) );
 	}
 	return formula;

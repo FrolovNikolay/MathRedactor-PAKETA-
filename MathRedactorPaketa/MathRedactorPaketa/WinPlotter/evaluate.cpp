@@ -1,4 +1,4 @@
-//Автор: Орлов Никита
+п»ї//ГЂГўГІГ®Г°: ГЋГ°Г«Г®Гў ГЌГЁГЄГЁГІГ 
 #pragma once
 #include <queue>
 #include <utility>
@@ -7,13 +7,13 @@
 #include <regex>
 #include <vector>
 
-//первая строка формула, вторая отрезок параметров в виде аргумент 
+//ГЇГҐГ°ГўГ Гї Г±ГІГ°Г®ГЄГ  ГґГ®Г°Г¬ГіГ«Г , ГўГІГ®Г°Г Гї Г®ГІГ°ГҐГ§Г®ГЄ ГЇГ Г°Г Г¬ГҐГІГ°Г®Гў Гў ГўГЁГ¤ГҐ Г Г°ГЈГіГ¬ГҐГ­ГІ 
 //<var>=[<left>;<right>]'\n'
 bool CGraphBuilder::buildPointGrid( const std::string& data )
 {
 	try {
 		std::stringstream ss;
-		for( int i = 0; i < data.size(); i++ ) {
+		for( int i = 0; i < static_cast<int>( data.size() ); i++ ) {
 			if( data[i] != '\r' ) {
 				ss << data[i];
 			}
@@ -35,7 +35,7 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 				}
 				double lb = std::stod( argument.substr( 3, firstArgEnd - 3 ) ); //left bound from arg template
 				double rb = std::stod( argument.substr( firstArgEnd + 1, secondArgEnd - firstArgEnd ) ); //right bound arg template
-				if( lb > rb ) { //опасный момент нужно ли производить сравнение с eps?
+				if( lb > rb ) { //Г®ГЇГ Г±Г­Г»Г© Г¬Г®Г¬ГҐГ­ГІ Г­ГіГ¦Г­Г® Г«ГЁ ГЇГ°Г®ГЁГ§ГўГ®Г¤ГЁГІГј Г±Г°Г ГўГ­ГҐГ­ГЁГҐ Г± eps?
 					return false;
 				}
 				args[argument[0]] = std::make_pair( lb, rb );
@@ -49,7 +49,7 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 
 		CFormula formula = ParseFormula( strFormula );
 		std::vector< char > vars = formula.GetVariables();
-		for( int i = 0; i < vars.size(); i++ ) {
+		for( int i = 0; i < static_cast<int>( vars.size() ); i++ ) {
 			if( args.find( vars[i] ) == args.end() ) {
 				args[vars[i]] = std::make_pair( leftBound, rightBound );
 			}
@@ -65,19 +65,20 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 					segments.push_back( std::make_pair( points.size() - 1, points.size() - 2 ) );
 				}
 			}
-		} else if( vars.size() == 2 ) {//TODO сделать циклы для argToCount
-			int secondAxisSize = ( args[vars[1]].second - args[vars[1]].first ) / eps; //не очень красиво вносить это в циклы.
-			int firstAxisSize = ( args[vars[0]].second - args[vars[0]].first ) / eps;
+		} else if( vars.size() == 2 ) {//TODO СЃРґРµР»Р°С‚СЊ С†РёРєР»С‹ РґР»СЏ argToCount
+			// РЅРµ РѕС‡РµРЅСЊ РєСЂР°СЃРёРІРѕ РІРЅРѕСЃРёС‚СЊ СЌС‚Рѕ РІ С†РёРєР»С‹.
+			int secondAxisSize = static_cast<int>( ( args[vars[1]].second - args[vars[1]].first ) / eps ); 
+			int firstAxisSize = static_cast<int>( ( args[vars[0]].second - args[vars[0]].first ) / eps );
 			for( int i = 0; i < firstAxisSize; i++ ) {
 				for( int j = 0; j < secondAxisSize; j++ ) {
 					argToCount[vars[0]] = args[vars[0]].first + i * eps;
 					argToCount[vars[1]] = args[vars[1]].first + j * eps;
 					auto result = formula.Calculate( argToCount );
 					points.push_back( C3DPoint( result['x'], result['y'], result['z'] ) );
-					if( j > 0 ) { //соединили соседние точки на одной оси
+					if( j > 0 ) { // СЃРѕРµРґРёРЅРёР»Рё СЃРѕСЃРµРґРЅРёРµ С‚РѕС‡РєРё РЅР° РѕРґРЅРѕР№ РѕСЃРё
 						segments.push_back( std::make_pair( points.size() - 1, points.size() - 2 ) );
 					}
-					if( i > 0 ) { //соединили соседние точки на другой оси
+					if( i > 0 ) { // СЃРѕРµРґРёРЅРёР»Рё СЃРѕСЃРµРґРЅРёРµ С‚РѕС‡РєРё РЅР° РѕРґРЅРѕР№ РѕСЃРё
 						segments.push_back( std::make_pair( points.size() - 1, points.size() - secondAxisSize - 1 ) );
 					}
 				}
@@ -87,7 +88,7 @@ bool CGraphBuilder::buildPointGrid( const std::string& data )
 			return false;
 		}
 
-	} catch( std::exception& e ) {
+	} catch( std::exception& ) {
 		return false;
 	}
 
