@@ -244,7 +244,7 @@ void CNotationBuilder::processBinaryOperator() {
 		currentToken = "+#";
 	}
 	while( !tempStack.empty() ) {
-		bool isFunctionOrOperator = std::regex_match( tempStack.top().first, leftOpRegex ) || std::regex_match( tempStack.top().first, rightOpRegex ) || std::regex_match( tempStack.top().first, binaryFunctionRegex );
+		bool isFunctionOrOperator = std::regex_match( tempStack.top().first, leftOpRegex ) || std::regex_match( tempStack.top().first, rightOpRegex ) || std::regex_match( tempStack.top().first, binaryFunctionRegex ) || std::regex_match( tempStack.top().first, agregationFunctionRegex );
 		bool isPriorityCorrect = isFunctionOrOperator 
 				&& ( ( ( std::regex_match( currentToken, leftOpRegex ) && operatorsPriority.find( tempStack.top().first )->second >= operatorsPriority.find( currentToken )->second ) 
 				|| ( std::regex_match( currentToken, rightOpRegex ) && operatorsPriority.find( tempStack.top().first )->second > operatorsPriority.find( currentToken )->second ) ) );
