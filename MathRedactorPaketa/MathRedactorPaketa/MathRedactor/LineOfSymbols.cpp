@@ -3,12 +3,13 @@
 #include <assert.h>
 #include <typeinfo>
 
-CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight ) :
+CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, bool _isBase ) :
 	height( _simpleSymbolHeight ),
 	baselineOffset( 0 ),
 	simpleSymbolHeight( _simpleSymbolHeight ),
-	parent( 0 )
-{}
+	parent( 0 ),
+	isBase( isBase )
+{ }
 
 CLineOfSymbols::CLineOfSymbols( const CLineOfSymbols& src ) :
 	height( src.height ),
@@ -16,10 +17,9 @@ CLineOfSymbols::CLineOfSymbols( const CLineOfSymbols& src ) :
 	simpleSymbolHeight( src.simpleSymbolHeight ),
 	parent( 0 )
 {
-
 	for( int i = 0; i < src.Length(); ++i ) {
 		assert( src[i] != 0 );
-		Push( src[i]->Clone( this ), i );
+		PushBack( src[i]->Clone( this ) );
 	}
 }
 
@@ -29,13 +29,8 @@ CLineOfSymbols& CLineOfSymbols::operator=( const CLineOfSymbols& src )
 		return *this;
 	}
 
-	height = src.height;
-	baselineOffset = src.baselineOffset;
-	simpleSymbolHeight = src.simpleSymbolHeight;
-	for( int i = 0; i < src.Length(); ++i ) {
-		assert( src[i] != 0 );
-		Push( src[i]->Clone( this ), i );
-	}
+	CLineOfSymbols tmp( src );
+	std::swap( *this, tmp );
 	return *this;
 }
 
@@ -46,21 +41,13 @@ CLineOfSymbols::~CLineOfSymbols( )
 	}
 }
 
-void CLineOfSymbols::Push( CSymbol* symbol, int index )
+void CLineOfSymbols::Insert( int index, CSymbol* symbol )
 {
-	if( index < 0 ) {
-		//TODO: add an error or exception
-		return;
-	}
-	if( index >= static_cast<int>( arrayOfSymbolPtrs.size() ) ) {
-		arrayOfSymbolPtrs.push_back( symbol );
-	} else {
-		arrayOfSymbolPtrs.insert( arrayOfSymbolPtrs.begin() + index, symbol );
-	}
+	arrayOfSymbolPtrs.insert( arrayOfSymbolPtrs.begin() + index, symbol );
 	Recalculate();
 }
 
-void CLineOfSymbols::Pop( int index )
+void CLineOfSymbols::Delete( int index )
 {
 	delete( arrayOfSymbolPtrs[index] );
 	arrayOfSymbolPtrs.erase( arrayOfSymbolPtrs.begin() + index );
@@ -69,7 +56,6 @@ void CLineOfSymbols::Pop( int index )
 
 void CLineOfSymbols::Draw( HDC displayHandle, int posX, int posY ) const
 {
-
 	//Устанавливаем шрифт (получаем текущий и обновляем высоту символа)
 	HFONT oldFont = (HFONT)::GetCurrentObject( displayHandle, OBJ_FONT );
 	assert( oldFont != 0 );

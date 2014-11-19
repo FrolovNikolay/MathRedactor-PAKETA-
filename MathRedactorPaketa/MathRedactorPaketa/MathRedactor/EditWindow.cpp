@@ -24,10 +24,6 @@ CEditWindow::CEditWindow() : horizontalScrollUnit( 30 ), verticalScrollUnit( 15 
 	caret.MoveTo( &content[0], 0 );
 }
 
-CEditWindow::~CEditWindow()
-{
-}
-
 bool CEditWindow::RegisterClass( HINSTANCE classOwnerInstance )
 {
 	WNDCLASSEX classInfo;
@@ -63,8 +59,8 @@ void CEditWindow::AddSymbol( CSymbol* symbol )
 		substrings[i]->SetParent( caret.GetLine() );
 	}
 
-	caret.GetLine()->Push( symbol, caret.GetIndex() );
-	caret.Move( DRight );
+	caret.GetLine()->Insert( caret.GetIndex(), symbol );
+	caret.Move( CD_Right );
 	recalculateHorzScrollParams();
 	recalculateVertScrollParams();
 	::RedrawWindow( windowHandle, 0, 0, RDW_INVALIDATE | RDW_ERASE );
@@ -88,14 +84,13 @@ void CEditWindow::AddSign( wchar_t sign )
 void CEditWindow::RemoveSign()
 {
 	if( caret.GetIndex() > 0 ) {
-		caret.GetLine()->Pop( caret.GetIndex() - 1 );
-		caret.Move( DLeft );
+		caret.GetLine()->Delete( caret.GetIndex() - 1 );
+		caret.Move( CD_Left );
 	} else if( getBaseLineIndex( caret.GetLine() ) > 0 ) {
 		int lineIndex = getBaseLineIndex( caret.GetLine() );
 		int pos = content[lineIndex - 1].Length();
 		for( int i = 0; i < content[lineIndex].Length(); ++i ) {
-			content[lineIndex - 1].Push( content[lineIndex][i]->Clone( &content[lineIndex - 1] ), 
-				content[lineIndex - 1].Length() );
+			content[lineIndex - 1].PushBack( content[lineIndex][i]->Clone( &content[lineIndex - 1] ) );
 		}
 		content.erase( content.begin() + lineIndex );
 		caret.MoveTo( &content[lineIndex - 1], pos );
@@ -110,16 +105,15 @@ void CEditWindow::NewLine()
 	int lineIndex = getBaseLineIndex( caret.GetLine() );
 	if( lineIndex != -1 ) {
 		if( lineIndex == content.size() - 1 ) {
-			content.push_back( CLineOfSymbols( simpleSymbolHeight ) );
+			content.push_back( CLineOfSymbols( simpleSymbolHeight, true ) );
 		} else {
-			content.insert( content.begin() + lineIndex + 1, 1, CLineOfSymbols( simpleSymbolHeight ) );
+			content.insert( content.begin() + lineIndex + 1, 1, CLineOfSymbols( simpleSymbolHeight, true ) );
 		}
 		for( int i = caret.GetIndex(); i < content[lineIndex].Length(); ++i ) {
-			content[lineIndex + 1].Push( content[lineIndex][i]->Clone( &content[lineIndex + 1] ),
-				i - caret.GetIndex() );
+			content[lineIndex + 1].Insert( i - caret.GetIndex(), content[lineIndex][i]->Clone( &content[lineIndex + 1] ) );
 		}
 		for( int i = content[lineIndex].Length() - 1; i >= caret.GetIndex(); --i ) {
-			content[lineIndex].Pop( i );
+			content[lineIndex].Delete( i );
 		}
 		caret.MoveTo( &content[lineIndex + 1], 0 );
 		recalculateVertScrollParams();
@@ -139,7 +133,7 @@ void CEditWindow::HideCaret()
 	caret.Destroy();
 }
 
-void CEditWindow::MoveCaret( CEditWindow::TDirection direction )
+void CEditWindow::MoveCaret( CEditWindow::TCaretDirection direction )
 {
 	
 	caret.Move( direction );
@@ -148,7 +142,7 @@ void CEditWindow::MoveCaret( CEditWindow::TDirection direction )
 		CLineOfSymbols* newLine = caret.GetLine();
 		symbolSelector.GetLocalSelectionInfo( newLine, begin, end );
 		symbolSelector.ResetSelection();
-		if( direction == TDirection::DRight || direction == TDirection::DDown ) {
+		if( direction == TCaretDirection::CD_Right || direction == TCaretDirection::CD_Down ) {
 			caret.MoveTo( newLine, end );
 		} else {
 			caret.MoveTo( newLine, begin );
@@ -544,15 +538,15 @@ void CEditWindow::removeSelectedSymbols()
 		}
 		if( startLine == lastLine ) {
 			for( int i = startSymbol; i <= lastSymbol; ++i ) {
-				content[startLine].Pop( startSymbol );
+				content[startLine].Delete( startSymbol );
 			}
 		} else {
 			int length = content[startLine].Length();
 			for( int i = startSymbol; i < length; ++i ) {
-				content[startLine].Pop( startSymbol );
+				content[startLine].Delete( startSymbol );
 			}
 			for( int i = lastSymbol + 1; i < content[lastLine].Length(); ++i ) {
-				content[startLine].Push( content[lastLine][i]->Clone( &content[startLine] ), startSymbol + i );
+				content[startLine].Insert( startSymbol + i, content[lastLine][i]->Clone( &content[startLine] ) );
 			}
 			content.erase( content.begin() + startLine + 1, content.begin() + lastLine + 1 );
 		}
@@ -562,7 +556,7 @@ void CEditWindow::removeSelectedSymbols()
 		int startSymbol, lastSymbol;
 		symbolSelector.GetLocalSelectionInfo( baseLine, startSymbol, lastSymbol );
 		for( int i = 0; i <= lastSymbol - startSymbol; ++i ) {
-			baseLine->Pop( startSymbol );
+			baseLine->Delete( startSymbol );
 		}
 		caret.MoveTo( baseLine, startSymbol );
 	}
@@ -699,19 +693,19 @@ void CEditWindow::CCaret::Destroy()
 	::DestroyCaret();
 }
 
-void CEditWindow::CCaret::Move( CEditWindow::TDirection direction )
+void CEditWindow::CCaret::Move( CEditWindow::TCaretDirection direction )
 {
 	switch( direction ) {
-	case DUp:
+	case CD_Up:
 		moveUp();
 		break;
-	case DDown:
+	case CD_Down:
 		moveDown();
 		break;
-	case DLeft:
+	case CD_Left:
 		moveLeft();
 		break;
-	case DRight:
+	case CD_Right:
 		moveRight();
 		break;
 	}
