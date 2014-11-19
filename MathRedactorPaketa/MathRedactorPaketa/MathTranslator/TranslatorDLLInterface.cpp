@@ -1,4 +1,3 @@
-
 #define MATHTRANSLATORDLL_EXPORTS
 
 #include "TranslatorDLLInterface.h"
@@ -11,7 +10,8 @@
 #include <fstream>  
 #include "ConvertLatex.h"
 
-void convertFormula(std::string inputFileName, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string outputFileName) {
+void ConvertFormula( std::string inputFileName, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string outputFileName) 
+{
 		shared_ptr<FormulaObj> obj(new FormulaObj(NT_MAIN));
 		MathMLParser mmlparser;
 		CConvertLatex latexConverter;

@@ -327,11 +327,11 @@ TNodeType readBinarOperation( TiXmlElement* elem )
 	{
 		return NT_APPROX;
 	}
-	if( id == "\leqslant" || id == "\leq" )
+	if( id == "\\leqslant" || id == "\\leq" )
 	{
 		return NT_LESSEQ;
 	}
-	if( id == "\geqslant" || id == "\geq" )
+	if( id == "\\geqslant" || id == "\\geq" )
 	{
 		return NT_GREATEQ;
 	}
@@ -607,13 +607,13 @@ void saveTreeToXml( TiXmlElement* pElem, shared_ptr<MathObj> obj, bool isNewRow 
 
         case NT_LESSEQ:
             saveTreeToXml( pElem, *it, isNewRow );
-            linkNewElem( pElem, "mo", "\leq" );
+            linkNewElem( pElem, "mo", "\\leq" );
             saveTreeToXml( pElem, *itLast, isNewRow );
             break;
 
         case NT_GREATEQ:
             saveTreeToXml( pElem, *it, isNewRow );
-            linkNewElem( pElem, "mo", "\geq" );
+            linkNewElem( pElem, "mo", "\\geq" );
             saveTreeToXml( pElem, *itLast, isNewRow );
             break;
 

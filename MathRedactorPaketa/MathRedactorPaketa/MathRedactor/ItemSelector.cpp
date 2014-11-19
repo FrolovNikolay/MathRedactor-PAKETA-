@@ -172,7 +172,9 @@ void CItemSelector::GetLocalSelectionInfo( CLineOfSymbols*& outBaseLine, int& st
 	if( startPos > endPos ) {
 		std::swap( startPos, endPos );
 	}
-
+	if( baseLine == 0 ) {
+		baseLine = outBaseLine;
+	}
 	outBaseLine = const_cast<CLineOfSymbols*>(baseLine);
 
 	// Находим первый символ выделения в подстроке
@@ -193,6 +195,7 @@ void CItemSelector::GetLocalSelectionInfo( CLineOfSymbols*& outBaseLine, int& st
 			break;
 		}
 	}
+	baseLine = 0;
 }
 
 // Определяем базовую подлинию начала выделения во внутренней структуре

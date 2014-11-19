@@ -3,13 +3,13 @@
 #include <wingdi.h>
 #include <Windows.h>
 
-const wchar_t CSigmaSymbol::symbol[] = { L'\u2211', L'\0' };
 
-CSigmaSymbol::CSigmaSymbol( int simpleSymbolHeight ) :
-upperLine( calculateSublineHeight( simpleSymbolHeight ) ),
-lowerLine( calculateSublineHeight( simpleSymbolHeight ) )
+CSigmaSymbol::CSigmaSymbol( int simpleSymbolHeight, const wchar_t symbolForDawing ) :
+	upperLine( calculateSublineHeight( simpleSymbolHeight ) ),
+	lowerLine( calculateSublineHeight( simpleSymbolHeight ) )
 {
-
+	symbol[0] = symbolForDawing;
+	symbol[1] = 0;
 }
 
 CSymbol* CSigmaSymbol::Clone( CLineOfSymbols* parent ) const

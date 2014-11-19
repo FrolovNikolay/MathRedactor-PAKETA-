@@ -51,6 +51,9 @@
     <ClCompile Include="RootSymbol.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="FunctionSymbol.cpp">
+      <Filter>Файлы исходного кода</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MainWindow.h">
@@ -95,9 +98,9 @@
     <ClInclude Include="RootSymbol.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Xml Include="RibbonMarkup.xml" />
+    <ClInclude Include="FunctionSymbol.h">
+      <Filter>Заголовочные файлы</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RibbonResource.rc">
@@ -120,10 +123,17 @@
     <Image Include="Res\sqrt.bmp">
       <Filter>Файлы ресурсов</Filter>
     </Image>
+    <Image Include="Res\pi_for_mult.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="Res\func.bmp">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="RibbonUI.bin">
+    <None Include="Ribbon.bml">
       <Filter>Файлы ресурсов</Filter>
     </None>
+    <None Include="RibbonMarkup.xml" />
   </ItemGroup>
 </Project>

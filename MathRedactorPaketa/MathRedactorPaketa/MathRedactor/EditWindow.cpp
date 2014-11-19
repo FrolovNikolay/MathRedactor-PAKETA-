@@ -141,7 +141,21 @@ void CEditWindow::HideCaret()
 
 void CEditWindow::MoveCaret( CEditWindow::TDirection direction )
 {
+	
 	caret.Move( direction );
+	if( symbolSelector.HasSelection() ) {
+		int begin, end;
+		CLineOfSymbols* newLine = caret.GetLine();
+		symbolSelector.GetLocalSelectionInfo( newLine, begin, end );
+		symbolSelector.ResetSelection();
+		if( direction == TDirection::DRight || direction == TDirection::DDown ) {
+			caret.MoveTo( newLine, end );
+		} else {
+			caret.MoveTo( newLine, begin );
+		}
+		::InvalidateRect( windowHandle, 0, true );
+	}
+	
 }
 
 void CEditWindow::MoveCaretTo( int x, int y )
@@ -198,6 +212,8 @@ void CEditWindow::MoveCaretTo( int x, int y )
 	}
 	caret.MoveTo( baseLine, symbolIdx );
 }
+
+
 
 // protected методы
 
@@ -266,7 +282,7 @@ void CEditWindow::OnWmPaint( )
 	// Фон текста прозрачный, для выделения
 	::SetBkMode( memDC, TRANSPARENT );
 
-	for( int i = 0; i < static_cast<int>( content.size( ) ); ++i ) {
+	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
 		content[i].Draw( memDC, posX, posY );
 		posY += content[i].GetHeight();
 	}
@@ -307,10 +323,10 @@ void CEditWindow::OnWmHScroll( WPARAM wParam, LPARAM lParam )
 			scrollInfo.nPos = min( scrollInfo.nPos + 1, scrollInfo.nMax );
 			break;
 		case SB_PAGELEFT:
-			scrollInfo.nPos = max( static_cast<int>( scrollInfo.nPos - scrollInfo.nPage ), static_cast<int>( scrollInfo.nMin ) );
+			scrollInfo.nPos = max( scrollInfo.nPos - static_cast<int>( scrollInfo.nPage ), scrollInfo.nMin );
 			break;
 		case SB_PAGERIGHT:
-			scrollInfo.nPos = min( static_cast<int>( scrollInfo.nPos + scrollInfo.nPage ), static_cast<int>( scrollInfo.nMax ) );
+			scrollInfo.nPos = min( scrollInfo.nPos + static_cast<int>( scrollInfo.nPage ), scrollInfo.nMax );
 			break;
 		case SB_THUMBTRACK:
 			scrollInfo.nPos = scrollInfo.nTrackPos;
@@ -345,10 +361,10 @@ void CEditWindow::OnWmVScroll( WPARAM wParam, LPARAM lParam )
 			scrollInfo.nPos = min( scrollInfo.nPos + 1, scrollInfo.nMax );
 			break;
 		case SB_PAGEUP:
-			scrollInfo.nPos = max( static_cast<int>( scrollInfo.nPos - scrollInfo.nPage ), static_cast<int>( scrollInfo.nMin ) );
+			scrollInfo.nPos = max( scrollInfo.nPos - static_cast<int>( scrollInfo.nPage ), scrollInfo.nMin );
 			break;
 		case SB_PAGEDOWN:
-			scrollInfo.nPos = min( static_cast<int>( scrollInfo.nPos + scrollInfo.nPage ), static_cast<int>( scrollInfo.nMax ) );
+			scrollInfo.nPos = min( scrollInfo.nPos + static_cast<int>( scrollInfo.nPage ), scrollInfo.nMax );
 			break;
 		case SB_THUMBTRACK:
 			scrollInfo.nPos = scrollInfo.nTrackPos;
@@ -665,7 +681,7 @@ void CEditWindow::CCaret::Show()
 {
 	moveToNewCoordinates();
 	if( !shown ) {
-		shown = ( ::ShowCaret( window->windowHandle ) != 0 );
+		shown = ::ShowCaret( window->windowHandle ) != 0;
 	}
 }
 

@@ -1,5 +1,8 @@
+п»ї#pragma once
+
 #include <string>
-//поддерживаемые форматы конвентора
+
+// РџРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ С„РѕСЂРјР°С‚С‹ РєРѕРЅРІРµРЅС‚РѕСЂР°.
 enum TSupportedFormats {
 	SF_LATEX,
 	SF_MATHML,
@@ -7,10 +10,9 @@ enum TSupportedFormats {
 };
 
 #ifdef MATHTRANSLATORDLL_EXPORTS
-#define MATHFUNCSDLL_API __declspec(dllexport) 
+#define MATHTRANSLATORDLL_API __declspec(dllexport) 
 #else
-#define MATHFUNCSDLL_API __declspec(dllimport) 
+#define MATHTRANSLATORDLL_API __declspec(dllimport) 
 #endif
 
-void MATHFUNCSDLL_API convertFormula(std::string inputFile, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string outputFile);
-//void __declspec(dllexport) convertFormula(std::string inputFile, TSupportedFormats inputFormat, TSupportedFormats outputFormat);
+void MATHTRANSLATORDLL_API ConvertFormula( std::string inputFile, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string outputFile );

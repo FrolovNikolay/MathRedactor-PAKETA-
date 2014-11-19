@@ -32,9 +32,14 @@ public:
 	//Пересчитать высоты и базовые линии
 	void Recalculate( );
 
+	// Добавление символа в конец
+	void PushBack( CSymbol* symbol ) {
+		Push( symbol, Length() );
+	}
+
 	// Добавление символа в позицию index
 	// Если index лежит за пределами строки то добавляет в конец строки
-	void CLineOfSymbols::Push( CSymbol* symbol, int index );
+	void Push( CSymbol* symbol, int index );
 	//Убирает символ с текущей позиции
 	void Pop( int index );
 	//Возвращает длину строки

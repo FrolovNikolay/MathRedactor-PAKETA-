@@ -25,7 +25,7 @@ public:
 	// Отображается окно
 	void Show( int );
 	
-	// Добавляет символ иуведомляет окно о том, что надо перерисоваться
+	// Добавляет символ и уведомляет окно о том, что надо перерисоваться
 	void AddSymbol( CSymbol* );
 	// Добавляет знак с клавиатуры
 	void AddSign( wchar_t );
@@ -46,6 +46,7 @@ public:
 	void MoveCaret( TDirection );
 	// Двигает каретку к данной точке
 	void MoveCaretTo( int x, int y );
+
 
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY

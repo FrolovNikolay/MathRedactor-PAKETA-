@@ -8,6 +8,13 @@
         <Image>Res\sigma.bmp</Image>
       </Command.LargeImages>
     </Command>
+    <Command Name="cmdButtonPiMult"
+             Symbol="ID_CMD_PIMUL"
+             LabelTitle="Произведение">
+      <Command.LargeImages>
+        <Image>Res\pi_for_mult.bmp</Image>
+      </Command.LargeImages>
+    </Command>
     <Command Name="cmdButtonFraction"
              Symbol="ID_CMD_FRACTION"
              LabelTitle="Дробь">
@@ -36,22 +43,58 @@
         <Image>Res\sqrt.bmp</Image>
       </Command.LargeImages>
     </Command>
+    <Command Name="cmdButtonSin"
+             Symbol="ID_CMD_SIN"
+             LabelTitle="Синус">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmdButtonCos"
+             Symbol="ID_CMD_COS"
+             LabelTitle="Косинус">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmdButtonTan"
+             Symbol="ID_CMD_TAN"
+             LabelTitle="Тангенс">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmdButtonCtg"
+             Symbol="ID_CMD_CTG"
+             LabelTitle="Котангенс">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
     <Command Name="cmdTabSymbols" LabelTitle="Символы" />
     <Command Name="cmdGroupSetOperations" LabelTitle="Операции над множествами" />
-    <Command Name="cmdGroupNumberOperations" LabelTitle="'Операции над числами" />
+    <Command Name="cmdGroupNumberOperations" LabelTitle="Операции над числами" />
+    <Command Name="cmdTrigonometryGroup" LabelTitle="Тригонометрические операции" />
   </Application.Commands>
   <Application.Views>
     <Ribbon>
       <Ribbon.Tabs>
         <Tab CommandName="cmdTabSymbols">
-          <Group CommandName="cmdGroupSetOperations" SizeDefinition="TwoButtons">
+          <Group CommandName="cmdGroupSetOperations" SizeDefinition="ThreeButtons">
             <Button CommandName="cmdButtonSigma" />
+            <Button CommandName="cmdButtonPiMult" />
             <Button CommandName="cmdButtonSqrt" />
           </Group>
           <Group CommandName="cmdGroupNumberOperations" SizeDefinition="ThreeButtons">
             <Button CommandName="cmdButtonFraction" />
             <Button CommandName="cmdButtonUpperIndex" />
             <Button CommandName="cmdButtonLowerIndex" />
+          </Group>
+          <Group CommandName="cmdTrigonometryGroup">
+            <Button CommandName="cmdButtonSin" />
+            <Button CommandName="cmdButtonCos" />
+            <Button CommandName="cmdButtonTan" />
+            <Button CommandName="cmdButtonCtg" />
           </Group>
         </Tab>
       </Ribbon.Tabs>

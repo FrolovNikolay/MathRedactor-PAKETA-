@@ -41,7 +41,7 @@ CLineOfSymbols& CLineOfSymbols::operator=( const CLineOfSymbols& src )
 
 CLineOfSymbols::~CLineOfSymbols( )
 {
-	for( int i = 0; i < static_cast<int>( arrayOfSymbolPtrs.size( ) ); ++i ) {
+	for( int i = 0; i < static_cast<int>( arrayOfSymbolPtrs.size() ); ++i ) {
 		delete arrayOfSymbolPtrs[i];
 	}
 }

@@ -38,7 +38,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -67,6 +69,7 @@
     <ClCompile Include="CommandHandler.cpp" />
     <ClCompile Include="EditWindow.cpp" />
     <ClCompile Include="FractionSymbol.cpp" />
+    <ClCompile Include="FunctionSymbol.cpp" />
     <ClCompile Include="IndexSymbol.cpp" />
     <ClCompile Include="instruments.cpp" />
     <ClCompile Include="ItemSelector.cpp" />
@@ -81,6 +84,7 @@
     <ClInclude Include="CommandHandler.h" />
     <ClInclude Include="EditWindow.h" />
     <ClInclude Include="FractionSymbol.h" />
+    <ClInclude Include="FunctionSymbol.h" />
     <ClInclude Include="instruments.h" />
     <ClInclude Include="ItemSelector.h" />
     <ClInclude Include="LineOfSymbols.h" />
@@ -94,20 +98,25 @@
     <ClInclude Include="IndexSymbol.h" />
   </ItemGroup>
   <ItemGroup>
-    <Xml Include="RibbonMarkup.xml" />
+    <None Include="RibbonMarkup.xml">
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">uicc.exe "RibbonMarkup.xml" Ribbon.bml /header:RibbonIDs.h /res:RibbonResource.rc</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Ribbon.bml;RibbonIDs.h;RibbonResource.rc</Outputs>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="RibbonResource.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Res\fraction.bmp" />
+    <Image Include="Res\func.bmp" />
     <Image Include="Res\lowerIndex.bmp" />
+    <Image Include="Res\pi_for_mult.bmp" />
     <Image Include="Res\sigma.bmp" />
     <Image Include="Res\sqrt.bmp" />
     <Image Include="Res\upperIndex.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="RibbonUI.bin" />
+    <None Include="Ribbon.bml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

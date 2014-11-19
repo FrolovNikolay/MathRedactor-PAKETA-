@@ -1,17 +1,24 @@
-//Автор: Давлетшин Азат
+п»ї//РђРІС‚РѕСЂ: Р”Р°РІР»РµС‚С€РёРЅ РђР·Р°С‚
 
 #pragma once
 
 #include "Symbol.h"
 #include "LineOfSymbols.h" 
 
-//Сложный символ "сигма". Состоит из двух строк (верхней и нижней)
+// Р‘РѕР»СЊС€РёРµ СЃРёРјРІРѕР»С‹ СЃРёРіРјР° Рё РїРё РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕСЊР·СѓСЋС‚СЃСЏ РґР»СЏ СЃСѓРјРјС‹ Рё РїСЂРѕРёР·РІРµРґРµРЅРёСЏ
+const wchar_t bigSigmaSymbol = L'\u2211';
+const wchar_t bigPiSymbol = L'\u220F';
+
+////////////////////////////////////////////////////////////////////////
+// РЎР»РѕР¶РЅС‹Р№ СЃРёРјРІРѕР» "СЃРёРіРјР°"(РєРѕС‚РѕСЂС‹Р№ РјРѕР¶РµС‚ РїСЂРµРґСЃС‚Р°РІР»СЏС‚СЊ РЅРµ С‚РѕР»СЊРєРѕ СЃСѓРјРјСѓ). РЎРѕСЃС‚РѕРёС‚ РёР· РґРІСѓС… СЃС‚СЂРѕРє (РІРµСЂС…РЅРµР№ Рё РЅРёР¶РЅРµР№)
+
 class CSigmaSymbol : public CSymbol {
 public:
 
-	CSigmaSymbol( int simpleSymbolHeight );
+	// Р’ РїР°СЂР°РјРµС‚СЂР°С… РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РїРµСЂРµРґР°РµС‚СЃСЏ СЃРёРјРІРѕР» РєРѕС‚РѕСЂС‹Р№ РЅР°РґРѕ Р±СѓРґРµС‚ РѕС‚РѕР±СЂР°Р¶Р°С‚СЊ
+	CSigmaSymbol( int simpleSymbolHeight, const wchar_t symbolForDawing );
 
-	//Создание копии (deep) объекта. 
+	//РЎРѕР·РґР°РЅРёРµ РєРѕРїРёРё (deep) РѕР±СЉРµРєС‚Р°. 
 	virtual CSymbol* Clone( CLineOfSymbols* parent ) const;
 	virtual void UpdateParent( CLineOfSymbols* parent );
 	void GetSubstrings( std::vector<const CLineOfSymbols*>& substrings ) const;
@@ -26,24 +33,24 @@ public:
 	CLineOfSymbols& GetLowerLine() { return lowerLine; }
 	const CLineOfSymbols& GetLowerLine() const { return lowerLine; }
 
-	//Описание этих методов находится в Symbol.h
+	//РћРїРёСЃР°РЅРёРµ СЌС‚РёС… РјРµС‚РѕРґРѕРІ РЅР°С…РѕРґРёС‚СЃСЏ РІ Symbol.h
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const;
 	virtual int CalculateWidth( HDC displayHandle ) const;
 
 private:
-	//Строки над сигмой и под сигмой
+	//РЎС‚СЂРѕРєРё РЅР°Рґ СЃРёРіРјРѕР№ Рё РїРѕРґ СЃРёРіРјРѕР№
 	CLineOfSymbols upperLine;
 	CLineOfSymbols lowerLine;
 
-	//Символ сигмы для TextOut
-	static const wchar_t symbol[];
+	//РЎРёРјРІРѕР» СЃРёРіРјС‹ РґР»СЏ TextOut
+	wchar_t symbol[2];
 
-	//Рассчитать высоту нижней и верхней строки
+	//Р Р°СЃСЃС‡РёС‚Р°С‚СЊ РІС‹СЃРѕС‚Сѓ РЅРёР¶РЅРµР№ Рё РІРµСЂС…РЅРµР№ СЃС‚СЂРѕРєРё
 	static int calculateSublineHeight( int simpleSymbolHeight ) 
 		{ return static_cast<int>( simpleSymbolHeight * 0.7 ); }
-	//Высота символа сигмы
+	//Р’С‹СЃРѕС‚Р° СЃРёРјРІРѕР»Р° СЃРёРіРјС‹
 	static int getSigmaHeight( int simpleSymbolHeight ) 
 		{ return static_cast<int>( simpleSymbolHeight * 1.5 ); }
-	//Сдвиг верхней и нижней строк относительно сигмы
+	//РЎРґРІРёРі РІРµСЂС…РЅРµР№ Рё РЅРёР¶РЅРµР№ СЃС‚СЂРѕРє РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЃРёРіРјС‹
 	static int getSublinesOffset() { return 1; }
 };

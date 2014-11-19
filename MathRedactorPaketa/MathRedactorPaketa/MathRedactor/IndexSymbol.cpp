@@ -4,8 +4,8 @@
 
 #include <assert.h>
 
-const float CIndexSymbol::heightRatio = 1.4F;
-const float CIndexSymbol::sublineHeightRatio = 0.4F;
+const float CIndexSymbol::heightRatio = 1.4f;
+const float CIndexSymbol::sublineHeightRatio = 0.4f;
 
 CIndexSymbol::CIndexSymbol( int simpleSymbolHeight, CIndexSymbol::TIndexType _type ) :
 		type( _type ), line( calculateSublineHeight( simpleSymbolHeight ) )
