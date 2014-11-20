@@ -68,6 +68,7 @@
   <ItemGroup>
     <ClCompile Include="CommandHandler.cpp" />
     <ClCompile Include="EditWindow.cpp" />
+    <ClCompile Include="EditWindowDrawer.cpp" />
     <ClCompile Include="FractionSymbol.cpp" />
     <ClCompile Include="FunctionSymbol.cpp" />
     <ClCompile Include="IndexSymbol.cpp" />
@@ -83,6 +84,7 @@
   <ItemGroup>
     <ClInclude Include="CommandHandler.h" />
     <ClInclude Include="EditWindow.h" />
+    <ClInclude Include="EditWindowDrawer.h" />
     <ClInclude Include="FractionSymbol.h" />
     <ClInclude Include="FunctionSymbol.h" />
     <ClInclude Include="instruments.h" />

@@ -10,7 +10,6 @@
 class CItemSelector {
 public:
 	CItemSelector( std::vector<CLineOfSymbols>& _content );
-	~CItemSelector();
 
 	// Установка начальной позиции курсора
 	void SetStartPosition( int x, int y, int moveX, int moveY );

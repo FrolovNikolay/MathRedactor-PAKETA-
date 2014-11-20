@@ -1,4 +1,7 @@
-﻿//Автор: Давлетшин Азат
+﻿// Автор: Давлетшин Азат.
+
+// Описание: Абстрактный класс символа (простого и сложного). Умеет рисовать себя в Device Context.
+// Нельзя использовать, не добавив к строке.
 
 #pragma once
 
@@ -7,8 +10,6 @@
 
 class CLineOfSymbols;
 
-//Абстрактный класс символа (простого и сложного). Умеет рисовать себя в Device Context
-//Нельзя использовать, не добавив к строке
 class CSymbol {
 public:
 	CSymbol() : x( -1 ), y( -1 ), width( -1 ), height( -1 ) {}
@@ -19,26 +20,29 @@ public:
 	int GetHeight() const { return height; }
 	virtual int GetHeight( int simpleSymbolHeight ) const = 0;
 	int GetWidth() const { return width; }
-	//Получить сдвиг базовой линии
+
+	// Получить сдвиг базовой линии.
 	virtual int GetBaselineOffset( int simpleSymbolHeight ) const = 0;
-	//Расстояние от базовой линии до нижней точки
+	// Расстояние от базовой линии до нижней точки.
 	virtual int GetDescent( int simpleSymbolHeight ) const = 0;
-	//Получить массив указателей на подстроки (может быть пустым). Освобождать память нельзя
+
+	// Получить массив указателей на подстроки (может быть пустым). Освобождать память нельзя.
 	virtual void GetSubstrings( std::vector<const CLineOfSymbols*>& substrings ) const = 0;
 	virtual void GetSubstrings( std::vector<CLineOfSymbols*>& substrings ) = 0;
 
-	//Создание копии (deep) объекта (паттерн Prototype)
+	// Создание копии (deep) объекта (паттерн Prototype).
 	virtual CSymbol* Clone( CLineOfSymbols* parent ) const = 0;
 	virtual void UpdateParent( CLineOfSymbols* parent ) = 0;
 
-	//Нарисовать символ в displayHandle, начиная с позиции (startX, startY) - левый верхний угол. Используется
-	//текущие FONT и PEN
+	// Нарисовать символ в displayHandle, начиная с позиции (startX, startY) - левый верхний угол.
+	// Используются текущие FONT и PEN.
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const = 0;
-	//Рассчитать ширину символа
+
+	// Рассчитать ширину символа.
 	virtual int CalculateWidth( HDC displayHandle ) const = 0;
 protected:
-	//Левый верхний угол, ширина, высота (обновляется при перерисовке)
-	//Служебная инфа, поэтому mutable (символ сам от этого не меняется)
+	// Левый верхний угол, ширина, высота (обновляется при перерисовке).
+	// Служебная инфа, поэтому mutable (символ сам от этого не меняется).
 	mutable int x;
 	mutable int y;
 	mutable int width;

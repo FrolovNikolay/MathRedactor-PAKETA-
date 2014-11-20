@@ -8,6 +8,7 @@
 #include <vector>
 #include "LineOfSymbols.h"
 #include "ItemSelector.h"
+#include "EditWindowDrawer.h"
 
 class CEditWindow {
 public:
@@ -125,8 +126,7 @@ private:
 	//Содержимое редактора (массив строк)
 	std::vector<CLineOfSymbols> content;
 	
-	//TODO: Сделать нормальные настройки
-	int simpleSymbolHeight;
+	const int simpleSymbolHeight;
 
 	// для скроллирования
 	const int horizontalScrollUnit;
@@ -134,6 +134,8 @@ private:
 
 	// связанный с окном механизм для выделения
 	CItemSelector symbolSelector;
+
+	CEditWindowDrawer drawer;
 
 	// каретка
 	CCaret caret;

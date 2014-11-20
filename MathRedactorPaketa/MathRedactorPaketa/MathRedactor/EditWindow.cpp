@@ -17,6 +17,7 @@ const wchar_t* CEditWindow::className = L"MathRedactorEditWindowClass";
 
 CEditWindow::CEditWindow() : horizontalScrollUnit( 30 ), verticalScrollUnit( 15 ), simpleSymbolHeight( 50 ),
 		caret( this ), symbolSelector( content )
+		, drawer( content, symbolSelector, horizontalScrollUnit, verticalScrollUnit, simpleSymbolHeight )
 {
 	windowHandle = 0;
 	
@@ -223,78 +224,7 @@ void CEditWindow::OnWmPaint( )
 	if( caretShown ) {
 		caret.Hide();
 	}
-
-	PAINTSTRUCT paintInfo;
-	HDC displayHandle = ::BeginPaint( windowHandle, &paintInfo );
-	assert( displayHandle != 0 );
-
-	SCROLLINFO scrollInfo;
-	::ZeroMemory( &scrollInfo, sizeof( SCROLLINFO ) );
-	scrollInfo.cbSize = sizeof( SCROLLINFO );
-	scrollInfo.fMask = SIF_ALL;
-
-	::GetScrollInfo( windowHandle, SB_HORZ, &scrollInfo );
-	int posX = - scrollInfo.nPos * horizontalScrollUnit;
-	::GetScrollInfo( windowHandle, SB_VERT, &scrollInfo );
-	int posY = - scrollInfo.nPos * verticalScrollUnit;
-
-	//Получаем размеры клиентского окна
-	RECT clientRect;
-	::GetClientRect( windowHandle, &clientRect );
-
-	int width = clientRect.right;
-	int height = clientRect.bottom;
-
-	HDC memDC = CreateCompatibleDC( displayHandle );
-	HBITMAP bitmap = CreateCompatibleBitmap( displayHandle, width, height );
-	HBITMAP oldBitmap = reinterpret_cast<HBITMAP>( ::SelectObject( memDC, bitmap ) );
-
-	//Фон
-	HBRUSH bgBrush = ::CreateSolidBrush( RGB( 255, 255, 255 ) );
-	HBRUSH oldBgBrush = (HBRUSH) ::SelectObject( memDC, bgBrush );
-	::Rectangle( memDC, 0, 0, width, height );
-	::SelectObject( memDC, oldBgBrush );
-	::DeleteObject( bgBrush );
-
-	//!!!Сделать настройку шрифта отдельно
-	HFONT font = ::CreateFont( simpleSymbolHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
-		CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Georgia" );
-	assert( font != 0 );
-
-	if( symbolSelector.HasSelection() ) {
-		symbolSelector.MakeSelection( memDC, width, height, posX, posY );
-	}
-
-	HFONT oldFont = (HFONT) ::SelectObject( memDC, font );
-
-	//Настройка кисти для линии (рисование дроби)
-	HPEN linePen = ::CreatePen( PS_SOLID, 1, RGB( 0, 0, 0 ) );
-	HPEN oldLinePen = (HPEN) ::SelectObject( memDC, linePen );
-
-	//Выравнивание для TextOut (левый верхний угол)
-	::SetTextAlign( memDC, TA_LEFT | TA_TOP );
-	// Фон текста прозрачный, для выделения
-	::SetBkMode( memDC, TRANSPARENT );
-
-	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
-		content[i].Draw( memDC, posX, posY );
-		posY += content[i].GetHeight();
-	}
-
-	::SelectObject( memDC, oldLinePen );
-	::DeleteObject( linePen );
-
-	::SelectObject( memDC, oldFont );
-	::DeleteObject( font );
-	
-	::SetBkMode( memDC, OPAQUE );
-
-	::BitBlt( displayHandle, 0, 0, width, height, memDC, 0, 0, SRCCOPY);
-	::DeleteObject( oldBitmap );
-	::DeleteObject( bitmap );
-	::DeleteDC( memDC );
-
-	::EndPaint( windowHandle, &paintInfo );
+	drawer.RePaint( windowHandle );
 	// если каретка показывалась до перерисовки, то отображаем ее
 	if( caretShown ) {
 		caret.Show();

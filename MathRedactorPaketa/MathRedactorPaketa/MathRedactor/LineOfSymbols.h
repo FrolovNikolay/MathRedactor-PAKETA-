@@ -40,11 +40,14 @@ public:
 	// Добавление символа в позицию index.
 	void Insert( int index, CSymbol* symbol );
 
-	//Убирает символ с текущей позиции.
+	// Убирает символ с текущей позиции.
 	void Delete( int index );
 
-	//Возвращает длину строки.
+	// Возвращает длину строки.
 	int Length() const { return static_cast<int>( arrayOfSymbolPtrs.size() ); }
+
+	// Является ли строка, строкой редактора(true) или сложного символа(false).
+	bool IsBase() const { return isBase; }
 
 	const CSymbol* operator[] ( int index ) const { return arrayOfSymbolPtrs[index]; }
 	CSymbol* operator[] ( int index ) { return arrayOfSymbolPtrs[index]; }

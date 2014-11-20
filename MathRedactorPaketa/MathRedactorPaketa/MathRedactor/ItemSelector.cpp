@@ -17,10 +17,6 @@ CItemSelector::CItemSelector( std::vector<CLineOfSymbols>& _content ) :
 {
 }
 
-CItemSelector::~CItemSelector()
-{
-}
-
 bool CItemSelector::HasSelection() const
 {
 	if(( endX == -1 && endY == -1 )|| ( baseLine != 0 && baseLine->Length() == 0 ) ) {
