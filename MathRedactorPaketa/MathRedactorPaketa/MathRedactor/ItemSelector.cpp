@@ -19,7 +19,7 @@ CItemSelector::CItemSelector( std::vector<CLineOfSymbols>& _content ) :
 
 bool CItemSelector::HasSelection() const
 {
-	if(( endX == -1 && endY == -1 )|| ( baseLine != 0 && baseLine->Length() == 0 ) ) {
+	if( ( endX == -1 && endY == -1 ) ) {
 		return false;
 	} else {
 		return true;
@@ -171,7 +171,12 @@ void CItemSelector::GetLocalSelectionInfo( CLineOfSymbols*& outBaseLine, int& st
 	if( baseLine == 0 ) {
 		baseLine = outBaseLine;
 	}
-	outBaseLine = const_cast<CLineOfSymbols*>(baseLine);
+	outBaseLine = const_cast<CLineOfSymbols*>( baseLine );
+	if( baseLine->Length() == 0 ) {
+		startSymbol = 0;
+		lastSymbol = -1;
+		return;
+	}
 
 	// Находим первый символ выделения в подстроке
 	int currentX = baseLine->GetX();

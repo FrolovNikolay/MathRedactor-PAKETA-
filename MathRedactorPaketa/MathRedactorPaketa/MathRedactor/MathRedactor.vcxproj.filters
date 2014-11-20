@@ -95,9 +95,6 @@
     <ClInclude Include="instruments.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="RootSymbol.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>

@@ -91,7 +91,6 @@
     <ClInclude Include="ItemSelector.h" />
     <ClInclude Include="LineOfSymbols.h" />
     <ClInclude Include="MainWindow.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="RibbonIDs.h" />
     <ClInclude Include="RootSymbol.h" />
     <ClInclude Include="SimpleSymbol.h" />

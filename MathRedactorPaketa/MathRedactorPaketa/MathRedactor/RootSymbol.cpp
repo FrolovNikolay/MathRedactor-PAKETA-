@@ -6,11 +6,9 @@
 const wchar_t CRootSymbol::symbol[] = { L'\u221A' };
 
 CRootSymbol::CRootSymbol( int simpleSymbolHeight ) :
-	exponentLine( getExponentHeight( simpleSymbolHeight ) ),
-	radicandLine( simpleSymbolHeight )
-{
-
-}
+	exponentLine( simpleSymbolHeight * 0.4 )
+	, radicandLine( simpleSymbolHeight * 0.8 )
+{}
 
 CSymbol* CRootSymbol::Clone( CLineOfSymbols* parent ) const
 {
@@ -40,24 +38,23 @@ void CRootSymbol::GetSubstrings( std::vector<CLineOfSymbols*>& substrings )
 
 void CRootSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const
 {
-	int rootHeight = getRootHeight( simpleSymbolHeight );
+	int rootHeight = radicandLine.GetHeight() / 0.8;
 	//Рисуем экспоненту
-	int exponentY = posY - ( ( rootHeight - simpleSymbolHeight ) +
-		( exponentLine.GetHeight() - getExponentVerticalOffset( rootHeight ) ) );
+	int exponentY = posY + rootHeight * 0.6 - exponentLine.GetHeight();
 	exponentLine.Draw( displayHandle, posX, exponentY );
 	int exponentWidth = exponentLine.CalculateWidth( displayHandle );
 
 	//Рисуем знак корня
 	//Устанавливаем шрифт для корня
-	HFONT oldFont = ( HFONT )::GetCurrentObject( displayHandle, OBJ_FONT );
+	HFONT oldFont = static_cast<HFONT>( ::GetCurrentObject( displayHandle, OBJ_FONT ) );
 	assert( oldFont != 0 );
 
 	LOGFONT fontInfo;
 	::GetObject( oldFont, sizeof( LOGFONT ), &fontInfo );
-	fontInfo.lfHeight = getRootHeight( simpleSymbolHeight );
+	fontInfo.lfHeight = rootHeight;
 	HFONT font = ::CreateFontIndirect( &fontInfo );
 	assert( font != 0 );
-	oldFont = ( HFONT )::SelectObject( displayHandle, font );
+	oldFont = static_cast<HFONT>( ::SelectObject( displayHandle, font ) );
 
 	SIZE fontSizeStruct;
 	::GetTextExtentPoint32( displayHandle, symbol, 1, &fontSizeStruct );
@@ -69,82 +66,70 @@ void CRootSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbolH
 	int rootWidth = fontSizeStruct.cx;
 
 	//Вычисляем координаты для сигмы и рисуем её
-	int rootX = posX + exponentWidth + getExponentOffset( rootWidth );
-	rootX = max( posX, rootX );
-	int rootY = posY - ( rootHeight - simpleSymbolHeight );
-	::TextOut( displayHandle, rootX, rootY, symbol, 1 );
+	::TextOut( displayHandle, posX + exponentWidth, posY, symbol, 1 );
 
 	//Возвращаем старый шрифт, удаляем созданный
 	::SelectObject( displayHandle, oldFont );
 	::DeleteObject( font );
 
 	//Рисуем подкоренное выражение
-	int radicandX = rootX + rootWidth;
-	int radicandY = posY;
+
+	int radicandX = posX + exponentWidth + rootWidth;
+	int radicandY = posY + rootHeight / 5;
 	radicandLine.Draw( displayHandle, radicandX, radicandY );
 	int radicandWidth = radicandLine.CalculateWidth( displayHandle );
 
 	//Рисуем линию
 	int strokeStartX = radicandX;
-	int strokeStartY = rootY + textMetric.tmInternalLeading / 2;
+	int strokeStartY = posY + textMetric.tmInternalLeading / 2;
 	::MoveToEx( displayHandle, strokeStartX, strokeStartY, NULL );
 	::LineTo( displayHandle, strokeStartX + radicandWidth, strokeStartY );
 
 	//Обновляем информацию
 	x = posX;
-	y = exponentY;
-	width = exponentWidth + rootWidth + getExponentOffset( rootWidth ) + radicandWidth;
-	height = getRootHeight( simpleSymbolHeight ) + 
-		( exponentLine.GetHeight( ) - getExponentVerticalOffset( rootHeight ) );
+	y = posY - max( 0, exponentLine.GetHeight() - rootHeight * 0.4 );
+	width = exponentWidth + rootWidth + radicandWidth;
+	height = max( rootHeight, exponentLine.GetHeight() + rootHeight * 0.6 );
 
 }
 
 int CRootSymbol::CalculateWidth( HDC displayHandle ) const
 {
-	int exponentWidth = exponentLine.CalculateWidth( displayHandle );
-	int radicandWidth = radicandLine.CalculateWidth( displayHandle );
-
-	HFONT oldFont = ( HFONT )::GetCurrentObject( displayHandle, OBJ_FONT );
+	HFONT oldFont = static_cast<HFONT>( ::GetCurrentObject( displayHandle, OBJ_FONT ) );
 	assert( oldFont != 0 );
-
 	LOGFONT fontInfo;
 	::GetObject( oldFont, sizeof( LOGFONT ), &fontInfo );
-	fontInfo.lfHeight = getRootHeight( fontInfo.lfHeight );
+	fontInfo.lfHeight = getRootHeight( radicandLine.GetHeight() );
 	HFONT font = ::CreateFontIndirect( &fontInfo );
 	assert( font != 0 );
-	oldFont = ( HFONT )::SelectObject( displayHandle, font );
+	oldFont = static_cast<HFONT>( ::SelectObject( displayHandle, font ) );
 
 	SIZE fontSizeStruct;
 	::GetTextExtentPoint32( displayHandle, symbol, 1, &fontSizeStruct );
 
+	TEXTMETRIC textMetric;
+	::GetTextMetrics( displayHandle, &textMetric );
+
 	//Ширина символа корня
 	int rootWidth = fontSizeStruct.cx;
-
-	//Возвращаем старый шрифт, удаляем созданный
-	::SelectObject( displayHandle, oldFont );
-	::DeleteObject( font );
-
-	width = exponentWidth + rootWidth + getExponentOffset( rootWidth ) + radicandWidth;
+	width = exponentLine.GetWidth() + rootWidth + radicandLine.GetWidth();
 
 	return width;
 }
 
 int CRootSymbol::GetHeight( int simpleSymbolHeight ) const
 {
-	int rootHeight = getRootHeight( simpleSymbolHeight );
-	height = getRootHeight( simpleSymbolHeight ) +
-		( exponentLine.GetHeight() - getExponentVerticalOffset( rootHeight ) );
+	int rootHeight = radicandLine.GetHeight() / 0.8;
+	height = max( rootHeight, exponentLine.GetHeight() + rootHeight * 0.6 );
 	return height;
 }
 
 int CRootSymbol::GetBaselineOffset( int simpleSymbolHeight ) const
 {
-	int rootHeight = getRootHeight( simpleSymbolHeight );
-	return ( exponentLine.GetHeight() - getExponentVerticalOffset( rootHeight ) ) +
-		( rootHeight - simpleSymbolHeight );
+	return max( 0, exponentLine.GetHeight() - radicandLine.GetHeight() / 2 );
 }
 
 int CRootSymbol::GetDescent( int simpleSymbolHeight ) const
 {
-	return simpleSymbolHeight;
+	return radicandLine.GetHeight() / 0.8;
 }

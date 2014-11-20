@@ -195,7 +195,7 @@ void CEditWindow::MoveCaretTo( int x, int y )
 		baseLine = isLineBase( &content[lineIdx], x, y );
 	}
 	if( baseLine->Length() == 0 ) {
-		symbolIdx = -1;
+		symbolIdx = 0;
 	} else {
 		currentX = baseLine->GetX();
 		for( symbolIdx = 0; symbolIdx < baseLine->Length(); ++symbolIdx ) {
@@ -207,8 +207,6 @@ void CEditWindow::MoveCaretTo( int x, int y )
 	}
 	caret.MoveTo( baseLine, symbolIdx );
 }
-
-
 
 // protected методы
 
@@ -698,20 +696,16 @@ void CEditWindow::CCaret::moveRight()
 
 void CEditWindow::CCaret::moveToNewCoordinates()
 {
-	int x, y;
-	int newHeight = height;
+	int x;
+	int newHeight = line->GetHeight();
+	int y = line->GetY();
 	if( line->Length() == 0 ) {
 		x = line->GetX();
-		y = line->GetY();
 		newHeight = line->GetHeight();
 	} else if( index == 0 ) {
-		newHeight = ( *line )[index]->GetHeight();
 		x = ( *line )[index]->GetX();
-		y = ( *line )[index]->GetY();
 	} else {
-		newHeight = ( *line )[index - 1]->GetHeight();
 		x = ( *line )[index - 1]->GetX() + ( *line )[index - 1]->GetWidth();
-		y = ( *line )[index - 1]->GetY();
 	}
 	if( newHeight > 0 && newHeight != height ) {
 		changeHeight( newHeight );
