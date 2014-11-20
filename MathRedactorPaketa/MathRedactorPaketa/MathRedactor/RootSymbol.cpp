@@ -6,8 +6,8 @@
 const wchar_t CRootSymbol::symbol[] = { L'\u221A' };
 
 CRootSymbol::CRootSymbol( int simpleSymbolHeight ) :
-	exponentLine( simpleSymbolHeight * 0.4 )
-	, radicandLine( simpleSymbolHeight * 0.8 )
+	exponentLine( exponentSymbolSize( simpleSymbolHeight ) )
+	, radicandLine( radicandSymbolSize( simpleSymbolHeight ) )
 {}
 
 CSymbol* CRootSymbol::Clone( CLineOfSymbols* parent ) const
@@ -38,9 +38,9 @@ void CRootSymbol::GetSubstrings( std::vector<CLineOfSymbols*>& substrings )
 
 void CRootSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const
 {
-	int rootHeight = radicandLine.GetHeight() / 0.8;
+	int rootHeight = rootSymbolHeight( radicandLine.GetHeight() );
 	//Рисуем экспоненту
-	int exponentY = posY + rootHeight * 0.6 - exponentLine.GetHeight();
+	int exponentY = posY + exponentOffset( rootHeight ) - radicandLine.getBaselineOffset() - exponentLine.GetHeight() + baseOffset();
 	exponentLine.Draw( displayHandle, posX, exponentY );
 	int exponentWidth = exponentLine.CalculateWidth( displayHandle );
 
@@ -66,8 +66,7 @@ void CRootSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbolH
 	int rootWidth = fontSizeStruct.cx;
 
 	//Вычисляем координаты для сигмы и рисуем её
-	::TextOut( displayHandle, posX + exponentWidth, posY, symbol, 1 );
-
+	::TextOut( displayHandle, posX + exponentWidth, posY - rootOffset( rootHeight ) - radicandLine.getBaselineOffset() + baseOffset(), symbol, 1 );
 	//Возвращаем старый шрифт, удаляем созданный
 	::SelectObject( displayHandle, oldFont );
 	::DeleteObject( font );
@@ -75,21 +74,21 @@ void CRootSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbolH
 	//Рисуем подкоренное выражение
 
 	int radicandX = posX + exponentWidth + rootWidth;
-	int radicandY = posY + rootHeight / 5;
+	int radicandY = posY - radicandLine.getBaselineOffset() + baseOffset();
 	radicandLine.Draw( displayHandle, radicandX, radicandY );
 	int radicandWidth = radicandLine.CalculateWidth( displayHandle );
 
 	//Рисуем линию
 	int strokeStartX = radicandX;
-	int strokeStartY = posY + textMetric.tmInternalLeading / 2;
+	int strokeStartY = posY - rootOffset( rootHeight ) +  baseOffset()  - radicandLine.getBaselineOffset() + textMetric.tmInternalLeading / 2;
 	::MoveToEx( displayHandle, strokeStartX, strokeStartY, NULL );
 	::LineTo( displayHandle, strokeStartX + radicandWidth, strokeStartY );
 
 	//Обновляем информацию
 	x = posX;
-	y = posY - max( 0, exponentLine.GetHeight() - rootHeight * 0.4 );
+	y = posY - max( rootSymbolHeight( rootHeight ), exponentLine.GetHeight() - exponentOffset( rootHeight ) );
 	width = exponentWidth + rootWidth + radicandWidth;
-	height = max( rootHeight, exponentLine.GetHeight() + rootHeight * 0.6 );
+	height = max( rootHeight, exponentLine.GetHeight() + ( rootHeight - exponentOffset( rootHeight ) ) ) + baseOffset();
 
 }
 
@@ -99,7 +98,7 @@ int CRootSymbol::CalculateWidth( HDC displayHandle ) const
 	assert( oldFont != 0 );
 	LOGFONT fontInfo;
 	::GetObject( oldFont, sizeof( LOGFONT ), &fontInfo );
-	fontInfo.lfHeight = getRootHeight( radicandLine.GetHeight() );
+	fontInfo.lfHeight = rootSymbolHeight( radicandLine.GetHeight() );
 	HFONT font = ::CreateFontIndirect( &fontInfo );
 	assert( font != 0 );
 	oldFont = static_cast<HFONT>( ::SelectObject( displayHandle, font ) );
@@ -112,24 +111,27 @@ int CRootSymbol::CalculateWidth( HDC displayHandle ) const
 
 	//Ширина символа корня
 	int rootWidth = fontSizeStruct.cx;
-	width = exponentLine.GetWidth() + rootWidth + radicandLine.GetWidth();
+	width = exponentLine.CalculateWidth( displayHandle ) + rootWidth + radicandLine.CalculateWidth( displayHandle );
 
+	::SelectObject( displayHandle, oldFont );
+	::DeleteObject( font );
 	return width;
 }
 
 int CRootSymbol::GetHeight( int simpleSymbolHeight ) const
 {
-	int rootHeight = radicandLine.GetHeight() / 0.8;
-	height = max( rootHeight, exponentLine.GetHeight() + rootHeight * 0.6 );
+	int rootHeight = rootSymbolHeight( radicandLine.GetHeight() );
+	height = max( rootHeight, exponentLine.GetHeight() + ( rootHeight - exponentOffset( rootHeight ) - rootOffset( rootHeight ) ) ) + baseOffset();
 	return height;
 }
 
 int CRootSymbol::GetBaselineOffset( int simpleSymbolHeight ) const
 {
-	return max( 0, exponentLine.GetHeight() - radicandLine.GetHeight() / 2 );
+	int rootHeight = rootSymbolHeight( radicandLine.GetHeight() );
+	return max( exponentLine.GetHeight() - exponentOffset( rootHeight ) + radicandLine.getBaselineOffset(), rootOffset( rootHeight ) + radicandLine.getBaselineOffset() );
 }
 
 int CRootSymbol::GetDescent( int simpleSymbolHeight ) const
 {
-	return radicandLine.GetHeight() / 0.8;
+	return radicandLine.GetHeight() - radicandLine.getBaselineOffset() + baseOffset();
 }

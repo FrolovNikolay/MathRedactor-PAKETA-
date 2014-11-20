@@ -57,6 +57,8 @@ void CLineOfSymbols::Delete( int index )
 void CLineOfSymbols::Draw( HDC displayHandle, int posX, int posY ) const
 {
 	if( !isBase && arrayOfSymbolPtrs.empty() ) {
+		x = posX;
+		y = posY;
 		height = simpleSymbolHeight;
 		width = height / 3;
 		HBRUSH voidBrush = ::CreateSolidBrush( RGB( 100, 100, 100 ) );

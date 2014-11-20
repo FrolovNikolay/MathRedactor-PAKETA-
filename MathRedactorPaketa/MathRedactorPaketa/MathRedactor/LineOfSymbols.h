@@ -33,7 +33,7 @@ public:
 	int CalculateWidth( HDC displayHandle ) const;
 	// Пересчитать высоты и базовые линии.
 	void Recalculate();
-
+	int getBaselineOffset() const { return baselineOffset; }
 	// Добавление символа в конец.
 	void PushBack( CSymbol* symbol ) { arrayOfSymbolPtrs.push_back( symbol ); }
 

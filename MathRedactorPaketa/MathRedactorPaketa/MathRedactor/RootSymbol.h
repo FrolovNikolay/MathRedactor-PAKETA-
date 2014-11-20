@@ -40,20 +40,17 @@ private:
 	// Символ корня для TextOut.
 	static const wchar_t symbol[];
 
+	static int radicandSymbolSize( int symbolSize ) { return static_cast<int>( symbolSize * 0.8 ); }
 	// Рассчитать высоту строки степени.
-	static int getExponentHeight( int simpleSymbolHeight ) { return static_cast<int>( simpleSymbolHeight * 0.5 ); }
+	static int exponentSymbolSize( int symbolSize ) { return static_cast<int>( symbolSize * 0.4 ); }
 	// Высота юникодного символа корня.
-	static int getRootHeight( int simpleSymbolHeight )
-	{
-		return static_cast<int>( simpleSymbolHeight * 1.4 );
-	}
-	// Сдвиг по горизонтали показателя степени.
-	static int getExponentHorizontalOffset( int rootWidth )
-	{
-		return static_cast<int>( rootWidth * 0.4 );
-	}
-	static int getExponentVerticalOffset( int rootHeight )
-	{
-		return static_cast<int>( rootHeight * 0.1 );
-	}
+	static int rootSymbolHeight( int symbolSize ) { return static_cast<int>( symbolSize / 0.8 ); }
+
+	static int exponentOffset( int rootHeight ) { return static_cast<int>( rootHeight * 0.2 ); }
+
+	static int radicantOffset( int rootHeight ) { return static_cast<int>( rootHeight * 0.2 ); }
+
+	static int rootOffset( int rootHeight ) { return static_cast<int>( rootHeight * 0.2 ); }
+
+	static int baseOffset() { return 10; }
 };
