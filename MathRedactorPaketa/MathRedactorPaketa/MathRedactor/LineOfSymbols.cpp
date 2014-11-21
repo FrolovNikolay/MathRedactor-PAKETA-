@@ -67,9 +67,9 @@ void CLineOfSymbols::Draw( HDC displayHandle, int posX, int posY ) const
 		y = posY;
 		height = simpleSymbolHeight;
 		width = simpleSymbolHeight;
-		HBRUSH voidBrush = ::CreateSolidBrush( RGB( 0xF5, 0xF5, 0xF5 ) );
+		HBRUSH voidBrush = ::CreateSolidBrush( RGB( 0xF0, 0xF0, 0xF0 ) );
 		HBRUSH oldBrush = static_cast<HBRUSH>( ::SelectObject( displayHandle, voidBrush ) );
-		HPEN voidPen = CreatePen( PS_SOLID, 1, RGB( 0xF5, 0xF5, 0xF5 ) );
+		HPEN voidPen = CreatePen( PS_SOLID, 1, RGB( 0xF0, 0xF0, 0xF0 ) );
 		HPEN oldPen = static_cast<HPEN>( ::SelectObject( displayHandle, voidPen ) );
 		::Rectangle( displayHandle, posX, posY, posX + width, posY + height );
 		::SelectObject( displayHandle, oldBrush );

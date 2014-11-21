@@ -105,6 +105,7 @@ void CEditWindow::RemoveSign()
 		caret.MoveTo( CSymbolPosition( pos, &content[lineIndex - 1] ) );
 		recalculateVertScrollParams();
 	}
+	currentLine->Recalculate();
 	recalculateHorzScrollParams();
 	::RedrawWindow( windowHandle, 0, 0, RDW_INVALIDATE );
 }
@@ -530,7 +531,7 @@ void CEditWindow::CCaret::Move( CEditWindow::TCaretDirection direction )
 
 void CEditWindow::CCaret::MoveTo( int x, int y )
 {
-	const CSymbolPosition* tmp = window->finder.FindPosition( x, y );
+	std::unique_ptr<const CSymbolPosition> tmp( window->finder.FindPosition( x, y ) );
 	if( tmp->Index == -1 ) {
 		MoveTo( CSymbolPosition( 0, *tmp ) );
 	} else if( tmp->Index == tmp->CurrentLine->Length() ) {
@@ -542,7 +543,6 @@ void CEditWindow::CCaret::MoveTo( int x, int y )
 			MoveTo( CSymbolPosition( tmp->Index + 1, *tmp ) );
 		}
 	}
-	delete tmp;
 }
 
 void CEditWindow::CCaret::MoveTo( const CSymbolPosition& newPosition ) 

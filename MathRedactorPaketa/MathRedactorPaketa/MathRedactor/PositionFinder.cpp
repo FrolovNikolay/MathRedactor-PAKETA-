@@ -48,8 +48,10 @@ CSymbolPosition* CPositionFinder::exactPosition( int x, int y, CSymbolPosition* 
 	if( substings.size() == 0 ) {
 		return parent;
 	} else {
+		int moveX = content[0].GetX();
+		int moveY = content[0].GetY();
 		for( int i = 0; i < static_cast<int>( substings.size() ); ++i ) {
-			if( IsLineContainPoint( substings[i], x, y ) ) {
+			if( IsLineContainPoint( substings[i], x + moveX, y + moveY ) ) {
 				std::unique_ptr<CSymbolPosition> tmp( new CSymbolPosition( 0, substings[i], parent ) );
 				return exactPosition( x, y, positionInLine( x, y, tmp.get() ) );
 			}
@@ -59,11 +61,11 @@ CSymbolPosition* CPositionFinder::exactPosition( int x, int y, CSymbolPosition* 
 }
 
 CSymbolPosition* CPositionFinder::positionInLine( int x, int y, CSymbolPosition* baseLine ) const
-{
+{ 
 	if( baseLine->CurrentLine->Length() == 0 ) {
 		return new CSymbolPosition( -1, *baseLine );
 	}
-	int currentX = baseLine->CurrentLine->GetX();
+	int currentX = baseLine->CurrentLine->GetX() - content[0].GetX();
 	int symbolIdx;
 	for( symbolIdx = 0; symbolIdx < baseLine->CurrentLine->Length(); ++symbolIdx ) {
 		currentX += ( *baseLine->CurrentLine )[symbolIdx]->GetWidth();
