@@ -1,6 +1,7 @@
 ﻿// Автор: Фролов Николай.
 
 #include "EditWindowDrawer.h"
+#include "SymbolPosition.h"
 #include <cassert>
 
 CEditWindowDrawer::CEditWindowDrawer( const std::vector<CLineOfSymbols>& _content, const CItemSelector& _selector,
@@ -16,6 +17,8 @@ CEditWindowDrawer::CEditWindowDrawer( const std::vector<CLineOfSymbols>& _conten
 	font = ::CreateFont( simpleSymbolHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
 	CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Georgia" );
 	linePen = ::CreatePen( PS_SOLID, 1, RGB( 0, 0, 0 ) );
+	selectionBrush = ::CreateSolidBrush( RGB( 100, 100, 255 ) );
+	selectionPen = CreatePen( PS_SOLID, 1, RGB( 100, 100, 255 ) );
 }
 
 CEditWindowDrawer::CEditWindowDrawer( const CEditWindowDrawer& src )
@@ -29,6 +32,8 @@ CEditWindowDrawer::CEditWindowDrawer( const CEditWindowDrawer& src )
 	font = ::CreateFont( simpleSymbolHeight, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, ANSI_CHARSET, OUT_DEFAULT_PRECIS,
 	CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, L"Georgia" );
 	linePen = ::CreatePen( PS_SOLID, 1, RGB( 0, 0, 0 ) );
+	selectionBrush = ::CreateSolidBrush( RGB( 100, 100, 255 ) );
+	selectionPen = CreatePen( PS_SOLID, 1, RGB( 100, 100, 255 ) );
 }
 
 CEditWindowDrawer::~CEditWindowDrawer()
@@ -36,6 +41,8 @@ CEditWindowDrawer::~CEditWindowDrawer()
 	::DeleteObject( backgroundBrush );
 	::DeleteObject( linePen );
 	::DeleteObject( font );
+	::DeleteObject( selectionBrush );
+	::DeleteObject( selectionPen );
 }
 
 CEditWindowDrawer& CEditWindowDrawer::operator = ( const CEditWindowDrawer& src )
@@ -54,58 +61,122 @@ void CEditWindowDrawer::RePaint( HWND windowHandle ) const
 	HDC displayHandle = ::BeginPaint( windowHandle, &paintInfo );
 	assert( displayHandle != 0 );
 
-	SCROLLINFO scrollInfo;
-	::ZeroMemory( &scrollInfo, sizeof( SCROLLINFO ) );
-	scrollInfo.cbSize = sizeof( SCROLLINFO );
-	scrollInfo.fMask = SIF_ALL;
-
-	::GetScrollInfo( windowHandle, SB_HORZ, &scrollInfo );
-	int posX = - scrollInfo.nPos * hScrollUnit;
-	::GetScrollInfo( windowHandle, SB_VERT, &scrollInfo );
-	int posY = - scrollInfo.nPos * vScrollUnit;
-
-	//Получаем размеры клиентского окна
-	RECT clientRect;
-	::GetClientRect( windowHandle, &clientRect );
-
-	int width = clientRect.right;
-	int height = clientRect.bottom;
+	int leftTopX;
+	int leftTopY;
+	int width;
+	int height;
+	getWindowInfo( leftTopX, leftTopY, width, height, windowHandle );
 
 	tempHDC = CreateCompatibleDC( displayHandle );
 	tempBitmap = CreateCompatibleBitmap( displayHandle, width, height );
 	HBITMAP oldBitmap = static_cast<HBITMAP>( ::SelectObject( tempHDC, tempBitmap ) );
-
-	//Фон
 	HBRUSH oldBgBrush = static_cast<HBRUSH>( ::SelectObject( tempHDC, backgroundBrush ) );
+
 	::Rectangle( tempHDC, 0, 0, width, height );
 	::SelectObject( tempHDC, oldBgBrush );
 
-	if( selector.HasSelection() ) {
-		selector.MakeSelection( tempHDC, width, height, posX, posY );
-	}
+	drawSelection( windowHandle );
 
 	HFONT oldFont = static_cast<HFONT>( ::SelectObject( tempHDC, font ) );
-
-	// Настройка кисти для линии ( рисование дроби ).
 	HPEN oldLinePen = static_cast<HPEN>( ::SelectObject( tempHDC, linePen ) );
-
-	// Фон текста прозрачный, для выделения.
 	::SetBkMode( tempHDC, TRANSPARENT );
 
+	int offsetY = 0;
 	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
-		content[i].Draw( tempHDC, posX, posY );
-		posY += content[i].GetHeight();
+		content[i].Draw( tempHDC, leftTopX, leftTopY + offsetY );
+		offsetY += content[i].GetHeight();
 	}
 
 	::SetBkMode( tempHDC, OPAQUE );
 
 	::SelectObject( tempHDC, oldLinePen );
 	::SelectObject( tempHDC, oldFont );
+	::BitBlt( displayHandle, 0, 0, width, height, tempHDC, 0, 0, SRCCOPY );
 
-	::BitBlt( displayHandle, 0, 0, width, height, tempHDC, 0, 0, SRCCOPY);
 	::DeleteObject( oldBitmap );
 	::DeleteObject( tempHDC );
 	::DeleteObject( tempBitmap );
-
 	::EndPaint( windowHandle, &paintInfo );
 }
+
+void CEditWindowDrawer::drawSelection( HWND windowHandle ) const
+{
+	if( selector.HasSelection() ) {
+		const CSymbolPosition* start;
+		const CSymbolPosition* end;
+		selector.GetSelectionInfo( start, end );
+		if( start->GetParent() == 0 && end->GetParent() == 0 ) {
+			drawGlobalSelection( start, end, windowHandle );
+		} else if( start->GetParent() != 0 && end->GetParent() != 0 ) {
+			drawLocalSelection( start, end, windowHandle );
+		} else {
+			// Начало в базовой строке, а конец нет, либо наоборот. Такого не должно произойти.
+			assert( false );
+		}
+	}
+}
+
+void CEditWindowDrawer::drawGlobalSelection( const CSymbolPosition* start, const CSymbolPosition* end, HWND windowHandle ) const
+{
+	if( &start->CurrentLine == &end->CurrentLine ) {
+		drawLocalSelection( start, end, windowHandle );
+	} else {
+		int startLine = -1;
+		while( &content[++startLine] != &start->CurrentLine ) { }
+
+		int endLine = -1;
+		while( &content[++endLine] != &end->CurrentLine ) { }
+
+		if( startLine > endLine ) {
+			std::swap( start, end );
+			std::swap( startLine, endLine );
+		}
+		drawLocalSelection( start, &CSymbolPosition( start->CurrentLine.Length() - 1, start->CurrentLine ), windowHandle );
+		for( int i = startLine + 1; i < endLine; ++i ) {
+			if( content[i].Length() != 0 ) {
+				drawLocalSelection( &CSymbolPosition( 0, content[i] ), &CSymbolPosition( content[i].Length() - 1, content[i] ), windowHandle );
+			}
+		}
+		drawLocalSelection( &CSymbolPosition( 0, end->CurrentLine ), end, windowHandle );
+	}
+}
+
+void CEditWindowDrawer::drawLocalSelection( const CSymbolPosition* start, const CSymbolPosition* end, HWND windowHandle ) const
+{
+	HBRUSH lastBrush = static_cast<HBRUSH>( ::SelectObject( tempHDC, selectionBrush ) );
+	HPEN oldPen = static_cast<HPEN>( ::SelectObject( tempHDC, selectionPen ) );
+
+	int leftTopX = start->CurrentLine[start->Index]->GetX();
+	int rightBotX = end->CurrentLine[end->Index]->GetX();
+	int leftTopY = start->CurrentLine.GetY();
+	int rightBotY = leftTopY + start->CurrentLine.GetHeight();
+	if( leftTopX > rightBotX ) {
+		std::swap( leftTopX, rightBotX );
+		rightBotX += start->CurrentLine[start->Index]->GetWidth();
+	} else {
+		rightBotX += end->CurrentLine[end->Index]->GetWidth();
+	}
+	::Rectangle( tempHDC, leftTopX, leftTopY, rightBotX, rightBotY );
+
+	::SelectObject( tempHDC, lastBrush );
+	::SelectObject( tempHDC, oldPen );
+}
+
+void CEditWindowDrawer::getWindowInfo( int& leftTopX, int& leftTopY, int& width, int& height, HWND windowHandle ) const
+{
+	SCROLLINFO scrollInfo;
+	::ZeroMemory( &scrollInfo, sizeof( SCROLLINFO ) );
+	scrollInfo.cbSize = sizeof( SCROLLINFO );
+	scrollInfo.fMask = SIF_ALL;
+	::GetScrollInfo( windowHandle, SB_HORZ, &scrollInfo );
+	leftTopX = - scrollInfo.nPos * hScrollUnit;
+	::GetScrollInfo( windowHandle, SB_VERT, &scrollInfo );
+	leftTopY = - scrollInfo.nPos * vScrollUnit;
+
+	//Получаем размеры клиентского окна
+	RECT clientRect;
+	::GetClientRect( windowHandle, &clientRect );
+	width = clientRect.right;
+	height = clientRect.bottom;
+}
+

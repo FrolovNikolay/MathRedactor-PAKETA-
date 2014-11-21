@@ -77,9 +77,14 @@
     <ClCompile Include="LineOfSymbols.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="PositionFinder.cpp" />
     <ClCompile Include="RootSymbol.cpp" />
     <ClCompile Include="SigmaSymbol.cpp" />
     <ClCompile Include="SimpleSymbol.cpp" />
+    <ClInclude Include="PositionFinder.h" />
+    <ClInclude Include="SymbolPosition.h">
+      <FileType>CppCode</FileType>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CommandHandler.h" />

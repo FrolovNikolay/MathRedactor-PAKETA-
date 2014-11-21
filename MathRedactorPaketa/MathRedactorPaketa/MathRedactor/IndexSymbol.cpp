@@ -9,9 +9,7 @@ const float CIndexSymbol::sublineHeightRatio = 0.4f;
 
 CIndexSymbol::CIndexSymbol( int simpleSymbolHeight, CIndexSymbol::TIndexType _type ) :
 		type( _type ), line( calculateSublineHeight( simpleSymbolHeight ) )
-{
-
-}
+{ }
 
 void CIndexSymbol::UpdateParent( CLineOfSymbols* parent )
 {

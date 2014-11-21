@@ -31,4 +31,14 @@ private:
 	mutable HBRUSH backgroundBrush;
 	mutable HFONT font;
 	mutable HPEN linePen;
+	mutable HBRUSH selectionBrush;
+	mutable HPEN selectionPen;
+
+	void drawSelection( HWND ) const;
+
+	void drawGlobalSelection( const CSymbolPosition* start, const CSymbolPosition* end, HWND ) const;
+
+	void drawLocalSelection( const CSymbolPosition* start, const CSymbolPosition* end, HWND ) const;
+
+	void getWindowInfo( int& leftTopX, int& leftTopY, int& width, int& height, HWND windowHandle ) const;
 };

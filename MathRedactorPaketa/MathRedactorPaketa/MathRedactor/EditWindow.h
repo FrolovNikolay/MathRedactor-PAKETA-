@@ -8,6 +8,7 @@
 #include <vector>
 #include "LineOfSymbols.h"
 #include "ItemSelector.h"
+#include "PositionFinder.h"
 #include "EditWindowDrawer.h"
 
 class CEditWindow {
@@ -132,17 +133,14 @@ private:
 	const int horizontalScrollUnit;
 	const int verticalScrollUnit;
 
-	// связанный с окном механизм для выделения
+	CPositionFinder finder;
 	CItemSelector symbolSelector;
-
 	CEditWindowDrawer drawer;
 
 	// каретка
 	CCaret caret;
 
 	CLineOfSymbols* isLineBase( CLineOfSymbols* currentBaseLine, int x, int y );
-
-	void removeSelectedSymbols();
 
 	bool isSymbolAllowed( wchar_t ) const;
 	int getBaseLineIndex( const CLineOfSymbols* ) const;

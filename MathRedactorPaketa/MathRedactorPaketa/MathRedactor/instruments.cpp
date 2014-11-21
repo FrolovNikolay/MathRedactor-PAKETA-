@@ -1,7 +1,8 @@
+// Автор: Фролов Николай.
+
 #include "instruments.h"
 
-
-bool isLineContainPoint( CLineOfSymbols* line, int x, int y )
+bool IsLineContainPoint( const CLineOfSymbols* line, int x, int y )
 {
 	int leftTopX = line->GetX();
 	int leftTopY = line->GetY();
