@@ -113,7 +113,7 @@ void CEditWindow::NewLine()
 		if( lineIndex == content.size() - 1 ) {
 			content.push_back( CLineOfSymbols( simpleSymbolHeight, true ) );
 		} else {
-			content.insert( content.begin() + lineIndex + 1, 1, CLineOfSymbols( simpleSymbolHeight, true ) );
+			content.insert( content.begin() + lineIndex + 1, CLineOfSymbols( simpleSymbolHeight, true ) );
 		}
 		for( int i = caret.GetIndex(); i < content[lineIndex].Length(); ++i ) {
 			content[lineIndex + 1].Insert( i - caret.GetIndex(), content[lineIndex][i]->Clone( &content[lineIndex + 1] ) );

@@ -11,7 +11,7 @@ static const int SideOffset = 2;
 //Простой символ (буква, цифра или простой оператор). Нет конструктора по-умолчанию.
 class CSimpleSymbol : public CSymbol {
 public:
-	CSimpleSymbol( wchar_t _symbol ) { symbol[0] = _symbol; }
+	CSimpleSymbol( wchar_t _symbol ) { symbol = _symbol; }
 
 	//Получить высоту символа
 	virtual int GetHeight( int simpleSymbolHeight ) const { return simpleSymbolHeight; }
@@ -25,8 +25,8 @@ public:
 	virtual void GetSubstrings( std::vector<const CLineOfSymbols*>& substrings ) const {}
 	virtual void GetSubstrings( std::vector<CLineOfSymbols*>& substrings ) {}
 
-	wchar_t GetSymbol( ) const { return symbol[0]; }
-	void SetSymbol( wchar_t _symbol ) { symbol[0] = _symbol; }
+	wchar_t GetSymbol( ) const { return symbol; }
+	void SetSymbol( wchar_t _symbol ) { symbol = _symbol; }
 
 	//Описание этих методов находится в Symbol.h
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const;
@@ -34,5 +34,5 @@ public:
 
 private:
 	//Имя символа (передается в TextOut).
-	wchar_t symbol[1];
+	wchar_t symbol;
 };

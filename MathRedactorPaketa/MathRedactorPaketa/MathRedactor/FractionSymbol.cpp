@@ -3,12 +3,10 @@
 #include <wingdi.h>
 #include <Windows.h>
 
-CFractionSymbol::CFractionSymbol( int simpleSymbolHeight ) :
-upperLine( simpleSymbolHeight ),
-lowerLine( simpleSymbolHeight )
-{
-
-}
+CFractionSymbol::CFractionSymbol( int simpleSymbolHeight ) 
+	: upperLine( simpleSymbolHeight )
+	, lowerLine( simpleSymbolHeight )
+{ }
 
 CSymbol* CFractionSymbol::Clone( CLineOfSymbols* parent ) const
 {

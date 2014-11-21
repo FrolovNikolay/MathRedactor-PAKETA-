@@ -30,7 +30,13 @@ CLineOfSymbols& CLineOfSymbols::operator=( const CLineOfSymbols& src )
 	}
 
 	CLineOfSymbols tmp( src );
-	std::swap( *this, tmp );
+	std::swap( tmp.arrayOfSymbolPtrs, arrayOfSymbolPtrs );
+	std::swap( tmp.baselineOffset, baselineOffset );
+	std::swap( tmp.height, height );
+	std::swap( tmp.width, width );
+	std::swap( tmp.parent, parent );
+	std::swap( tmp.x, x );
+	std::swap( tmp.y, y );
 	return *this;
 }
 
