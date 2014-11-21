@@ -41,6 +41,9 @@ CSymbolPosition* CPositionFinder::FindPosition( int x, int y, CSymbolPosition* b
 CSymbolPosition* CPositionFinder::exactPosition( int x, int y, CSymbolPosition* parent ) const
 {
 	std::vector<const CLineOfSymbols*> substings;
+	if( parent->Index == -1 ) {
+		return parent;
+	}
 	( *parent->CurrentLine )[parent->Index]->GetSubstrings( substings );
 	if( substings.size() == 0 ) {
 		return parent;
@@ -48,7 +51,7 @@ CSymbolPosition* CPositionFinder::exactPosition( int x, int y, CSymbolPosition* 
 		for( int i = 0; i < static_cast<int>( substings.size() ); ++i ) {
 			if( IsLineContainPoint( substings[i], x, y ) ) {
 				std::unique_ptr<CSymbolPosition> tmp( new CSymbolPosition( 0, substings[i], parent ) );
-				return positionInLine( x, y, tmp.get() );
+				return exactPosition( x, y, positionInLine( x, y, tmp.get() ) );
 			}
 		}
 		return parent;
