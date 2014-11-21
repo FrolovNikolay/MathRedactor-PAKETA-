@@ -19,12 +19,6 @@ END
 ID_CMD_PIMUL_LargeImages_RESID    BITMAP    "Res\pi_for_mult.bmp" /* LargeImages ID_CMD_PIMUL_LargeImages_RESID: (null) */
 STRINGTABLE 
 BEGIN
-    ID_CMD_FRACTION_LabelTitle_RESID L"\x0414\x0440\x043e\x0431\x044c" /* LabelTitle ID_CMD_FRACTION_LabelTitle_RESID: (null) */
-END
-
-ID_CMD_FRACTION_LargeImages_RESID    BITMAP    "Res\fraction.bmp" /* LargeImages ID_CMD_FRACTION_LargeImages_RESID: (null) */
-STRINGTABLE 
-BEGIN
     ID_CMD_UPPER_INDEX_LabelTitle_RESID L"\x0412\x0435\x0440\x0445\x043d\x0438\x0439 \x0438\x043d\x0434\x0435\x043a\x0441" /* LabelTitle ID_CMD_UPPER_INDEX_LabelTitle_RESID: (null) */
 END
 
@@ -35,6 +29,12 @@ BEGIN
 END
 
 ID_CMD_LOWER_INDEX_LargeImages_RESID    BITMAP    "Res\lowerIndex.bmp" /* LargeImages ID_CMD_LOWER_INDEX_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_FRACTION_LabelTitle_RESID L"\x0414\x0440\x043e\x0431\x044c" /* LabelTitle ID_CMD_FRACTION_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_FRACTION_LargeImages_RESID    BITMAP    "Res\fraction.bmp" /* LargeImages ID_CMD_FRACTION_LargeImages_RESID: (null) */
 STRINGTABLE 
 BEGIN
     ID_CMD_SQRT_LabelTitle_RESID L"\x041a\x043e\x0440\x0435\x043d\x044c" /* LabelTitle ID_CMD_SQRT_LabelTitle_RESID: (null) */
@@ -67,7 +67,72 @@ END
 ID_CMD_CTG_LargeImages_RESID    BITMAP    "Res\func.bmp" /* LargeImages ID_CMD_CTG_LargeImages_RESID: (null) */
 STRINGTABLE 
 BEGIN
+    ID_CMD_ACCEPT_LabelTitle_RESID L"\x041e\x0442\x0440\x0438\x0441\x043e\x0432\x0430\x0442\x044c" /* LabelTitle ID_CMD_ACCEPT_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_ACCEPT_LargeImages_RESID    BITMAP    "Res\\accept.bmp" /* LargeImages ID_CMD_ACCEPT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_REJECT_LabelTitle_RESID L"\x041e\x0442\x043c\x0435\x043d\x0430" /* LabelTitle ID_CMD_REJECT_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_REJECT_LargeImages_RESID    BITMAP    "Res\\reject.bmp" /* LargeImages ID_CMD_REJECT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_Y_FX_LabelTitle_RESID L"y = f(x)" /* LabelTitle ID_CMD_Y_FX_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_Y_FX_LargeImages_RESID    BITMAP    "Res\func.bmp" /* LargeImages ID_CMD_Y_FX_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_Z_FXY_LabelTitle_RESID L"z = f(x,y)" /* LabelTitle ID_CMD_Z_FXY_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_Z_FXY_LargeImages_RESID    BITMAP    "Res\func.bmp" /* LargeImages ID_CMD_Z_FXY_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_XY_T_LabelTitle_RESID L"x=u(t) y=v(t)" /* LabelTitle ID_CMD_XY_T_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_XY_T_LargeImages_RESID    BITMAP    "Res\func.bmp" /* LargeImages ID_CMD_XY_T_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_XYZ_T_LabelTitle_RESID L"x=u(t) y=v(t) z=g(t)" /* LabelTitle ID_CMD_XYZ_T_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_XYZ_T_LargeImages_RESID    BITMAP    "Res\func.bmp" /* LargeImages ID_CMD_XYZ_T_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_XYZ_TL_LabelTitle_RESID L"x=u(t,l) y=v(t,l) z=g(t,l)" /* LabelTitle ID_CMD_XYZ_TL_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_XYZ_TL_LargeImages_RESID    BITMAP    "Res\func.bmp" /* LargeImages ID_CMD_XYZ_TL_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_IMPORT_LabelTitle_RESID L"\x0418\x043c\x043f\x043e\x0440\x0442" /* LabelTitle ID_CMD_IMPORT_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_IMPORT_LargeImages_RESID    BITMAP    "Res\\import.bmp" /* LargeImages ID_CMD_IMPORT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_EXPORT_LabelTitle_RESID L"\x042d\x043a\x0441\x043f\x043e\x0440\x0442" /* LabelTitle ID_CMD_EXPORT_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_EXPORT_LargeImages_RESID    BITMAP    "Res\\export.bmp" /* LargeImages ID_CMD_EXPORT_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
+    ID_CMD_CHECK_LabelTitle_RESID L"\x041f\x0440\x043e\x0432\x0435\x0440\x0438\x0442\x044c \x043d\x0430 \x0432\x044b\x0447\x0438\x0441\x043b\x0438\x043c\x043e\x0441\x0442\x044c" /* LabelTitle ID_CMD_CHECK_LabelTitle_RESID: (null) */
+END
+
+ID_CMD_CHECK_LargeImages_RESID    BITMAP    "Res\\play.bmp" /* LargeImages ID_CMD_CHECK_LargeImages_RESID: (null) */
+STRINGTABLE 
+BEGIN
     cmdTabSymbols_LabelTitle_RESID L"\x0421\x0438\x043c\x0432\x043e\x043b\x044b" /* LabelTitle cmdTabSymbols_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    cmdTabPlot_LabelTitle_RESID L"\x0413\x0440\x0430\x0444\x0438\x043a" /* LabelTitle cmdTabPlot_LabelTitle_RESID: (null) */
 END
 
 STRINGTABLE 
@@ -87,7 +152,27 @@ END
 
 STRINGTABLE 
 BEGIN
+    cmdActionGroup_LabelTitle_RESID L"\x0414\x0435\x0439\x0441\x0442\x0432\x0438\x044f" /* LabelTitle cmdActionGroup_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    cmdFunctionGroup_LabelTitle_RESID L"\x0422\x0438\x043f \x0444\x0443\x043d\x043a\x0446\x0438\x0438" /* LabelTitle cmdFunctionGroup_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    cmdLastGroup_LabelTitle_RESID L"\x041f\x0440\x043e\x0447\x0435\x0435" /* LabelTitle cmdLastGroup_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
+    cmdChooseFunction_LabelTitle_RESID L"\x0412\x044b\x0431\x0435\x0440\x0438\x0442\x0435 \x0442\x0438\x043f" /* LabelTitle cmdChooseFunction_LabelTitle_RESID: (null) */
+END
+
+STRINGTABLE 
+BEGIN
     InternalCmd2_LabelTitle_RESID L"Label:InternalCmd2" /* LabelTitle InternalCmd2_LabelTitle_RESID: (null) */
 END
 
-APPLICATION_RIBBON    UIFILE    "Ribbon.bml"
+APPLICATION_RIBBON    UIFILE    "RibbonUI.bin"

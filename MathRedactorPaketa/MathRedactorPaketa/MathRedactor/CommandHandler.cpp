@@ -1,11 +1,14 @@
 ﻿// Автор: Федюнин Валерий
 
+#include "CommandHandler.h"
+
+#include <assert.h>
+
 #include "FractionSymbol.h"
 #include "SimpleSymbol.h"
 #include "SigmaSymbol.h"
 #include "IndexSymbol.h"
 #include "RootSymbol.h"
-#include "CommandHandler.h"
 #include "RibbonIDs.h"
 #include "FunctionSymbol.h"
 
@@ -49,6 +52,21 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 	const PROPVARIANT* propvarValue, IUISimplePropertySet* pCommandExecutionProperties )
 {
 	switch( nCmdId ) {
+		case ID_CMD_ACCEPT:
+			::MessageBox( 0, L"Здесь функция отрисовки нового графика", L"TODO", MB_OK );
+			break;
+		case ID_CMD_REJECT:
+			::MessageBox( 0, L"Здесь функция отказа от нового графика", L"TODO", MB_OK );
+			break;
+		case ID_CMD_EXPORT:
+			::MessageBox( 0, L"Здесь функция экспорта", L"TODO", MB_OK );
+			break;
+		case ID_CMD_IMPORT:
+			::MessageBox( 0, L"Здесь функция импорта", L"TODO", MB_OK );
+			break;
+		case ID_CMD_CHECK:
+			::MessageBox( 0, L"Здесь проверка на вычислимость", L"TODO", MB_OK );
+			break;
 		case ID_CMD_SIGMA:
 		{
 			CSigmaSymbol* sigma = new CSigmaSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), bigSigmaSymbol );
@@ -109,6 +127,16 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 			editWindow->AddSymbol( func );
 			break;
 		}
+		// вынужденная мера, ибо DropDownButton представляет собой набор отдельных кнопок
+		case ID_CMD_Y_FX:
+		case ID_CMD_Z_FXY:
+		case ID_CMD_XY_T:
+		case ID_CMD_XYZ_T:
+		case ID_CMD_XYZ_TL:
+			::MessageBox( 0, L"Здесь будем переключать тип функции", L"TODO", MB_OK );
+			break;
+		default:
+			assert( false );
 	}
 
 	return S_OK;

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Application xmlns='http://schemas.microsoft.com/windows/2009/Ribbon'>
   <Application.Commands>
+    <!-- Кнопки для операций над множествами -->
     <Command Name="cmdButtonSigma"
              Symbol="ID_CMD_SIGMA"
              LabelTitle="Сумма">
@@ -15,13 +16,7 @@
         <Image>Res\pi_for_mult.bmp</Image>
       </Command.LargeImages>
     </Command>
-    <Command Name="cmdButtonFraction"
-             Symbol="ID_CMD_FRACTION"
-             LabelTitle="Дробь">
-      <Command.LargeImages>
-        <Image>Res\fraction.bmp</Image>
-      </Command.LargeImages>
-    </Command>
+    <!-- Кнопки для формата ввода -->
     <Command Name="cmdButtonUpperIndex"
              Symbol="ID_CMD_UPPER_INDEX"
              LabelTitle="Верхний индекс">
@@ -36,6 +31,14 @@
         <Image>Res\lowerIndex.bmp</Image>
       </Command.LargeImages>
     </Command>
+    <!-- Кнопки для операций над числами -->
+    <Command Name="cmdButtonFraction"
+             Symbol="ID_CMD_FRACTION"
+             LabelTitle="Дробь">
+      <Command.LargeImages>
+        <Image>Res\fraction.bmp</Image>
+      </Command.LargeImages>
+    </Command>
     <Command Name="cmdButtonSqrt"
              Symbol="ID_CMD_SQRT"
              LabelTitle="Корень">
@@ -43,6 +46,7 @@
         <Image>Res\sqrt.bmp</Image>
       </Command.LargeImages>
     </Command>
+    <!-- Кнопки для тригонометрических операций -->
     <Command Name="cmdButtonSin"
              Symbol="ID_CMD_SIN"
              LabelTitle="Синус">
@@ -71,14 +75,119 @@
         <Image>Res\func.bmp</Image>
       </Command.LargeImages>
     </Command>
+    <!-- Кнопки для работы с функцией -->
+    <Command Name="cmdButtonAccept"
+             Symbol="ID_CMD_ACCEPT"
+             LabelTitle="Отрисовать">
+      <Command.LargeImages>
+        <Image>Res/accept.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmdButtonReject"
+             Symbol="ID_CMD_REJECT"
+             LabelTitle="Отмена">
+      <Command.LargeImages>
+        <Image>Res/reject.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <!-- Кнопки для выбора типа графика -->
+    <Command Name="cmd_y_fx"
+             Symbol="ID_CMD_Y_FX"
+             LabelTitle="y = f(x)">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmd_z_fxy"
+             Symbol="ID_CMD_Z_FXY"
+             LabelTitle="z = f(x,y)">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmd_xy_t"
+             Symbol="ID_CMD_XY_T"
+             LabelTitle="x=u(t) y=v(t)">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmd_xyz_t"
+             Symbol="ID_CMD_XYZ_T"
+             LabelTitle="x=u(t) y=v(t) z=g(t)">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmd_xyz_tl"
+             Symbol="ID_CMD_XYZ_TL"
+             LabelTitle="x=u(t,l) y=v(t,l) z=g(t,l)">
+      <Command.LargeImages>
+        <Image>Res\func.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <!-- Кнопки для импорта/экспорта -->
+    <Command Name="cmdButtonImport"
+             Symbol="ID_CMD_IMPORT"
+             LabelTitle="Импорт">
+      <Command.LargeImages>
+        <Image>Res/import.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <Command Name="cmdButtonExport"
+             Symbol="ID_CMD_EXPORT"
+             LabelTitle="Экспорт">
+      <Command.LargeImages>
+        <Image>Res/export.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <!-- Проверка на вычислимость -->
+    <Command Name="cmdButtonCheck"
+             Symbol="ID_CMD_CHECK"
+             LabelTitle="Проверить на вычислимость">
+      <Command.LargeImages>
+        <Image>Res/play.bmp</Image>
+      </Command.LargeImages>
+    </Command>
+    <!-- Надписи для групп и вкладок -->
+    <!-- Табы -->
     <Command Name="cmdTabSymbols" LabelTitle="Символы" />
+    <Command Name="cmdTabPlot" LabelTitle="График" />
+    <!-- Группы -->
     <Command Name="cmdGroupSetOperations" LabelTitle="Операции над множествами" />
     <Command Name="cmdGroupNumberOperations" LabelTitle="Операции над числами" />
     <Command Name="cmdTrigonometryGroup" LabelTitle="Тригонометрические операции" />
+    <Command Name="cmdActionGroup" LabelTitle="Действия" />
+    <Command Name="cmdFunctionGroup" LabelTitle="Тип функции" />
+    <Command Name="cmdLastGroup" LabelTitle="Прочее" />
+    <Command Name="cmdChooseFunction" LabelTitle="Выберите тип" />
   </Application.Commands>
   <Application.Views>
     <Ribbon>
       <Ribbon.Tabs>
+        <Tab CommandName="cmdTabPlot">
+          <Group CommandName="cmdActionGroup" SizeDefinition="TwoButtons">
+            <Button CommandName="cmdButtonAccept" />
+            <Button CommandName="cmdButtonReject" />
+          </Group>
+          <Group CommandName="cmdFunctionGroup" SizeDefinition="OneButton">
+            <DropDownButton CommandName="cmdChooseFunction">
+              <MenuGroup Class="MajorItems">
+                <Button CommandName="cmd_y_fx" />
+                <Button CommandName="cmd_z_fxy" />
+                <Button CommandName="cmd_xy_t" />
+                <Button CommandName="cmd_xyz_t" />
+                <Button CommandName="cmd_xyz_tl" />
+              </MenuGroup>
+            </DropDownButton>
+          </Group>
+          <Group CommandName="cmdLastGroup" SizeDefinition="ThreeButtons">
+            <Button CommandName="cmdButtonImport" />
+            <Button CommandName="cmdButtonExport" />
+            <Button CommandName="cmdButtonCheck" />
+          </Group>
+        </Tab>
+        
         <Tab CommandName="cmdTabSymbols">
           <Group CommandName="cmdGroupSetOperations" SizeDefinition="ThreeButtons">
             <Button CommandName="cmdButtonSigma" />
@@ -90,13 +199,14 @@
             <Button CommandName="cmdButtonUpperIndex" />
             <Button CommandName="cmdButtonLowerIndex" />
           </Group>
-          <Group CommandName="cmdTrigonometryGroup">
+          <Group CommandName="cmdTrigonometryGroup" SizeDefinition="FourButtons">
             <Button CommandName="cmdButtonSin" />
             <Button CommandName="cmdButtonCos" />
             <Button CommandName="cmdButtonTan" />
             <Button CommandName="cmdButtonCtg" />
           </Group>
         </Tab>
+        
       </Ribbon.Tabs>
     </Ribbon>
   </Application.Views>

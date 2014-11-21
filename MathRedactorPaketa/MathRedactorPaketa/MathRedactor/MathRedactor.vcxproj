@@ -113,10 +113,15 @@
     <ResourceCompile Include="RibbonResource.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Res\accept.bmp" />
+    <Image Include="Res\export.bmp" />
     <Image Include="Res\fraction.bmp" />
     <Image Include="Res\func.bmp" />
+    <Image Include="Res\import.bmp" />
     <Image Include="Res\lowerIndex.bmp" />
     <Image Include="Res\pi_for_mult.bmp" />
+    <Image Include="Res\play.bmp" />
+    <Image Include="Res\reject.bmp" />
     <Image Include="Res\sigma.bmp" />
     <Image Include="Res\sqrt.bmp" />
     <Image Include="Res\upperIndex.bmp" />
