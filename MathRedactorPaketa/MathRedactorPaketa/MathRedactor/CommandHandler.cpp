@@ -52,78 +52,60 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 		case ID_CMD_SIGMA:
 		{
 			CSigmaSymbol* sigma = new CSigmaSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), bigSigmaSymbol );
-			sigma->GetUpperLine().Insert( 0, new CSimpleSymbol( L'9' ) );
-			sigma->GetLowerLine().Insert( 0, new CSimpleSymbol( L'1' ) );
 			editWindow->AddSymbol( sigma );
 			break;
 		}
 		case ID_CMD_PIMUL:
 		{
 			CSigmaSymbol* sigma = new CSigmaSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), bigPiSymbol );
-			sigma->GetUpperLine().Insert( 0, new CSimpleSymbol( L'9' ) );
-			sigma->GetLowerLine().Insert( 0, new CSimpleSymbol( L'1' ) );
 			editWindow->AddSymbol( sigma );
 			break;
 		}
 		case ID_CMD_FRACTION:
 		{
 			CFractionSymbol* fraction = new CFractionSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight() );
-			fraction->GetUpperLine().Insert( 0, new CSimpleSymbol( L'1' ) );
-			fraction->GetLowerLine().Insert( 0, new CSimpleSymbol( L'2' ) );
 			editWindow->AddSymbol( fraction );
 			break;
 		}
 		case ID_CMD_LOWER_INDEX:
 		{
 			CIndexSymbol* lowerIndex = new CIndexSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight( ), CIndexSymbol::ITLower );
-			lowerIndex->GetLine().Insert( 0, new CSimpleSymbol( L't' ) );
-			lowerIndex->GetLine().Insert( 1, new CSimpleSymbol( L'm' ) );
-			lowerIndex->GetLine().Insert( 2, new CSimpleSymbol( L'p' ) );
 			editWindow->AddSymbol( lowerIndex );
 			break;
 		}
 		case ID_CMD_UPPER_INDEX:
 		{
 			CIndexSymbol* upperIndex = new CIndexSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), CIndexSymbol::ITUpper );
-			upperIndex->GetLine().Insert( 0, new CSimpleSymbol( L't' ) );
-			upperIndex->GetLine().Insert( 1, new CSimpleSymbol( L'm' ) );
-			upperIndex->GetLine().Insert( 2, new CSimpleSymbol( L'p' ) );
 			editWindow->AddSymbol( upperIndex );
 			break;
 		}
 		case ID_CMD_SQRT:
 		{
 			CRootSymbol* root = new CRootSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight() );
-			root->GetExponentLine().Insert( 0, new CSimpleSymbol( L'2' ) );
-			root->GetRadicandLine().Insert( 0, new CSimpleSymbol( L'x' ) );
 			editWindow->AddSymbol( root );
 			break;
 		}
 		case ID_CMD_SIN:
 		{
 			CFunctionSymbol *func = new CFunctionSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), L"sin" );
-			func->GetArgumentLine().PushBack( new CSimpleSymbol( L'x' ) );
 			editWindow->AddSymbol( func );
 			break;
 		}
 		case ID_CMD_COS:
 		{
 			CFunctionSymbol *func = new CFunctionSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), L"cos" );
-			func->GetArgumentLine().PushBack( new CSimpleSymbol( L'x' ) );
 			editWindow->AddSymbol( func );
 			break;
 		}
 		case ID_CMD_TAN:
 		{
 			CFunctionSymbol *func = new CFunctionSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), L"tan" );
-			func->GetArgumentLine().PushBack( new CSimpleSymbol( L'x' ) );
 			editWindow->AddSymbol( func );
 			break;
 		}
 		case ID_CMD_CTG:
 		{
 			CFunctionSymbol *func = new CFunctionSymbol( editWindow->GetCaretLine()->GetSimpleSymbolHeight(), L"ctg" );
-			func->GetArgumentLine().PushBack( new CSimpleSymbol( L'x' ) );
 			editWindow->AddSymbol( func );
 			break;
 		}

@@ -66,10 +66,10 @@ void CLineOfSymbols::Draw( HDC displayHandle, int posX, int posY ) const
 		x = posX;
 		y = posY;
 		height = simpleSymbolHeight;
-		width = height / 3;
-		HBRUSH voidBrush = ::CreateSolidBrush( RGB( 100, 100, 100 ) );
+		width = simpleSymbolHeight;
+		HBRUSH voidBrush = ::CreateSolidBrush( RGB( 0xF5, 0xF5, 0xF5 ) );
 		HBRUSH oldBrush = static_cast<HBRUSH>( ::SelectObject( displayHandle, voidBrush ) );
-		HPEN voidPen = CreatePen( PS_SOLID, 1, RGB( 100, 100, 100 ) );
+		HPEN voidPen = CreatePen( PS_SOLID, 1, RGB( 0xF5, 0xF5, 0xF5 ) );
 		HPEN oldPen = static_cast<HPEN>( ::SelectObject( displayHandle, voidPen ) );
 		::Rectangle( displayHandle, posX, posY, posX + width, posY + height );
 		::SelectObject( displayHandle, oldBrush );
@@ -114,6 +114,10 @@ void CLineOfSymbols::Draw( HDC displayHandle, int posX, int posY ) const
 
 int CLineOfSymbols::CalculateWidth( HDC displayHandle ) const
 {
+	if( !isBase && arrayOfSymbolPtrs.empty() ) {
+		width = simpleSymbolHeight;
+		return width;
+	}
 	//Устанавливаем шрифт (получаем текущий и обновляем высоту символа)
 	HFONT oldFont = (HFONT)::GetCurrentObject( displayHandle, OBJ_FONT );
 	assert( oldFont != 0 );
@@ -146,14 +150,18 @@ int CLineOfSymbols::CalculateWidth( HDC displayHandle ) const
 
 void CLineOfSymbols::Recalculate()
 {
-	int descent = simpleSymbolHeight;
-	baselineOffset = 0;
-	for( int i = 0; i < Length(); ++i ) {
-		descent = max( descent, arrayOfSymbolPtrs[i]->GetDescent( simpleSymbolHeight ) );
-		baselineOffset = max( baselineOffset, arrayOfSymbolPtrs[i]->GetBaselineOffset( simpleSymbolHeight ) );
-	}
+	if( !isBase && arrayOfSymbolPtrs.empty() ) {
+		height = simpleSymbolHeight;
+	} else {
+		int descent = simpleSymbolHeight;
+		baselineOffset = 0;
+		for( int i = 0; i < Length(); ++i ) {
+			descent = max( descent, arrayOfSymbolPtrs[i]->GetDescent( simpleSymbolHeight ) );
+			baselineOffset = max( baselineOffset, arrayOfSymbolPtrs[i]->GetBaselineOffset( simpleSymbolHeight ) );
+		}
 
-	height = descent + baselineOffset;
+		height = descent + baselineOffset;
+	}
 	
 	if( parent != 0 ) {
 		parent->Recalculate();

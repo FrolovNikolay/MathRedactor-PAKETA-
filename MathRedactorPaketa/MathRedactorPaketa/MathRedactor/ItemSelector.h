@@ -9,7 +9,9 @@
 
 class CItemSelector {
 public:
-	CItemSelector( const CPositionFinder& );
+	CItemSelector( const CPositionFinder&, const std::vector<CLineOfSymbols>& );
+
+	typedef std::pair<CSymbolPosition, CSymbolPosition> CSymbolInterval;
 
 	// Установка начальной позиции курсора
 	void SetStartPosition( int x, int y );
@@ -18,13 +20,18 @@ public:
 	// Проверить наличие выделения.
 	bool HasSelection() const { return start != 0 && end != 0; }
 	// Снять выделение.
-	void ResetSelection() { delete start; start = 0; delete end; end = 0; }
+	void ResetSelection();
 	// Информация о выделенных объектах.
-	void GetSelectionInfo( const CSymbolPosition*& _start, const CSymbolPosition*& _end ) const { _start = start; _end = end; }
+	CSymbolInterval GetSelectionInfo() const;
 
 private:
 	const CPositionFinder& finder;
+	const std::vector<CLineOfSymbols>& content;
 
-	const CSymbolPosition* start;
-	const CSymbolPosition* end;
+	std::shared_ptr<CSymbolPosition> start;
+	std::shared_ptr<CSymbolPosition> end;
+
+	void goToNextSymbol( int& lineIdx, CSymbolPosition& position ) const;
+
+	void goToPrevSymbol( int& lineIdx, CSymbolPosition& position ) const;
 };

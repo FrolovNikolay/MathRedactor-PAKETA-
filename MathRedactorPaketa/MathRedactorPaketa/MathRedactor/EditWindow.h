@@ -26,7 +26,7 @@ public:
 	// Временно
 	int GetSimpleSymbolHeight() const { return simpleSymbolHeight; }
 
-	CLineOfSymbols* GetCaretLine() { return caret.GetLine(); }
+	CLineOfSymbols* GetCaretLine() { return const_cast<CLineOfSymbols*>( caret.GetLine() ); }
 
 	// регистрирует класс окна
 	static bool RegisterClass( HINSTANCE );
@@ -51,8 +51,6 @@ public:
 	void HideCaret();
 	// Двигает каретку на шаг по направлению
 	void MoveCaret( TCaretDirection );
-	// Двигает каретку к данной точке
-	void MoveCaretTo( int x, int y );
 
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY
@@ -76,13 +74,13 @@ private:
 	// Класс каретки для этого типа окна
 	class CCaret {
 	public:
-		CCaret( CEditWindow* );
+		CCaret( CEditWindow* , const CLineOfSymbols* baseLine );
 
-		CLineOfSymbols* GetLine();
-		int GetIndex() const;
+		const CLineOfSymbols* GetLine() const { return caretPosition.CurrentLine; }
+		int GetIndex() const { return caretPosition.Index; }
 
 		// видит ли пользователь каретку в данный момент
-		bool IsShown() const;
+		bool IsShown() const { return shown; }
 
 		void Create();
 		void Destroy();
@@ -94,20 +92,18 @@ private:
 		// сдвигает каретку на единицу в данном направлении
 		void Move( TCaretDirection );
 		// сдвигает каретку в определенную позицию
-		void MoveTo( CLineOfSymbols*, int );
+		void MoveTo( const CSymbolPosition& );
+
+		void MoveTo( int x, int y );
 
 	private:
 		// окно, которому принадлежит каретка
 		CEditWindow* window;
+		// положение каретки
+		CSymbolPosition caretPosition;
 		// текущий размер каретки
 		int width;
 		int height;
-		// положение каретки
-		// линия, в которой находится каретка
-		CLineOfSymbols* line;
-		// индекс символа, перед которым стоит каретка
-		// если равен длине строки - каретка стоит в конце строки
-		int index;
 		// отображается ли каретка в данный момент
 		bool shown;
 
@@ -123,11 +119,11 @@ private:
 	HWND windowHandle;
 	// имя класса окна
 	static const wchar_t* className;
+	
+	const int simpleSymbolHeight;
 
 	//Содержимое редактора (массив строк)
 	std::vector<CLineOfSymbols> content;
-	
-	const int simpleSymbolHeight;
 
 	// для скроллирования
 	const int horizontalScrollUnit;

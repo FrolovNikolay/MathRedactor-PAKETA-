@@ -2,6 +2,7 @@
 
 #include "EditWindowDrawer.h"
 #include "SymbolPosition.h"
+#include <memory>
 #include <cassert>
 
 CEditWindowDrawer::CEditWindowDrawer( const std::vector<CLineOfSymbols>& _content, const CItemSelector& _selector,
@@ -102,12 +103,15 @@ void CEditWindowDrawer::RePaint( HWND windowHandle ) const
 void CEditWindowDrawer::drawSelection( HWND windowHandle ) const
 {
 	if( selector.HasSelection() ) {
-		const CSymbolPosition* start;
-		const CSymbolPosition* end;
-		selector.GetSelectionInfo( start, end );
-		if( start->GetParent() == 0 && end->GetParent() == 0 ) {
+		CItemSelector::CSymbolInterval interval = selector.GetSelectionInfo();
+		CSymbolPosition start = interval.first;
+		CSymbolPosition end = interval.second;
+		if( start.Index == -1 || end.Index == -1 ) {
+			return;
+		}
+		if( start.GetParent() == 0 && end.GetParent() == 0 ) {
 			drawGlobalSelection( start, end, windowHandle );
-		} else if( start->GetParent() != 0 && end->GetParent() != 0 ) {
+		} else if( start.GetParent() != 0 && end.GetParent() != 0 ) {
 			drawLocalSelection( start, end, windowHandle );
 		} else {
 			// Начало в базовой строке, а конец нет, либо наоборот. Такого не должно произойти.
@@ -116,45 +120,41 @@ void CEditWindowDrawer::drawSelection( HWND windowHandle ) const
 	}
 }
 
-void CEditWindowDrawer::drawGlobalSelection( const CSymbolPosition* start, const CSymbolPosition* end, HWND windowHandle ) const
+void CEditWindowDrawer::drawGlobalSelection( const CSymbolPosition& start, const CSymbolPosition& end, HWND windowHandle ) const
 {
-	if( &start->CurrentLine == &end->CurrentLine ) {
+	if( start.CurrentLine == end.CurrentLine ) {
 		drawLocalSelection( start, end, windowHandle );
 	} else {
 		int startLine = -1;
-		while( &content[++startLine] != &start->CurrentLine ) { }
+		while( &content[++startLine] != start.CurrentLine ) { }
 
 		int endLine = -1;
-		while( &content[++endLine] != &end->CurrentLine ) { }
+		while( &content[++endLine] != end.CurrentLine ) { }
 
-		if( startLine > endLine ) {
-			std::swap( start, end );
-			std::swap( startLine, endLine );
-		}
-		drawLocalSelection( start, &CSymbolPosition( start->CurrentLine.Length() - 1, start->CurrentLine ), windowHandle );
+		drawLocalSelection( start, CSymbolPosition( start.CurrentLine->Length() - 1, start.CurrentLine ), windowHandle );
 		for( int i = startLine + 1; i < endLine; ++i ) {
 			if( content[i].Length() != 0 ) {
-				drawLocalSelection( &CSymbolPosition( 0, content[i] ), &CSymbolPosition( content[i].Length() - 1, content[i] ), windowHandle );
+				drawLocalSelection( CSymbolPosition( 0, &content[i] ), CSymbolPosition( content[i].Length() - 1, &content[i] ), windowHandle );
 			}
 		}
-		drawLocalSelection( &CSymbolPosition( 0, end->CurrentLine ), end, windowHandle );
+		drawLocalSelection( CSymbolPosition( 0, end.CurrentLine ), end, windowHandle );
 	}
 }
 
-void CEditWindowDrawer::drawLocalSelection( const CSymbolPosition* start, const CSymbolPosition* end, HWND windowHandle ) const
+void CEditWindowDrawer::drawLocalSelection( const CSymbolPosition& start, const CSymbolPosition& end, HWND windowHandle ) const
 {
 	HBRUSH lastBrush = static_cast<HBRUSH>( ::SelectObject( tempHDC, selectionBrush ) );
 	HPEN oldPen = static_cast<HPEN>( ::SelectObject( tempHDC, selectionPen ) );
 
-	int leftTopX = start->CurrentLine[start->Index]->GetX();
-	int rightBotX = end->CurrentLine[end->Index]->GetX();
-	int leftTopY = start->CurrentLine.GetY();
-	int rightBotY = leftTopY + start->CurrentLine.GetHeight();
+	int leftTopX = ( *start.CurrentLine )[start.Index]->GetX();
+	int rightBotX = ( *end.CurrentLine )[end.Index]->GetX();
+	int leftTopY = start.CurrentLine->GetY();
+	int rightBotY = leftTopY + start.CurrentLine->GetHeight();
 	if( leftTopX > rightBotX ) {
 		std::swap( leftTopX, rightBotX );
-		rightBotX += start->CurrentLine[start->Index]->GetWidth();
+		rightBotX += ( *start.CurrentLine )[start.Index]->GetWidth();
 	} else {
-		rightBotX += end->CurrentLine[end->Index]->GetWidth();
+		rightBotX += ( *end.CurrentLine )[end.Index]->GetWidth();
 	}
 	::Rectangle( tempHDC, leftTopX, leftTopY, rightBotX, rightBotY );
 
