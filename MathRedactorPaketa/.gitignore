@@ -8,5 +8,6 @@ MathRedactorPaketa/MathTranslator/Debug/
 MathRedactorPaketa/MathTranslator/Release/
 MathRedactorPaketa/WinPlotter/Debug/
 MathRedactorPaketa/WinPlotter/Release/
+MathRedactorPaketa/WinPlotter/*.aps
 MathRedactorPaketa/MathValidator/Debug/
 MathRedactorPaketa/MathValidator/Release/
