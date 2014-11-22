@@ -60,14 +60,18 @@ CItemSelector::CSymbolInterval CItemSelector::GetSelectionInfo() const
 			}
 		}
 	} else {
-		return std::make_pair( *start, *end );
+		if( start->Index > end->Index ) {
+			return std::make_pair( *end, *start );
+		} else {
+			return std::make_pair( *start, *end );
+		}
 	}
 }
 
 void CItemSelector::goToNextSymbol( int& lineIdx, CSymbolPosition& position ) const
 {
 	if( position.CurrentLine->Length() == position.Index ) {
-		for( ++lineIdx; lineIdx < content.size(); ++lineIdx ) {
+		for( ++lineIdx; lineIdx < static_cast<int>( content.size() ); ++lineIdx ) {
 			if( content[lineIdx].Length() != 0 ) {
 				break;
 			}

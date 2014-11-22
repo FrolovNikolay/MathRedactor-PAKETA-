@@ -138,6 +138,12 @@ private:
 
 	CLineOfSymbols* isLineBase( CLineOfSymbols* currentBaseLine, int x, int y );
 
+	void removeSelectedItems();
+
+	void removeLocalSelected( const CSymbolPosition&, const CSymbolPosition& );
+
+	void removeGlobalSelected( const CSymbolPosition&, const CSymbolPosition& );
+
 	bool isSymbolAllowed( wchar_t ) const;
 	int getBaseLineIndex( const CLineOfSymbols* ) const;
 
