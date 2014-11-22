@@ -8,6 +8,7 @@ description:
 
 #pragma once
 #include "evaluate.h"
+#include "MainWindow.h"
 const int indentFromBorder = 25;
 
 #include "CWinMain.h"
@@ -261,7 +262,7 @@ void CWinMain::OnCreate( HWND hWnd ) {
 	hButtonMoveLeft = createButton( L"<", buttonBlockPosX - buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_LEFT );
 	hButtonMoveRight = createButton( L">", buttonBlockPosX + buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_RIGHT );
 
-	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-ой отступ + 25 так как положение кнопки считаетс¤ от левого верхнего угла
+	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-ой отступ + 25 так как положение кнопки считается от левого верхнего угла
 	// buttonBlockPosY = height - buttonSize - indentFromBorder;
 
 	hButtonRotateDown = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_DOWN );
@@ -323,10 +324,18 @@ LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
 
 void CWinMain::ShowFormulaForm()
 {
+	
+	if( hFormulaForm == 0 ) {
+		// TODO: создать окно
+	}
+
+	/*
 	if( hFormulaForm == 0 ) {
 		hFormulaForm = ::CreateDialog( 0, MAKEINTRESOURCE( IDD_FORMULA_FORM ), handle, formulaDialogProc );
 		ShowWindow( hFormulaForm, SW_SHOW );
 	}
+	*/
+	// оставлено, чтобы потом удалить все что идет от него
 }
 
 /*
@@ -372,14 +381,20 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 
 void CWinMain::TakeFormula()
 {
+	// объекты для считывания текста
 	size_t i;
-	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 );
+	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 ); // получение длинны текста
 	TCHAR* buff = new TCHAR[textLength + 1];
 	char* outbuff = new char[textLength + 1];
+
+	// считывание текста
 	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
+	// char -> TCHAR
 	wcstombs_s( &i, outbuff, textLength + 1, buff, textLength + 1 );
+	// своеобразный костыль, ибо билдер принимает строку
 	std::string data( outbuff );
 	CGraphBuilder builder;
+
 	if( !builder.buildPointGrid( data ) ) {
 		::MessageBox( hFormulaForm, L"Formula builder error", L"Error", MB_OK );
 	} else {
