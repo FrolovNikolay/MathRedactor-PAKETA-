@@ -244,15 +244,18 @@ void CWinMain::OnCreate( HWND hWnd ) {
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 
-	hChild = winPlotter.create( hInstance, hWnd );
+	hPlotter = winPlotter.create( hInstance, hWnd );
+	hRedactor = winRedactor.Create( hInstance, hWnd );
 	
-	if ( hChild == 0 ) {
+	if ( hPlotter == 0 || hRedactor == 0 ) {
 		MessageBox( 0, L"Не удалось создать дочернее окно", L"Ошибка", MB_OK | MB_ICONERROR );
 		OnDestroy();
 	}
 	winPlotter.show( SW_SHOW );
-	SetWindowPos( hChild, HWND_BOTTOM, 0, 0, width, height, 0 );
-	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hChild, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
+	winRedactor.Show( SW_HIDE );
+	SetWindowPos( hPlotter, HWND_BOTTOM, 0, 0, width, height, 0 );
+	SetWindowPos( hRedactor, HWND_BOTTOM, 0, 0, width, height, 0 );
+	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hPlotter, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
 
 	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен размеру кнопки + 25
 	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен размеру кнопки + 25
@@ -282,7 +285,8 @@ void CWinMain::ResizeChildrens() {
 	GetClientRect( handle, &rect );
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	SetWindowPos( hChild, HWND_TOP, 0, 0, width, height, SWP_NOOWNERZORDER );
+	SetWindowPos( hPlotter, HWND_TOP, 0, 0, width, height, SWP_NOOWNERZORDER );
+	SetWindowPos( hRedactor, HWND_BOTTOM, 0, 0, width, height, SWP_NOOWNERZORDER );
 
 	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен размеру кнопки + 25
 	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен размеру кнопки + 25
@@ -324,9 +328,11 @@ LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
 
 void CWinMain::ShowFormulaForm()
 {
-	
+	//HINSTANCE hInstance = reinterpret_cast<HINSTANCE>( GetWindowLong( handle, GWL_HINSTANCE ) );
 	if( hFormulaForm == 0 ) {
 		// TODO: создать окно
+		winRedactor.Show( SW_SHOW );
+
 	}
 
 	/*

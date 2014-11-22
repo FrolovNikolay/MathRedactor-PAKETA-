@@ -19,7 +19,7 @@ int __stdcall wWinMain(HINSTANCE hInstance, HINSTANCE prevInstance, LPWSTR comma
 	CMainWindow::RegisterClass( hInstance );
 
 	CMainWindow mainWindow;
-	mainWindow.Create( L"Редактор формул", hInstance );
+	mainWindow.Create( hInstance, 0 );
 	mainWindow.Show( nCmdShow );
 
 	WPARAM exitCode = MessageLoop();

@@ -104,12 +104,30 @@
     <ClCompile Include="EngineCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="..\MathRedactor\RibbonResource.rc" />
     <ResourceCompile Include="WinPlotter.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MathRedactor\MathRedactor.vcxproj">
       <Project>{7034676c-b086-4d85-bf97-aed5fa8ed3e6}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\MathRedactor\RibbonMarkup.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\MathRedactor\Res\accept.bmp" />
+    <Image Include="..\MathRedactor\Res\export.bmp" />
+    <Image Include="..\MathRedactor\Res\fraction.bmp" />
+    <Image Include="..\MathRedactor\Res\func.bmp" />
+    <Image Include="..\MathRedactor\Res\import.bmp" />
+    <Image Include="..\MathRedactor\Res\lowerIndex.bmp" />
+    <Image Include="..\MathRedactor\Res\pi_for_mult.bmp" />
+    <Image Include="..\MathRedactor\Res\play.bmp" />
+    <Image Include="..\MathRedactor\Res\reject.bmp" />
+    <Image Include="..\MathRedactor\Res\sigma.bmp" />
+    <Image Include="..\MathRedactor\Res\sqrt.bmp" />
+    <Image Include="..\MathRedactor\Res\upperIndex.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

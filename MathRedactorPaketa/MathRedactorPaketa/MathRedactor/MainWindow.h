@@ -20,7 +20,7 @@ public:
 	static bool RegisterClass( HINSTANCE );
 	
 	// Создает окно
-	bool Create( LPCWSTR windowName, HINSTANCE ownerInstance, int witdh = 800, int height = 600 );
+	HWND Create( HINSTANCE ownerInstance, HWND parent );
 	// Отображает окно
 	void Show( int );
 

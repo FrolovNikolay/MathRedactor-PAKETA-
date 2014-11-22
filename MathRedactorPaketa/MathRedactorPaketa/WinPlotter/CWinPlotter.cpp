@@ -44,8 +44,8 @@ bool CWinPlotter::registerClass( HINSTANCE hInstance )
 HWND CWinPlotter::create( HINSTANCE hInstance, HWND parent )
 {
 	handle = ::CreateWindowEx( 0, L"CWinPlotter", L"CWinPlotter", WS_CHILD | WS_BORDER | WS_VISIBLE | WS_CLIPSIBLINGS, 0, 0, 200, 200, parent, 0, hInstance, this );
-	RECT rect;
-	GetClientRect( handle, &rect );
+	//RECT rect;
+	//GetClientRect( handle, &rect );
 	return handle;
 }
 

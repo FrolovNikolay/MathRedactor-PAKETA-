@@ -1,11 +1,14 @@
 ﻿#include <windows.h>
 #include "CWinMain.h"
 #include "CWinPlotter.h"
+#include "MainWindow.h"
 #include "resource.h"
 
 int __stdcall wWinMain( HINSTANCE hInstance, HINSTANCE previnstance, LPWSTR commandLine, int nCmdShow ) {
-	CWinMain::registerClass(hInstance);
-	CWinPlotter::registerClass(hInstance);
+	::CoInitialize( 0 );
+	CWinMain::registerClass( hInstance );
+	CWinPlotter::registerClass( hInstance );
+	CMainWindow::RegisterClass( hInstance );
 	CWinMain window;
 
 	HWND hWnd = window.create( hInstance );

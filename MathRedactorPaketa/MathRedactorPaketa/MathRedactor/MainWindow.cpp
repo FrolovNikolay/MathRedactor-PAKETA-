@@ -36,11 +36,12 @@ bool CMainWindow::RegisterClass( HINSTANCE classOwnerInstance )
 	return ( ::RegisterClassEx( &classInfo ) != 0 );
 }
 
-bool CMainWindow::Create( LPCWSTR windowName, HINSTANCE ownerInstance, int width, int height )
+HWND CMainWindow::Create( HINSTANCE ownerInstance, HWND parent )
 {	
+	//DWORD style = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_CLIPSIBLINGS;
 	DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
-	windowHandle = ::CreateWindowEx( 0, className, windowName, style, 0, 0, width, height, 0, 0, ownerInstance, this );
-	return( windowHandle != 0 );
+	windowHandle = ::CreateWindowEx( 0, className, L"Редактор формул", style, 0, 0, 800, 600, 0, 0, ownerInstance, this );
+	return windowHandle;
 }
 
 void CMainWindow::Show( int nCmdShow ) 

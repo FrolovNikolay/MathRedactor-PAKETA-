@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Ресурсы редактора">
+      <UniqueIdentifier>{897e5db2-2a9f-4740-b7ac-f5bea9cfe5ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Matrix44.h">
@@ -118,5 +121,51 @@
     <ResourceCompile Include="WinPlotter.rc">
       <Filter>Файлы ресурсов</Filter>
     </ResourceCompile>
+    <ResourceCompile Include="..\MathRedactor\RibbonResource.rc">
+      <Filter>Ресурсы редактора</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\MathRedactor\RibbonMarkup.xml">
+      <Filter>Ресурсы редактора</Filter>
+    </Xml>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\MathRedactor\Res\accept.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\export.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\fraction.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\func.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\import.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\lowerIndex.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\pi_for_mult.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\play.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\reject.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\sigma.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\sqrt.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
+    <Image Include="..\MathRedactor\Res\upperIndex.bmp">
+      <Filter>Ресурсы редактора</Filter>
+    </Image>
   </ItemGroup>
 </Project>

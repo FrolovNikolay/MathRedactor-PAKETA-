@@ -12,6 +12,7 @@ description:
 #include <vector>
 
 #include "CWinPlotter.h"
+#include "MainWindow.h"
 
 
 class CWinMain
@@ -50,11 +51,14 @@ private:
 	static WNDPROC defButtonProc;						// дефолтный обработчик кнопок-контролов
 	static WNDPROC defMouseProc;						// дефолтный обработчик откна отрисовки
 	HWND handle;										// хэндл окна
-	HWND hChild;										// хэндл ребенка
+	HWND hPlotter;										// хэндл плоттера
+	HWND hRedactor;										// хэндл редактора
 	HWND hFormulaForm;									// хэндл диалога
-	CWinPlotter winPlotter;								// якобы так должен выглядеть делегат
 	UINT_PTR timer;										// таймер
 	int buttonSize = 25;								// рзмер кнопки
+
+	CMainWindow winRedactor;							// дочернее окно - редактор
+	CWinPlotter winPlotter;								// дочернее окно, отвечающее за прорисовку
 
 	// хэндлы кнопок
 	HWND hButtonMoveTop, hButtonMoveBot, hButtonMoveLeft, hButtonMoveRight;
