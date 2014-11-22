@@ -44,16 +44,17 @@ void CFunctionSymbol::GetSubstrings( std::vector<CLineOfSymbols*>& substrings )
 
 void CFunctionSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const
 {
+	int baselineOffset = max( functionName.getBaselineOffset(), argumentLine.getBaselineOffset() );
 	// Рисуем название
-	functionName.Draw( displayHandle, posX, posY );
+	functionName.Draw( displayHandle, posX, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
 	int functionNameWidth = functionName.CalculateWidth( displayHandle );
 
 	//Рисуем аргумент
-	argumentLine.Draw( displayHandle, posX + functionNameWidth, posY );
+	argumentLine.Draw( displayHandle, posX + functionNameWidth, posY - GetBaselineOffset( simpleSymbolHeight ) );
 	int argumentWidth = argumentLine.CalculateWidth( displayHandle );
 
 	// Рисуем закрывающуюся скобку
-	closingBracket.Draw( displayHandle, posX + functionNameWidth + argumentWidth, posY );
+	closingBracket.Draw( displayHandle, posX + functionNameWidth + argumentWidth, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
 	int closingBracketWidth = closingBracket.CalculateWidth( displayHandle );
 
 	//Обновляем информацию
@@ -76,15 +77,15 @@ int CFunctionSymbol::CalculateWidth( HDC displayHandle ) const
 
 int CFunctionSymbol::GetHeight( int simpleSymbolHeight ) const
 {
-	return simpleSymbolHeight;
+	return max( functionName.GetHeight(), argumentLine.GetHeight() );
 }
 
 int CFunctionSymbol::GetBaselineOffset( int simpleSymbolHeight ) const
 {
-	return 0;
+	return max( functionName.getBaselineOffset(), argumentLine.getBaselineOffset() );
 }
 
 int CFunctionSymbol::GetDescent( int simpleSymbolHeight ) const
 {
-	return simpleSymbolHeight;
+	return max( functionName.GetHeight(), argumentLine.GetHeight() );
 }
