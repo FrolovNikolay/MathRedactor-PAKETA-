@@ -107,20 +107,22 @@ namespace {
 	IOperator* ParseBinaryOperator( const std::string& equation, int left, int right )
 	{
 		assert( left < right );
-		std::string operators = "-+/*^";
+		char operators[3][2] = {{'-', '+'}, {'/', '*'}, {'^', '^'}};
 
-		for( int i = 0; i < static_cast<int>( operators.size() ); ++i ) {
+		for( int i = 0; i < 3; ++i ) {
 			int balance = 0;
 			for( int j = right - 1; j >= left; --j ) {
 				if( equation[j] == '(' ) {
 					++balance;
 				} else if( equation[j] == ')' ) {
 					--balance;
-				} else if( equation[j] == operators[i] && balance == 0 && j > left && j < right - 1 ) {
+				} else if( ( equation[j] == operators[i][0] || equation[j] == operators[i][1] ) 
+					&& balance == 0 && j > left && j < right - 1 ) 
+				{
 					IOperator* leftOperand = ParseOperator( equation, left, j );
 					IOperator* rightOperand = ParseOperator( equation, j + 1, right );
 					BINOP type;
-					switch( operators[i] ) {
+					switch( equation[j] ) {
 					case '-':
 						type = MINUS;
 						break;
