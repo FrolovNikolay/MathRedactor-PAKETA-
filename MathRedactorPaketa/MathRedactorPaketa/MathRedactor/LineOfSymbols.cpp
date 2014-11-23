@@ -179,10 +179,10 @@ std::string CLineOfSymbols::ToPlotterString( int firstEnablePosition ) const
 }
 
 // Преобразование строки в Latex формат.
-std::string CLineOfSymbols::ToLatexString() const
+std::string CLineOfSymbols::ToLatexString( int firstEnableSymbol ) const
 {
 	std::string result = "";
-	for( int i = 0; i < static_cast<int>( arrayOfSymbolPtrs.size() ); ++i ) {
+	for( int i = firstEnableSymbol; i < static_cast<int>( arrayOfSymbolPtrs.size() ); ++i ) {
 		result += arrayOfSymbolPtrs[i]->ToLatexString();
 	}
 	return result;

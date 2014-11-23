@@ -52,7 +52,7 @@ public:
 	// Преобразование строки в необходимый плоттеру формат.
 	std::string ToPlotterString( int firstEnableSymbol = 0 ) const;
 	// Преобразование строки в Latex формат.
-	std::string ToLatexString() const;
+	std::string ToLatexString( int firstEnableSymbol = 0 ) const;
 
 	const CSymbol* operator[] ( int index ) const { return arrayOfSymbolPtrs[index]; }
 	CSymbol* operator[] ( int index ) { return arrayOfSymbolPtrs[index]; }

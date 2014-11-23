@@ -74,7 +74,7 @@ public:
 
 	// отправляет родительскому окну сообщение о закрытии
 	void SendClose() const { ::SendMessage( parentHandle, WM_CLOSE, 0, 0 ); }
-	void SendAccept() const { ::SendMessage( parentHandle, WM_REDACTOR_OK, 0, 0 ); }
+	void SendAccept() const;
 
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY
@@ -180,7 +180,7 @@ private:
 	void removeGlobalSelected( const CSymbolPosition&, const CSymbolPosition& );
 
 	// Проверка валидности данных введеных в окне. В случае ошибки описание передается через ссылку.
-	bool isInputValid( std::string& error ) const;
+	bool isInputValid( std::wstring& error ) const;
 
 	bool isSymbolAllowed( wchar_t ) const;
 	int getBaseLineIndex( const CLineOfSymbols* ) const;

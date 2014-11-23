@@ -234,12 +234,23 @@ void CEditWindow::SetFunctionType( TFunctionType fType )
 // Реакция на кнопку по осуществлению проверки на валидность.
 void CEditWindow::CheckValidity() const
 {
-	std::string error;
+	std::wstring error;
 	if( isInputValid( error ) ) {
 		::MessageBox( 0, L"Введенная в окне функция вычислима.", L"Проверка прошла успешно!", MB_OK );
 	} else {
-		std::wstring msg = std::wstring( L"Введенная в окне функция невычислима. " ) + std::wstring( error.begin(), error.end() );
+		std::wstring msg = std::wstring( L"Введенная в окне функция невычислима. " ) + error;
 		::MessageBox( 0, msg.c_str(), L"Введенное выражение невычислимо.", MB_OK );
+	}
+}
+
+void CEditWindow::SendAccept() const
+{
+	std::wstring error;
+	if( !isInputValid( error ) ) {
+		std::wstring msg = std::wstring( L"Построение графика невозможно. Введенная в окне функция невычислима. " ) + error;
+		::MessageBox( 0, msg.c_str(), L"Введенное выражение невычислимо.", MB_OK );
+	} else {
+		::SendMessage( parentHandle, WM_REDACTOR_OK, 0, 0 );
 	}
 }
 
@@ -502,12 +513,16 @@ void CEditWindow::removeGlobalSelected( const CSymbolPosition& start, const CSym
 }
 
 // Проверка вычислимости введенных данных.
-bool CEditWindow::isInputValid( std::string& error ) const
+bool CEditWindow::isInputValid( std::wstring& error ) const
 {
+	int i = 0;
 	try {
-		TestFormula( CalculateLatexString(), knownVariables );
+		for( i = 0; i < content.size(); ++i ) {
+			TestFormula( content[i].ToLatexString( firstEnablePosition ), knownVariables );
+		}
 	} catch( const std::runtime_error& e ) {
-		error = e.what();
+		std::string errorMsg( e.what() );
+		error = std::to_wstring( i + 1 ) + std::wstring( L"-е определение функции невычислимо." ) + std::wstring( errorMsg.begin(), errorMsg.end() );
 		return false;
 	}
 	return true;

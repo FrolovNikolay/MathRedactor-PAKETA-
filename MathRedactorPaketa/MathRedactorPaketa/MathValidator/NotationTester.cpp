@@ -70,7 +70,7 @@ bool CNotationTester::Test( const std::string& src, const std::set<std::string>&
 	}
 	if( numbersStack.size() == 1 && numbersStack.top().GetType() == TT_Variable && knownVars.find( numbersStack.top().GetString() ) == knownVars.end() ) {
 		throw CErrorCatcher( "Unknown variable " + numbersStack.top().GetString(), tokens, currentNotation.second );
-	} else if( numbersStack.size() != 1 || ( numbersStack.top().GetType() != TT_Computable && numbersStack.top().GetType() != TT_Number ) ) {
+	} else if( numbersStack.size() != 1 || ( numbersStack.top().GetType() != TT_Computable && numbersStack.top().GetType() != TT_Number && numbersStack.top().GetType() != TT_Variable ) ) {
 		// Ошибка, итоговой результат несвязен, либо не является вычислимым. - Здесь ошибочно все выражение, точнее выделить ошибку сложно.
 		throw CErrorCatcher( "Error", tokens, -1 );
 	}
