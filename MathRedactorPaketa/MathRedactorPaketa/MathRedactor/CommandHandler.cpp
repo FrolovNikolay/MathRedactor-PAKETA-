@@ -53,10 +53,10 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 {
 	switch( nCmdId ) {
 		case ID_CMD_ACCEPT:
-			::MessageBox( 0, L"Здесь функция отрисовки нового графика", L"TODO", MB_OK );
+			editWindow->SendAccept();
 			break;
 		case ID_CMD_REJECT:
-			::MessageBox( 0, L"Здесь функция отказа от нового графика", L"TODO", MB_OK );
+			editWindow->SendClose();
 			break;
 		case ID_CMD_EXPORT:
 			::MessageBox( 0, L"Здесь функция экспорта", L"TODO", MB_OK );

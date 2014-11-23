@@ -11,6 +11,7 @@
 #include "ItemSelector.h"
 #include "PositionFinder.h"
 #include "EditWindowDrawer.h"
+#include "Messages.h"
 
 class CEditWindow {
 public:
@@ -59,6 +60,10 @@ public:
 
 	// Реакция на кнопку по осуществлению проверки на валидность.
 	void CheckValidity() const;
+
+	// отправляет родительскому окну сообщение о закрытии
+	void SendClose() const { ::SendMessage( parentHandle, WM_CLOSE, 0, 0 ); }
+	void SendAccept() const { ::SendMessage( parentHandle, WM_REDACTOR_OK, 0, 0 ); }
 
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY
@@ -124,6 +129,8 @@ private:
 	};
 	// хэндл окна, которому соответствует этот объект класса.
 	HWND windowHandle;
+	// хэндл родителя
+	HWND parentHandle;
 	// имя класса окна
 	static const wchar_t* className;
 	

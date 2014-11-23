@@ -10,6 +10,7 @@ description:
 #include "evaluate.h"
 #include "MainWindow.h"
 #include <Commctrl.h>
+#include "Messages.h"
 const int indentFromBorder = 25;
 
 #include "CWinMain.h"
@@ -149,6 +150,9 @@ LRESULT __stdcall CWinMain::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( hWnd, GWL_USERDATA ) );
 
 	switch( uMsg ) {
+		case WM_REDACTOR_OK:
+			wnd->TakeFormula();
+			return 0;
 		case WM_NCCREATE:
 			wnd->timer = SetTimer( hWnd, 0, 10, 0 );
 			break;
@@ -374,6 +378,7 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 	switch( wmId ) {
 		case IDOK:
 			OnFormOk();
+			return TRUE;
 		case IDCANCEL:		
 			EndDialog( hFormulaForm, 0 );
 			DestroyWindow( hFormulaForm );
@@ -386,12 +391,38 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 
 void CWinMain::OnFormOk()
 {
-	epsilon = ::SendDlgItemMessage( hFormulaForm, IDC_SLIDER, TBM_GETPOS, 0, 0 );
 	TCHAR buff[150];
 	TCHAR* stopString;
 	::GetDlgItemText( hFormulaForm, IDC_EDIT_MAX_PARAM_1, buff, 150 );
-	double b = wcstod( buff, &stopString );
-	int a = 1;
+	tempMax_1 = wcstod( buff, &stopString );
+	if( wcslen( stopString ) > 0 ) {
+		::MessageBox( hFormulaForm, L"Введен некорректный параметр для максимального значения 1-ого параметра", L"Error", MB_OK | MB_ICONERROR );
+		return;
+	}
+	::GetDlgItemText( hFormulaForm, IDC_EDIT_MAX_PARAM_2, buff, 150 );
+	tempMax_2 = wcstod( buff, &stopString );
+	if( wcslen( stopString ) > 0 ) {
+		::MessageBox( hFormulaForm, L"Введен некорректный параметр для максимального значения 2-ого параметра", L"Error", MB_OK | MB_ICONERROR );
+		return;
+	}
+	::GetDlgItemText( hFormulaForm, IDC_EDIT_MIN_PARAM_1, buff, 150 );
+	tempMin_1 = wcstod( buff, &stopString );
+	if( wcslen( stopString ) > 0 ) {
+		::MessageBox( hFormulaForm, L"Введен некорректный параметр для минимального значения 1-ого параметра", L"Error", MB_OK | MB_ICONERROR );
+		return;
+	}
+	::GetDlgItemText( hFormulaForm, IDC_EDIT_MIN_PARAM_2, buff, 150 );
+	tempMin_2 = wcstod( buff, &stopString );
+	if( wcslen( stopString ) > 0 ) {
+		::MessageBox( hFormulaForm, L"Введен некорректный параметр для минимального значения 2-ого параметра", L"Error", MB_OK | MB_ICONERROR );
+		return;
+	}
+
+	epsilon = ::SendDlgItemMessage( hFormulaForm, IDC_SLIDER, TBM_GETPOS, 0, 0 );
+
+	EndDialog( hFormulaForm, 0 );
+	DestroyWindow( hFormulaForm );
+	hFormulaForm = 0;
 }
 
 void CWinMain::TakeFormula()
@@ -399,7 +430,7 @@ void CWinMain::TakeFormula()
 	CGraphBuilder builder;
 
 	if( !builder.buildPointGrid( winRedactor.CalculateStringForPlotter() ) ) {
-		::MessageBox( hFormulaForm, L"Formula builder error", L"Error", MB_OK );
+		::MessageBox( hFormulaForm, L"Formula builder error", L"Error", MB_OK | MB_ICONERROR );
 	} else {
 		winPlotter.testObject.Clear();
 		const std::vector< C3DPoint >& points = builder.GetPoints();

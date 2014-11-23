@@ -38,7 +38,7 @@ bool CMainWindow::RegisterClass( HINSTANCE classOwnerInstance )
 
 HWND CMainWindow::Create( HINSTANCE ownerInstance, HWND parent )
 {	
-	DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
+	DWORD style = WS_OVERLAPPED | WS_CLIPCHILDREN;
 	parentHandle = parent;
 	windowHandle = ::CreateWindowEx( 0, className, L"Редактор формул", style, 0, 0, 800, 600, parent, 0, ownerInstance, this );
 	return windowHandle;
@@ -211,6 +211,10 @@ LRESULT __stdcall CMainWindow::windowProcedure( HWND windowHandle, UINT message,
 	CMainWindow* window = reinterpret_cast<CMainWindow*>( ::GetWindowLong( windowHandle, GWL_USERDATA ) );	
 
 	switch( message ) {
+	case WM_REDACTOR_OK:
+		::SendMessage( window->parentHandle, WM_REDACTOR_OK, 0, 0 );
+		window->OnWmClose();
+		return 0;
 	case WM_DESTROY:
 		window->OnWmDestroy();
 		break;

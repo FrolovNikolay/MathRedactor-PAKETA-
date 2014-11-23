@@ -46,7 +46,7 @@ bool CEditWindow::RegisterClass( HINSTANCE classOwnerInstance )
 HWND CEditWindow::Create( HWND parent, HINSTANCE ownerInstance )
 {
 	DWORD style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL;
-
+	parentHandle = parent;
 	windowHandle = ::CreateWindowEx( 0, className, 0, style, 0, 0, 0, 0, parent, 0, ownerInstance, this );
 
 	return windowHandle;
@@ -389,6 +389,9 @@ LRESULT __stdcall CEditWindow::windowProcedure( HWND windowHandle, UINT message,
 	CEditWindow* window = reinterpret_cast<CEditWindow*>( ::GetWindowLong( windowHandle, GWL_USERDATA ) );
 
 	switch( message ) {
+	case WM_REDACTOR_OK:
+		::SendMessage( window->parentHandle, WM_REDACTOR_OK, 0, 0 );
+		return 0;
 	case WM_CLOSE:
 		window->OnWmDestroy();
 		break;

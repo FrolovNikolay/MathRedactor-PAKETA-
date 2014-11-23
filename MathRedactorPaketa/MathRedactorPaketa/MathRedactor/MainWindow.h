@@ -26,7 +26,7 @@ public:
 	void Show( int );
 
 	// Возвращает строку для Plottera
-	std::string CalculateStringForPlotter() { return editWindow->CalculateStringForPlotter(); }
+	std::string CalculateStringForPlotter() const { return editWindow->CalculateStringForPlotter(); }
 
 	// реализация IUnknown
 	// добавить ссылку
