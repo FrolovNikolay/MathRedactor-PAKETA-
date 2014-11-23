@@ -31,6 +31,7 @@ protected:
 	void OnCreate( HWND hWnd );							// действия при создании окна
 	LRESULT OnCommand( WPARAM wParam, LPARAM lParam );	// обработка WM_COMMAND
 	LRESULT OnFormCommand( WPARAM wParam, LPARAM lParam );	// обработка комманд в окне диалога
+	void OnFormOk();									// обработчик изменения параметров принажатии Ок
 	void ShowFormulaForm();								// отобразить диалог ввода формулы
 	void ShowParamForm();								// отобразить диалог редактирование параметров
 	void ResizeChildrens();								// смена положения и размеров дочерних окон
@@ -71,4 +72,8 @@ private:
 	static LRESULT __stdcall buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 	static LRESULT __stdcall mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 	static BOOL __stdcall formulaDialogProc( HWND handle, UINT message, WPARAM wParam, LPARAM lParam );
+
+	// temporary params for plotter
+	double maxParam_1, minParam_1, maxParam_2, minParam_2, epsilon;
+	double tempMax_1, tempMin_1, tempMax_2, tempMin_2, temp_eps;
 };

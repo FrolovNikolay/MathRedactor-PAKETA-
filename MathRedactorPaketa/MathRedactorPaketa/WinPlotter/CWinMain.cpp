@@ -9,6 +9,7 @@ description:
 #pragma once
 #include "evaluate.h"
 #include "MainWindow.h"
+#include <Commctrl.h>
 const int indentFromBorder = 25;
 
 #include "CWinMain.h"
@@ -347,7 +348,7 @@ void CWinMain::ShowParamForm()
 }
 
 /*
-обработчик диалогового окна ввода формулы
+обработчик диалогового окна ввода параметров
 */
 BOOL __stdcall CWinMain::formulaDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -370,9 +371,9 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 {
 	int wmId = LOWORD( wParam );
 
-	// временная заглушка
 	switch( wmId ) {
 		case IDOK:
+			OnFormOk();
 		case IDCANCEL:		
 			EndDialog( hFormulaForm, 0 );
 			DestroyWindow( hFormulaForm );
@@ -381,6 +382,16 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 		default:
 			return FALSE;
 	}
+}
+
+void CWinMain::OnFormOk()
+{
+	epsilon = ::SendDlgItemMessage( hFormulaForm, IDC_SLIDER, TBM_GETPOS, 0, 0 );
+	TCHAR buff[150];
+	TCHAR* stopString;
+	::GetDlgItemText( hFormulaForm, IDC_EDIT_MAX_PARAM_1, buff, 150 );
+	double b = wcstod( buff, &stopString );
+	int a = 1;
 }
 
 void CWinMain::TakeFormula()
