@@ -46,7 +46,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)/MathRedactorPaketa/MathValidator/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\MathRedactorPaketa\MathValidator;$(SolutionDir)\MathRedactorPaketa\MathTranslator</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -62,7 +62,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)/MathValidator/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\MathRedactorPaketa\MathValidator;$(SolutionDir)\MathRedactorPaketa\MathTranslator</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -133,6 +133,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Ribbon.bml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MathTranslator\MathTranslator.vcxproj">
+      <Project>{58993401-cb0b-4bb4-8a30-43f79d73ecc7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\MathValidator\MathValidator.vcxproj">
+      <Project>{025c5e30-be20-48cd-aac9-33aee1f1b827}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
