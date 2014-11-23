@@ -57,12 +57,6 @@
     <ClInclude Include="Enums.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
-    <ClInclude Include="IStmExp.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="StmExpRealis.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
     <ClInclude Include="evaluate.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>

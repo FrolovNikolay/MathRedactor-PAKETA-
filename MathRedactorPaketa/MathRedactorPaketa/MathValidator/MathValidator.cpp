@@ -1,4 +1,4 @@
-#define MATHVALIDDLL_EXPORTS
+﻿#define MATHVALIDDLL_EXPORTS
 
 #include "MathValidator.h"
 #include <NotationTester.h>
