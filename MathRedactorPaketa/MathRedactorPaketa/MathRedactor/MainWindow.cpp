@@ -149,9 +149,6 @@ void CMainWindow::OnWmChar( WPARAM code )
 void CMainWindow::OnWmKeydown( WPARAM code )
 {
 	switch( code ) {
-	case VK_SPACE:
-		editWindow->AddSign( L' ' );
-		break;
 	case VK_BACK:
 		editWindow->RemoveSign();
 		break;

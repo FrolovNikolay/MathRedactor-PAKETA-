@@ -41,8 +41,10 @@ public:
 	// Подсчет ширины символа в данном контексте устройства
 	virtual int CalculateWidth( HDC displayHandle ) const;
 
-	// Преобразование символа, в необходимый плоттеру формат.
+	// Преобразование символа в необходимый плоттеру формат.
 	virtual std::string ToPlotterString() const;
+	// Преобразование символа в Latex формат.
+	virtual std::string ToLatexString() const;
 
 private:
 	// то, что записано в индексе

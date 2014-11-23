@@ -32,8 +32,10 @@ public:
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const;
 	virtual int CalculateWidth( HDC displayHandle ) const;
 
-	// Преобразование символа, в необходимый плоттеру формат.
+	// Преобразование символа в необходимый плоттеру формат.
 	virtual std::string ToPlotterString() const;
+	// Преобразование символа в Latex формат.
+	virtual std::string ToLatexString() const;
 
 private:
 	//Имя символа (передается в TextOut).

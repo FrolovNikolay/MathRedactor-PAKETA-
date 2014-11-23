@@ -7,7 +7,6 @@
 #include "Symbol.h"
 #include "LineOfSymbols.h" 
 
-
 class CFunctionSymbol : public CSymbol {
 public:
 
@@ -32,16 +31,20 @@ public:
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const;
 	virtual int CalculateWidth( HDC displayHandle ) const;
 
-	// Преобразование символа, в необходимый плоттеру формат.
+	// Преобразование символа в необходимый плоттеру формат.
 	virtual std::string ToPlotterString() const;
+	// Преобразование символа в Latex формат.
+	virtual std::string ToLatexString() const;
 
 private:
 
 	// Название функции которое отображается на экране
 	CLineOfSymbols functionName;
 	// Закрывающаяся круглая скобка идущая последним отображенным символом
-	CLineOfSymbols closingBracket;
+	CLineOfSymbols openingBracket;
 	// Аргументы функции
 	CLineOfSymbols argumentLine;
+	// Закрывающаяся круглая скобка идущая последним отображенным символом
+	CLineOfSymbols closingBracket;
 
 };

@@ -7,7 +7,7 @@
 #include <Windows.h>
 
 CFunctionSymbol::CFunctionSymbol( int simpleSymbolHeight, wchar_t* _funcName ) :
-	argumentLine( simpleSymbolHeight ), functionName( simpleSymbolHeight ), closingBracket( simpleSymbolHeight )
+	argumentLine( simpleSymbolHeight ), functionName( simpleSymbolHeight ), openingBracket( simpleSymbolHeight), closingBracket( simpleSymbolHeight )
 {
 	// Заполняем имя функции
 	int i = 0;
@@ -15,7 +15,7 @@ CFunctionSymbol::CFunctionSymbol( int simpleSymbolHeight, wchar_t* _funcName ) :
 		functionName.PushBack( new CSimpleSymbol( _funcName[i] ) );
 		i++;
 	}
-	functionName.PushBack( new CSimpleSymbol( L'(' ) );
+	openingBracket.PushBack( new CSimpleSymbol( L'(' ) );
 	closingBracket.PushBack( new CSimpleSymbol( L')' ) );
 }
 
@@ -48,18 +48,21 @@ void CFunctionSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSym
 	// Рисуем название
 	functionName.Draw( displayHandle, posX, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
 	int functionNameWidth = functionName.CalculateWidth( displayHandle );
+	// Рисуем открывающуюся скобку.
+	openingBracket.Draw( displayHandle, posX + functionNameWidth, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
+	int openingBracketWidth = openingBracket.CalculateWidth( displayHandle );
 
 	//Рисуем аргумент
-	argumentLine.Draw( displayHandle, posX + functionNameWidth, posY - GetBaselineOffset( simpleSymbolHeight ) );
+	argumentLine.Draw( displayHandle, posX + functionNameWidth + openingBracketWidth, posY - GetBaselineOffset( simpleSymbolHeight ) );
 	int argumentWidth = argumentLine.CalculateWidth( displayHandle );
 
 	// Рисуем закрывающуюся скобку
-	closingBracket.Draw( displayHandle, posX + functionNameWidth + argumentWidth, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
+	closingBracket.Draw( displayHandle, posX + functionNameWidth + argumentWidth + openingBracketWidth, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
 	int closingBracketWidth = closingBracket.CalculateWidth( displayHandle );
 
 	//Обновляем информацию
 	x = posX;
-	width =  argumentWidth + functionNameWidth + closingBracketWidth;
+	width =  argumentWidth + functionNameWidth + closingBracketWidth + openingBracketWidth;
 	height = simpleSymbolHeight;
 }
 
@@ -67,11 +70,13 @@ int CFunctionSymbol::CalculateWidth( HDC displayHandle ) const
 {
 	// Ширина названия функции
 	int functionNameWidth = functionName.CalculateWidth( displayHandle );
+	// Ширина открывающейся скобки.
+	int openingBracketWidth = openingBracket.CalculateWidth( displayHandle );
 	// Ширина аргумента функции
 	int argumentWidth = argumentLine.CalculateWidth( displayHandle );
 	// Ширина закрывающейся скобки
 	int closingBracketWidth = closingBracket.CalculateWidth( displayHandle );
-	width = functionNameWidth + argumentWidth + closingBracketWidth;
+	width = functionNameWidth + openingBracketWidth + argumentWidth + closingBracketWidth;
 	return width;
 }
 
@@ -90,8 +95,14 @@ int CFunctionSymbol::GetDescent( int simpleSymbolHeight ) const
 	return max( functionName.GetHeight(), argumentLine.GetHeight() );
 }
 
-// Преобразование символа, в необходимый плоттеру формат.
+// Преобразование символа в необходимый плоттеру формат.
 std::string CFunctionSymbol::ToPlotterString() const
 {
 	return functionName.ToPlotterString() + "(" + argumentLine.ToPlotterString() + ")";
+}
+
+// Преобразование символа в Latex формат.
+std::string CFunctionSymbol::ToLatexString() const
+{
+	return "\\" + functionName.ToLatexString() + "{" + argumentLine.ToLatexString() + "}";
 }

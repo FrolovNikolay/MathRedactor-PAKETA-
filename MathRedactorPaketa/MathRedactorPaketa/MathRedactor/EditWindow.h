@@ -23,13 +23,12 @@ public:
 
 	CEditWindow();
 
-	// Временно
+	// регистрирует класс окна
+	static bool RegisterClass( HINSTANCE );
+
 	int GetSimpleSymbolHeight() const { return simpleSymbolHeight; }
 
 	CLineOfSymbols* GetCaretLine() { return const_cast<CLineOfSymbols*>( caret.GetLine() ); }
-
-	// регистрирует класс окна
-	static bool RegisterClass( HINSTANCE );
 
 	// Создает окно
 	HWND Create( HWND, HINSTANCE );
@@ -51,8 +50,11 @@ public:
 	void HideCaret();
 	// Двигает каретку на шаг по направлению
 	void MoveCaret( TCaretDirection );
-	// Получить строку для плоттера.
+
+	// Получить содержимое редактора в формате для плоттера.
 	std::string CalculateStringForPlotter() const;
+	// Получить содержимое редактора в Latex формате.
+	std::string CalculateLatexString() const;
 
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY

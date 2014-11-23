@@ -178,12 +178,22 @@ void CEditWindow::MoveCaret( CEditWindow::TCaretDirection direction )
 	::InvalidateRect( windowHandle, 0, true );
 }
 
-// Получить строку для плоттера.
+// Получить содержимое редактора в формате для плоттера.
 std::string CEditWindow::CalculateStringForPlotter() const
 {
 	std::string result = "";
 	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
 		result += content[i].ToPlotterString() + "\n";
+	}
+	return result;
+}
+
+// Получить содержимое редактора в Latex формате.
+std::string CEditWindow::CalculateLatexString() const
+{
+	std::string result = "";
+	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+		result += content[i].ToLatexString() + "\n";
 	}
 	return result;
 }

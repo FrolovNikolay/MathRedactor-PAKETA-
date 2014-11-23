@@ -138,9 +138,21 @@ int CSigmaSymbol::GetDescent( int simpleSymbolHeight ) const
 	return lowerLine.GetHeight() + getSublinesOffset() + ( getSigmaHeight( simpleSymbolHeight ) + simpleSymbolHeight ) / 2;
 }
 
-// Преобразование символа, в необходимый плоттеру формат.
+// Преобразование символа в необходимый плоттеру формат.
 std::string CSigmaSymbol::ToPlotterString() const
 {
 	// TODO: Plotter не работает с аггрегирующими функциями.
 	return "";
+}
+
+// Преобразование символа в Latex формат.
+std::string CSigmaSymbol::ToLatexString() const
+{
+	if( symbol[0] == bigSigmaSymbol ) {
+		return "\\sum_{" + lowerLine.ToLatexString() + "}^{" + upperLine.ToLatexString() + "}";
+	} else if( symbol[0] == bigPiSymbol ) {
+		return "\\mul_{" + lowerLine.ToLatexString() + "}^{" + upperLine.ToLatexString() + "}";
+	} else {
+		assert( false );
+	}
 }

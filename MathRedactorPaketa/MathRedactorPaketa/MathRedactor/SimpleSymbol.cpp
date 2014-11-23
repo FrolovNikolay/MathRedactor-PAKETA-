@@ -24,7 +24,7 @@ int CSimpleSymbol::CalculateWidth( HDC displayHandle ) const
 	return width;
 }
 
-// Преобразование символа, в необходимый плоттеру формат.
+// Преобразование символа в необходимый плоттеру формат.
 std::string CSimpleSymbol::ToPlotterString() const
 {
 	if( symbol == ' ') {
@@ -32,6 +32,15 @@ std::string CSimpleSymbol::ToPlotterString() const
 	}
 	char tmp[2];
 	tmp[1] = '\0';
-	::WideCharToMultiByte( CP_ACP, 0, &symbol, -1, tmp, 1, 0, 0);
+	::WideCharToMultiByte( CP_ACP, 0, &symbol, -1, tmp, 1, 0, 0 );
+	return tmp;
+}
+
+// Преобразование символа в Latex формат.
+std::string CSimpleSymbol::ToLatexString() const
+{
+	char tmp[2];
+	tmp[1] = '\0';
+	::WideCharToMultiByte( CP_ACP, 0, &symbol, -1, tmp, 1, 0, 0 );
 	return tmp;
 }
