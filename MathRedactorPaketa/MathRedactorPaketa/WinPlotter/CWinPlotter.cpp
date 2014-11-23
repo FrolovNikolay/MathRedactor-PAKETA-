@@ -5,7 +5,6 @@
 
 #include "3DPoint.h"
 
-double time = 0;
 
 LRESULT __stdcall CWinPlotter::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -185,7 +184,6 @@ void CWinPlotter::PaintObject()
 			static_cast< int >( axisRenderedObject.Points[segment->Second].X ),
 			static_cast< int >( axisRenderedObject.Points[segment->Second].Y ) );
 	}
-
 
 	::DeleteObject( pointBrush );
 	::DeleteObject( currentBrush );

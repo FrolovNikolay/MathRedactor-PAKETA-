@@ -51,11 +51,5 @@ private:
 	// Аналог для объекта с осями
 	C2DModel axisRenderedObject;
 
-
-	// Вспомогательный объект, debug
-	void debug();
-	C3DModel debugObject;
-	C2DModel debugRenderedObject;
-
 	static LRESULT __stdcall windowProc( HWND handle, UINT message, WPARAM wParam, LPARAM lParam );
 };
