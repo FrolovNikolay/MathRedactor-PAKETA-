@@ -1,4 +1,4 @@
-/*
+ï»¿/*
 	author: Timur Khusaenov
 */
 #pragma once
@@ -9,7 +9,7 @@ namespace WinPlotter
 	void SetParamText( HWND hWnd, int ID, char c )
 	{
 		std::wstringstream wss;
-		wss << L"Äèàïàçîí ïàðàìåòðà " << c;
+		wss << L"Ð”Ð¸Ð°Ð¿Ð°Ð·Ð¾Ð½ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð° " << c;
 		::SetWindowText( ::GetDlgItem( hWnd, ID ), wss.str().c_str() );
 	}
 
