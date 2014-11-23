@@ -38,9 +38,9 @@ bool CMainWindow::RegisterClass( HINSTANCE classOwnerInstance )
 
 HWND CMainWindow::Create( HINSTANCE ownerInstance, HWND parent )
 {	
-	//DWORD style = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_CLIPSIBLINGS;
 	DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN;
-	windowHandle = ::CreateWindowEx( 0, className, L"Редактор формул", style, 0, 0, 800, 600, 0, 0, ownerInstance, this );
+	parentHandle = parent;
+	windowHandle = ::CreateWindowEx( 0, className, L"Редактор формул", style, 0, 0, 800, 600, parent, 0, ownerInstance, this );
 	return windowHandle;
 }
 
@@ -118,6 +118,13 @@ void CMainWindow::OnWmDestroy()
 {
 	destroyFramework();
 	::PostQuitMessage( 0 );
+}
+
+void CMainWindow::OnWmClose()
+{
+	Show( SW_HIDE );
+	::EnableWindow( parentHandle, true );
+	::SetFocus( parentHandle );
 }
 
 void CMainWindow::OnWmCreate( HWND _windowHandle )
@@ -204,9 +211,12 @@ LRESULT __stdcall CMainWindow::windowProcedure( HWND windowHandle, UINT message,
 	CMainWindow* window = reinterpret_cast<CMainWindow*>( ::GetWindowLong( windowHandle, GWL_USERDATA ) );	
 
 	switch( message ) {
-	case WM_CLOSE:
+	case WM_DESTROY:
 		window->OnWmDestroy();
 		break;
+	case WM_CLOSE:
+		window->OnWmClose();
+		return 0;
 	case WM_CREATE:
 		window->OnWmCreate( windowHandle );
 		break;

@@ -43,6 +43,8 @@ public:
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY
 	void OnWmDestroy();
+	// метод, вызываемый при получении окном сообщения WM_CLOSE
+	void OnWmClose();
 	// метод, создающий дочерние окна, вызывается при сообщени WM_CREATE
 	void OnWmCreate( HWND );
 	// меняет размеры дочерних окон при изменении размеров родительского
@@ -62,6 +64,8 @@ private:
 	CEditWindow *editWindow;
 	// хэндл дочернего окна-редактора
 	HWND editHandle;
+	// хендл родителя
+	HWND parentHandle;
 	// имя класса окна
 	static const wchar_t* className;
 

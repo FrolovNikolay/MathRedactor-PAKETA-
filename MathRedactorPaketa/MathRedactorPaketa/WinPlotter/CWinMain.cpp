@@ -330,9 +330,8 @@ void CWinMain::ShowFormulaForm()
 {
 	//HINSTANCE hInstance = reinterpret_cast<HINSTANCE>( GetWindowLong( handle, GWL_HINSTANCE ) );
 	if( hFormulaForm == 0 ) {
-		// TODO: создать окно
 		winRedactor.Show( SW_SHOW );
-
+		::EnableWindow( handle, false );
 	}
 
 	/*
