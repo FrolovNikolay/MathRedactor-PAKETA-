@@ -7,53 +7,12 @@
 #include <regex>
 #include <vector>
 
-//ïåðâàÿ ñòðîêà ôîðìóëà, âòîðàÿ îòðåçîê ïàðàìåòðîâ â âèäå àðãóìåíò 
-//<var>=[<left>;<right>]'\n'
-bool CGraphBuilder::buildPointGrid( const std::string& data )
+bool CGraphBuilder::buildPointGrid( const CFormula& formula, std::map< char, std::pair< double, double > > args, double eps )
 {
 	try {
-		std::stringstream ss;
-		for( int i = 0; i < static_cast<int>( data.size() ); i++ ) {
-			if( data[i] != '\r' ) {
-				ss << data[i];
-			}
-		}
-		std::string strFormula, argument;
-		std::map<char, std::pair< double, double > > args;
-		std::getline( ss, strFormula, '\n' );
-		std::regex argRegex( "((t|l|x|y|z)=\\[([\\-+]?[0-9]*\\.?[0-9]+)(;)([\\-+]?[0-9]*\\.?[0-9]+)\\])" );
-		std::regex epsRegex( "(eps=([0-9]*\\.?[0-9]+))" );
-		while( std::getline( ss, argument ) ) {
-			if( std::regex_match( argument, argRegex ) ) {
-				int firstArgEnd = 3;
-				while( argument[firstArgEnd] != ';' ) {
-					firstArgEnd++;
-				}
-				int secondArgEnd = firstArgEnd;
-				while( argument[secondArgEnd] != ']' ) {
-					secondArgEnd++;
-				}
-				double lb = std::stod( argument.substr( 3, firstArgEnd - 3 ) ); //left bound from arg template
-				double rb = std::stod( argument.substr( firstArgEnd + 1, secondArgEnd - firstArgEnd ) ); //right bound arg template
-				if( lb > rb ) { //îïàñíûé ìîìåíò íóæíî ëè ïðîèçâîäèòü ñðàâíåíèå ñ eps?
-					return false;
-				}
-				args[argument[0]] = std::make_pair( lb, rb );
-			} else if( std::regex_match( argument, epsRegex ) ) {
-				std::string strEps = argument.substr( 4 );
-				this->eps = std::stod( strEps );
-			} else {
-				return false;
-			}
-		}
-
-		CFormula formula = ParseFormula( strFormula );
-		std::vector< char > vars = formula.GetVariables();
-		for( int i = 0; i < static_cast<int>( vars.size() ); i++ ) {
-			if( args.find( vars[i] ) == args.end() ) {
-				args[vars[i]] = std::make_pair( leftBound, rightBound );
-			}
-		}
+		points.clear();
+		segments.clear();
+		std::vector<char> vars = formula.GetVariables();
 
 		std::map< char, double > argToCount;
 		if( vars.size() == 1 ) { 

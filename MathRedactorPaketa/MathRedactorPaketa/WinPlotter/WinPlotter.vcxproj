@@ -86,6 +86,7 @@
     <ClInclude Include="TriangleIndex.h" />
     <ClInclude Include="Matrix44.h" />
     <ClInclude Include="EngineCamera.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="2DPoint.cpp" />

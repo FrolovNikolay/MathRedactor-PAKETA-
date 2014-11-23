@@ -9,7 +9,9 @@ description:
 #pragma once
 
 #include "Windows.h"
+#include "CFormula.h"
 #include <vector>
+#include <map>
 
 #include "CWinPlotter.h"
 #include "MainWindow.h"
@@ -18,6 +20,7 @@ description:
 class CWinMain
 {
 public:
+	CWinMain() : epsilon( 1. ) { maxParam[0] = maxParam[1] = 10.; minParam[0] = minParam[1] = -10.; }
 	static bool registerClass( HINSTANCE hInstance );	// зарегистрировать класс окна
 	HWND create( HINSTANCE hInctance );					// создать экземпляр окна
 	void show( int cmdShow );							// показать окно
@@ -29,6 +32,7 @@ public:
 protected:
 	void OnDestroy();									// разрушение окна
 	void OnCreate( HWND hWnd );							// действия при создании окна
+	void OnDialogCreate( HWND hWnd );					// действия при создании окна
 	LRESULT OnCommand( WPARAM wParam, LPARAM lParam );	// обработка WM_COMMAND
 	LRESULT OnFormCommand( WPARAM wParam, LPARAM lParam );	// обработка комманд в окне диалога
 	void OnFormOk();									// обработчик изменения параметров принажатии Ок
@@ -74,6 +78,11 @@ private:
 	static BOOL __stdcall formulaDialogProc( HWND handle, UINT message, WPARAM wParam, LPARAM lParam );
 
 	// temporary params for plotter
-	double maxParam_1, minParam_1, maxParam_2, minParam_2, epsilon;
-	double tempMax_1, tempMin_1, tempMax_2, tempMin_2, temp_eps;
+	double maxParam[2], minParam[2];
+	double epsilon;
+
+	CFormula formula;
+	void buildPlot();
+	std::map< char, std::pair< double, double > > args;
+	std::vector<char> vars;
 };

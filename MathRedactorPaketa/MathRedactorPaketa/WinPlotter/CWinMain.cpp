@@ -11,6 +11,7 @@ description:
 #include "MainWindow.h"
 #include <Commctrl.h>
 #include "Messages.h"
+#include "Utils.h"
 const int indentFromBorder = 25;
 
 #include "CWinMain.h"
@@ -359,6 +360,9 @@ BOOL __stdcall CWinMain::formulaDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( ::GetParent( hWnd ), GWL_USERDATA ) );
 
 	switch( uMsg ) {
+		case WM_INITDIALOG:
+			wnd->OnDialogCreate( hWnd );
+			return TRUE;
 		case WM_COMMAND:
 			return wnd->OnFormCommand( wParam, lParam );
 		case WM_CLOSE:
@@ -368,6 +372,28 @@ BOOL __stdcall CWinMain::formulaDialogProc( HWND hWnd, UINT uMsg, WPARAM wParam,
 			return TRUE;
 		default:
 			return FALSE;
+	}
+}
+
+void CWinMain::OnDialogCreate( HWND hWnd )
+{
+	WinPlotter::SetValue( hWnd, IDC_EDIT_MAX_PARAM_1, maxParam[0] );
+	WinPlotter::SetValue( hWnd, IDC_EDIT_MAX_PARAM_2, maxParam[1] );
+	WinPlotter::SetValue( hWnd, IDC_EDIT_MIN_PARAM_1, minParam[0] );
+	WinPlotter::SetValue( hWnd, IDC_EDIT_MIN_PARAM_2, minParam[1] );
+	WinPlotter::SetValue( hWnd, IDC_EDIT_EPS, epsilon );
+
+	WinPlotter::SetParamText( hWnd, IDC_STATIC_PARAM_1, vars[0] );
+
+	if( vars.size() == 1 ) {
+		WinPlotter::HideEdit( hWnd, IDC_EDIT_MAX_PARAM_2 );
+		WinPlotter::HideEdit( hWnd, IDC_EDIT_MIN_PARAM_2 );
+		WinPlotter::HideEdit( hWnd, IDC_STATIC_PARAM_2 );
+		WinPlotter::HideEdit( hWnd, IDC_STATIC_MIN2 );
+		WinPlotter::HideEdit( hWnd, IDC_STATIC_MAX2 );
+	}
+	if( vars.size() == 2 ) {
+		WinPlotter::SetParamText( hWnd, IDC_STATIC_PARAM_2, vars[1] );
 	}
 }
 
@@ -393,6 +419,8 @@ void CWinMain::OnFormOk()
 {
 	TCHAR buff[150];
 	TCHAR* stopString;
+	double tempMax_1, tempMin_1, tempMax_2, tempMin_2, temp_eps;
+
 	::GetDlgItemText( hFormulaForm, IDC_EDIT_MAX_PARAM_1, buff, 150 );
 	tempMax_1 = wcstod( buff, &stopString );
 	if( wcslen( stopString ) > 0 ) {
@@ -417,9 +445,29 @@ void CWinMain::OnFormOk()
 		::MessageBox( hFormulaForm, L"Введен некорректный параметр для минимального значения 2-ого параметра", L"Error", MB_OK | MB_ICONERROR );
 		return;
 	}
+	::GetDlgItemText( hFormulaForm, IDC_EDIT_EPS, buff, 150 );
+	temp_eps = wcstod( buff, &stopString );
+	if( wcslen( stopString ) > 0 ) {
+		::MessageBox( hFormulaForm, L"Введен некорректный параметр значения эпсилон", L"Error", MB_OK | MB_ICONERROR );
+		return;
+	}
+	if( tempMax_1 < tempMin_1 || tempMax_2 < tempMin_2 ) {
+		::MessageBox( hFormulaForm, L"Максимум меньше минимума", L"Error", MB_OK | MB_ICONERROR );
+		return;
+	}
 
-	epsilon = ::SendDlgItemMessage( hFormulaForm, IDC_SLIDER, TBM_GETPOS, 0, 0 );
+	maxParam[0] = tempMax_1;
+	minParam[0] = tempMin_1;
+	maxParam[1] = tempMax_2;
+	minParam[1] = tempMin_2;
+	epsilon = temp_eps;
 
+	args.clear();
+
+	for( int i = 0; i < static_cast<int>( vars.size() ); i++ ) {
+		args[vars[i]] = std::make_pair( minParam[i], maxParam[i] );
+	}
+	buildPlot();
 	EndDialog( hFormulaForm, 0 );
 	DestroyWindow( hFormulaForm );
 	hFormulaForm = 0;
@@ -427,18 +475,30 @@ void CWinMain::OnFormOk()
 
 void CWinMain::TakeFormula()
 {
-	CGraphBuilder builder;
+	formula = ParseFormula( winRedactor.CalculateStringForPlotter() );
+	vars = formula.GetVariables();
 
-	if( !builder.buildPointGrid( winRedactor.CalculateStringForPlotter() ) ) {
+	args.clear();
+	for( int i = 0; i < static_cast<int>( vars.size() ); i++ ) {
+		args[vars[i]] = std::make_pair( minParam[i], maxParam[i] );
+	}
+	buildPlot();
+	::EnableMenuItem( GetMenu( handle ), ID_PARAMS, MF_ENABLED );
+}
+
+void CWinMain::buildPlot()
+{
+	CGraphBuilder builder;
+	if( !builder.buildPointGrid( formula, args, epsilon ) ) {
 		::MessageBox( hFormulaForm, L"Formula builder error", L"Error", MB_OK | MB_ICONERROR );
 	} else {
 		winPlotter.testObject.Clear();
 		const std::vector< C3DPoint >& points = builder.GetPoints();
 		const std::vector< std::pair< int, int > >& segmentsIds = builder.GetSegments();
-		for( int j = 0; j < static_cast<int>( points.size() ); j++ ) {
+		for( int j = 0; j < static_cast< int >( points.size() ); j++ ) {
 			winPlotter.testObject.AddPoint( points[j] );
 		}
-		for( int j = 0; j < static_cast<int>( segmentsIds.size() ); j++ ) {
+		for( int j = 0; j < static_cast< int >( segmentsIds.size() ); j++ ) {
 			winPlotter.testObject.AddSegment( segmentsIds[j].first, segmentsIds[j].second );
 		}
 		winPlotter.moveX( 0 );
