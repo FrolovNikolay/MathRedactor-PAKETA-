@@ -2,9 +2,15 @@
 
 #include "MathValidator.h"
 #include <NotationTester.h>
+#include <ErrorCatcher.h>
+#include <exception>
 
-bool TestFormula( const std::string& str )
+void TestFormula( const std::string& str, const std::set<std::string>& knownVars )
 {
 	CNotationTester notationTester;
-	return notationTester.Test( str );
+	try {
+		notationTester.Test( str, knownVars );
+	} catch( const CErrorCatcher& e ) {
+		throw std::runtime_error( e.what() );
+	}
 }

@@ -15,7 +15,7 @@
 class CNotationTester {
 public:
 	// Метод тестирования валидности формулы в виде latex-строки.
-	bool Test( const std::string& src );
+	bool Test( const std::string& src, const std::set<std::string>& _knownVars );
 
 private:
 	// Здесь хранятся все переменные.

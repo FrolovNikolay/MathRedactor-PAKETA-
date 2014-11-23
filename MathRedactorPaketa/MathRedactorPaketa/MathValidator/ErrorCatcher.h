@@ -7,11 +7,12 @@
 #include <string>
 #include <vector>
 
-class CErrorCatcher
-{
+class CErrorCatcher {
 public:
-	CErrorCatcher( std::string message, const std::vector<std::string>& tokens, int index );
-	std::string what() { return msg + " in: " + subStr; }
+	CErrorCatcher( const std::string& message, const std::vector<std::string>& tokens, int index );
+	
+	std::string what() const { return msg + " in: " + subStr; }
+
 private:
 	std::string msg;
 	std::string subStr;

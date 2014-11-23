@@ -5,6 +5,7 @@
 #pragma once
 
 #include <string>
+#include <set>
 
 #ifdef MATHVALIDDLL_EXPORTS
 #define MATHVALIDDLL_API __declspec(dllexport) 
@@ -13,4 +14,4 @@
 #endif
 
 // Проверка заданной формулы на валидность.
-bool MATHVALIDDLL_API TestFormula( const std::string& );
+void MATHVALIDDLL_API TestFormula( const std::string&, const std::set<std::string>& );

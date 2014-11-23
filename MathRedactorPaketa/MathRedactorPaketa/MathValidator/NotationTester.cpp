@@ -6,77 +6,71 @@
 #include <cassert>
 
 // Метод тестирования валидности формулы в виде latex-строки.
-bool CNotationTester::Test( const std::string& src )
+bool CNotationTester::Test( const std::string& src, const std::set<std::string>& _knownVars )
 {
 	reinitialize();
 
-	try {
-		CNotationBuilder builder( src );
-		std::stack< std::pair<std::string, int> > notation = builder.GetReverseNotation();
+	CNotationBuilder builder( src );
+	std::stack< std::pair<std::string, int> > notation = builder.GetReverseNotation();
+	knownVars = _knownVars;
+	tokens = builder.GetTokens();
 
-		tokens = builder.GetTokens();
-
-		while( !notation.empty() ) {
-			currentNotation = notation.top();
-			notation.pop();
-			CTexToken currToken = CTexToken::ConvertToken( currentNotation.first );
-			switch( currToken.GetType() ) {
-				case TT_Number:
-					numbersStack.push( currToken );
+	while( !notation.empty() ) {
+		currentNotation = notation.top();
+		notation.pop();
+		CTexToken currToken = CTexToken::ConvertToken( currentNotation.first );
+		switch( currToken.GetType() ) {
+			case TT_Number:
+				numbersStack.push( currToken );
+				break;
+			case TT_Variable:
+				numbersStack.push( currToken );
+				break;
+			case TT_BoolOp:
+			case TT_ComparisonOp:
+			case TT_BinOp:
+			case TT_Frac:
+			case TT_ComplexSqrt:
+				testBinaryOperation( currToken );
+				break;
+			case TT_Pow:
+				// Особенность написания аггрегирующих операторов sum/mul
+				if( !notation.empty() && IsAggregationFunction( notation.top().first ) ) {
 					break;
-				case TT_Variable:
-					numbersStack.push( currToken );
-					break;
-				case TT_BoolOp:
-				case TT_ComparisonOp:
-				case TT_BinOp:
-				case TT_Frac:
-				case TT_ComplexSqrt:
-					testBinaryOperation( currToken );
-					break;
-				case TT_Pow:
-					// Особенность написания аггрегирующих операторов sum/mul
-					if( !notation.empty() && IsAggregationFunction( notation.top().first ) ) {
-						break;
-					}
-					testBinaryOperation( currToken );
-					break;
-				case TT_UnaryOp:
-				case TT_Cos:
-				case TT_Sin:
-				case TT_Tan:
-				case TT_Ctan:
-				case TT_SimpleSqrt:
-					testUnaryOperation( currToken );
-					break;
-				case TT_Assign:
-					// Допускается определение переменных только в функциях аггрегаторах.
-					// Если не выполняется следующее условие, значит мы не определяем переменную в аггрегаторе и это ошибка.
-					if( notation.empty() || notation.top().first != "_" ) {
-						// Ошибка - некорретктное использование =
-						throw CErrorCatcher( "Assign error", tokens, notation.top().second );
-					}
-					testAssignOperation();
-					break;
-				case TT_Sum:
-				case TT_Mul:
-					testAggregationOperation( currToken );
-					break;
-				case TT_LowIndex:
-					// Индексация была пока никак не обрабатывается.
-					break;
-				default:
-					assert( false );
-			}
+				}
+				testBinaryOperation( currToken );
+				break;
+			case TT_UnaryOp:
+			case TT_Cos:
+			case TT_Sin:
+			case TT_Tan:
+			case TT_Ctan:
+			case TT_SimpleSqrt:
+				testUnaryOperation( currToken );
+				break;
+			case TT_Assign:
+				// Допускается определение переменных только в функциях аггрегаторах.
+				// Если не выполняется следующее условие, значит мы не определяем переменную в аггрегаторе и это ошибка.
+				if( notation.empty() || notation.top().first != "_" ) {
+					// Ошибка - некорретктное использование =
+					throw CErrorCatcher( "Assign error", tokens, notation.top().second );
+				}
+				testAssignOperation();
+				break;
+			case TT_Sum:
+			case TT_Mul:
+				testAggregationOperation( currToken );
+				break;
+			case TT_LowIndex:
+				// Индексация была пока никак не обрабатывается.
+				break;
+			default:
+				assert( false );
 		}
-		if( numbersStack.size() != 1 || ( numbersStack.top().GetType() != TT_Computable && numbersStack.top().GetType() != TT_Number ) ) {
-			// Ошибка, итоговой результат несвязен, либо не является вычислимым. - Здесь ошибочно все выражение, точнее выделить ошибку сложно.
-			throw CErrorCatcher( "Error", tokens, -1 );
-		}
-	} catch( CErrorCatcher& e ) {
-		// Показ ошибки происходит по средставом исключений - если ни одного исключения не упало, значит формула валидна.
-		std::cout << e.what() << std::endl;
-		return false;
+	}
+	if( numbersStack.size() != 1 || ( numbersStack.top().GetType() != TT_Computable && numbersStack.top().GetType() != TT_Number ) ) {
+		// Ошибка, итоговой результат несвязен, либо не является вычислимым. - Здесь ошибочно все выражение, точнее выделить ошибку сложно.
+		throw CErrorCatcher( "Error", tokens, -1 );
 	}
 	return true;
 }

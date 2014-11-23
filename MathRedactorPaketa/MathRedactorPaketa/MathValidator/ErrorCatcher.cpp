@@ -3,7 +3,7 @@
 #include <ErrorCatcher.h>
 #include <algorithm>
 
-CErrorCatcher::CErrorCatcher( std::string message, const std::vector<std::string>& tokens, int index ) : msg(message), subStr("")
+CErrorCatcher::CErrorCatcher( const std::string& message, const std::vector<std::string>& tokens, int index ) : msg( message ), subStr("")
 {
 	if( index == -1 ) {
 		subStr = "all formula";
