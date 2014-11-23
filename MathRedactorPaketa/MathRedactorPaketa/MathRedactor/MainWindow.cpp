@@ -148,9 +148,9 @@ void CMainWindow::OnWmSize()
 void CMainWindow::OnWmChar( WPARAM code )
 {
 	editWindow->AddSign( code );
-	if( code == 0x0D ) {
+	/* if( code == 0x0D ) {
 		editWindow->NewLine();
-	}
+	} */
 }
 
 void CMainWindow::OnWmKeydown( WPARAM code )

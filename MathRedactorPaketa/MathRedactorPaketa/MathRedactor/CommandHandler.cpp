@@ -127,13 +127,20 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 			editWindow->AddSymbol( func );
 			break;
 		}
-		// вынужденная мера, ибо DropDownButton представляет собой набор отдельных кнопок
 		case ID_CMD_Y_FX:
+			editWindow->SetFunctionType( FT_YfromX );
+			break;
 		case ID_CMD_Z_FXY:
+			editWindow->SetFunctionType( FT_ZfromXY );
+			break;
 		case ID_CMD_XY_T:
+			editWindow->SetFunctionType( FT_XYfromT );
+			break;
 		case ID_CMD_XYZ_T:
+			editWindow->SetFunctionType( FT_XYZfromT );
+			break;
 		case ID_CMD_XYZ_TL:
-			::MessageBox( 0, L"Здесь будем переключать тип функции", L"TODO", MB_OK );
+			editWindow->SetFunctionType( FT_XYZfromTL );
 			break;
 		default:
 			assert( false );

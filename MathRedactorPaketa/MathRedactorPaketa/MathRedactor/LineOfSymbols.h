@@ -50,7 +50,7 @@ public:
 	bool IsBase() const { return isBase; }
 
 	// Преобразование строки в необходимый плоттеру формат.
-	std::string ToPlotterString() const;
+	std::string ToPlotterString( int firstEnableSymbol = 0 ) const;
 	// Преобразование строки в Latex формат.
 	std::string ToLatexString() const;
 

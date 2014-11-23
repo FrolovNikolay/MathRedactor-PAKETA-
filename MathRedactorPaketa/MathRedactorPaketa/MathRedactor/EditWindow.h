@@ -13,6 +13,14 @@
 #include "EditWindowDrawer.h"
 #include "Messages.h"
 
+enum TFunctionType {
+	FT_YfromX,
+	FT_ZfromXY,
+	FT_XYfromT,
+	FT_XYZfromT,
+	FT_XYZfromTL
+};
+
 class CEditWindow {
 public:
 	// возможные направления движения каретки
@@ -57,6 +65,9 @@ public:
 	std::string CalculateStringForPlotter() const;
 	// Получить содержимое редактора в Latex формате.
 	std::string CalculateLatexString() const;
+
+	// Установка нового типа обрабатываемой функции.
+	void SetFunctionType( TFunctionType );
 
 	// Реакция на кнопку по осуществлению проверки на валидность.
 	void CheckValidity() const;
@@ -143,11 +154,19 @@ private:
 	const int horizontalScrollUnit;
 	const int verticalScrollUnit;
 
+	// Отвечает за поиск символа по координате.
 	CPositionFinder finder;
+	// Отвечает за выделение.
 	CItemSelector symbolSelector;
+	// Отвечает за прорисовку окна.
 	CEditWindowDrawer drawer;
 
+	// Текущий заданный тип функции.
+	TFunctionType currentFunctionType;
+	// Набор переменных, от которых определна функция.
 	std::set<std::string> knownVariables;
+	// До этой позиции в линиях находится служебная информация.
+	int firstEnablePosition;
 
 	// каретка
 	CCaret caret;
@@ -168,6 +187,17 @@ private:
 
 	void recalculateVertScrollParams() const;
 	void recalculateHorzScrollParams() const;
+
+	// Установить известные переменные в соответствии с типом.
+	void setVariables();
+	// Установить первую доступную позицию в строке.
+	void setFirstEnablePosition();
+	// Установка базового ввода.
+	void setBaseContent();
+
+	void insertOneParametrFunc( wchar_t , wchar_t );
+
+	void insertTwoParametrFunc( wchar_t, wchar_t, wchar_t );
 
 	static LRESULT __stdcall windowProcedure( HWND, UINT, WPARAM, LPARAM );
 };

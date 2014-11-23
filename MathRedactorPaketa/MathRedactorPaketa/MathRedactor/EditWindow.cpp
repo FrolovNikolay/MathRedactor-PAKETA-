@@ -26,7 +26,9 @@ CEditWindow::CEditWindow()
 		, finder( content )
 		, symbolSelector( finder, content )
 		, drawer( content, symbolSelector, horizontalScrollUnit, verticalScrollUnit, simpleSymbolHeight )
+		, currentFunctionType( FT_ZfromXY )
 {
+	SetFunctionType( FT_YfromX );
 	windowHandle = 0;
 }
 
@@ -184,7 +186,14 @@ std::string CEditWindow::CalculateStringForPlotter() const
 {
 	std::string result = "";
 	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
-		result += content[i].ToPlotterString() + "\n";
+		result += content[i][0]->ToPlotterString();
+		result += "=";
+		result += content[i].ToPlotterString( firstEnablePosition );
+		if( i != static_cast<int>( content.size() - 1 ) ) {
+			 result += ", ";
+		} else {
+			result += "\n";
+		}
 	}
 	return result;
 }
@@ -197,6 +206,37 @@ std::string CEditWindow::CalculateLatexString() const
 		result += content[i].ToLatexString() + "\n";
 	}
 	return result;
+}
+
+// Установка нового типа обрабатываемой функции.
+void CEditWindow::SetFunctionType( TFunctionType fType )
+{
+	if( fType == currentFunctionType ) {
+		return;
+	}
+	bool hasChanges = false;
+	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+		if( content[i].Length() > firstEnablePosition ) {
+			hasChanges = true;
+			break;
+		}
+	}
+	if( hasChanges ) {
+		// Ползователь не хочет потерять введенную информацию.
+		if( IDNO == ::MessageBox( 0, L"Смена типа вводимой функции повлечет потерю уже введенных данных. Продолжить?",
+					  L"Осторожно, возможна потеря данных!", MB_YESNO | MB_ICONWARNING ) ) {
+			return;
+		}
+	}
+	content.clear();
+	knownVariables.clear();
+	// Важно! Установка типа должна произойти до изменяющих устанавливающих функций.
+	currentFunctionType = fType;
+	setVariables();
+	setFirstEnablePosition();
+	setBaseContent();
+	caret.MoveTo( CSymbolPosition( firstEnablePosition, &content[0] ) );
+	::InvalidateRect( windowHandle, 0, true );
 }
 
 // Реакция на кнопку по осуществлению проверки на валидность.
@@ -483,7 +523,7 @@ bool CEditWindow::isInputValid( std::string& error ) const
 // проверяет, допустим ли данный символ
 bool CEditWindow::isSymbolAllowed( wchar_t symbol ) const
 {
-	std::wstring allowedOperators = L"+-/*=^~()[]{}";
+	std::wstring allowedOperators = L"+-/*=().";
 	return ( allowedOperators.find( symbol ) != std::wstring::npos || symbol == L' ' || ( symbol >= '0' && symbol <= '9' ) ||
 		( symbol >= 'a'  &&  symbol <= 'z' ) || ( symbol >= 'A'  &&  symbol <= 'Z' ) );
 }
@@ -713,4 +753,107 @@ void CEditWindow::CCaret::changeHeight( int newHeight )
 	if( wasShown ) {
 		Show();
 	}
+}
+
+// Установить известные переменные в соответствии с типом.
+void CEditWindow::setVariables()
+{
+	switch( currentFunctionType ) {
+		case FT_YfromX:
+			knownVariables.insert("x");
+			break;
+		case FT_XYfromT:
+			knownVariables.insert("t");
+			break;
+		case FT_ZfromXY:
+			knownVariables.insert("x");
+			knownVariables.insert("y");
+			break;
+		case FT_XYZfromT:
+			knownVariables.insert("t");
+			break;
+		case FT_XYZfromTL:
+			knownVariables.insert("t");
+			knownVariables.insert("l");
+			break;
+		default:
+			assert( false );
+	}
+}
+
+// Установить первую доступную позицию в строке.
+void CEditWindow::setFirstEnablePosition()
+{
+	switch( currentFunctionType ) {
+		case FT_YfromX:
+			firstEnablePosition = 5;
+			break;
+		case FT_XYfromT:
+			firstEnablePosition = 5;
+			break;
+		case FT_ZfromXY:
+			firstEnablePosition = 7;
+			break;
+		case FT_XYZfromT:
+			firstEnablePosition = 5;
+			break;
+		case FT_XYZfromTL:
+			firstEnablePosition = 7;
+			break;
+		default:
+			assert( false );
+	}
+}
+
+// Установка базового ввода.
+void CEditWindow::setBaseContent()
+{
+	switch( currentFunctionType ) {
+		case FT_YfromX:
+			insertOneParametrFunc( 'y', 'x' );
+			break;
+		case FT_XYfromT:
+			insertOneParametrFunc( 'x', 't' );
+			insertOneParametrFunc( 'y', 't' );
+			break;
+		case FT_ZfromXY:
+			insertTwoParametrFunc( 'z', 'x', 'y' );
+			break;
+		case FT_XYZfromT:
+			insertOneParametrFunc( 'x', 't' );
+			insertOneParametrFunc( 'y', 't' );
+			insertOneParametrFunc( 'z', 't' );
+			break;
+		case FT_XYZfromTL:
+			insertTwoParametrFunc( 'x', 't', 'l' );
+			insertTwoParametrFunc( 'y', 't', 'l' );
+			insertTwoParametrFunc( 'z', 't', 'l' );
+			break;
+		default:
+			assert( false );
+	}
+}
+
+void CEditWindow::insertOneParametrFunc( wchar_t funcName, wchar_t parametrName )
+{
+	content.push_back( CLineOfSymbols( simpleSymbolHeight, true ) );
+	int i = static_cast<int>( content.size() - 1 );
+	content[i].PushBack( new CSimpleSymbol( funcName ) );
+	content[i].PushBack( new CSimpleSymbol( '(' ) );
+	content[i].PushBack( new CSimpleSymbol( parametrName ) );
+	content[i].PushBack( new CSimpleSymbol( ')' ) );
+	content[i].PushBack( new CSimpleSymbol( '=' ) );
+}
+
+void CEditWindow::insertTwoParametrFunc( wchar_t funcName, wchar_t firstParametrName, wchar_t secondParametrName )
+{
+	content.push_back( CLineOfSymbols( simpleSymbolHeight, true ) );
+	int i = static_cast<int>( content.size() - 1 );
+	content[i].PushBack( new CSimpleSymbol( funcName ) );
+	content[i].PushBack( new CSimpleSymbol( '(' ) );
+	content[i].PushBack( new CSimpleSymbol( firstParametrName ) );
+	content[i].PushBack( new CSimpleSymbol( ',' ) );
+	content[i].PushBack( new CSimpleSymbol( secondParametrName ) );
+	content[i].PushBack( new CSimpleSymbol( ')' ) );
+	content[i].PushBack( new CSimpleSymbol( '=' ) );
 }

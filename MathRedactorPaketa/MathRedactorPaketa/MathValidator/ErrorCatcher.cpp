@@ -14,4 +14,3 @@ CErrorCatcher::CErrorCatcher( const std::string& message, const std::vector<std:
 		subStr += tokens[i] + " ";
 	}
 }
-

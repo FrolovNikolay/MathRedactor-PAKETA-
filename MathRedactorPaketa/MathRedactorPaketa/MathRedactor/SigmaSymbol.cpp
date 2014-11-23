@@ -141,8 +141,14 @@ int CSigmaSymbol::GetDescent( int simpleSymbolHeight ) const
 // Преобразование символа в необходимый плоттеру формат.
 std::string CSigmaSymbol::ToPlotterString() const
 {
-	// TODO: Plotter не работает с аггрегирующими функциями.
-	return "";
+	if( symbol[0] == bigSigmaSymbol ) {
+		return "sum(" + lowerLine.ToPlotterString() + ", " + upperLine.ToPlotterString() + ")";
+	} else if( symbol[0] == bigPiSymbol ) {
+		return "mul(" + lowerLine.ToPlotterString() + ", " + upperLine.ToPlotterString() + ")";
+	} else {
+		assert( false );
+	}
+	
 }
 
 // Преобразование символа в Latex формат.
