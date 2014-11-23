@@ -167,3 +167,13 @@ void CLineOfSymbols::Recalculate()
 		parent->Recalculate();
 	}
 }
+
+// Преобразование символа, в необходимый плоттеру формат.
+std::string CLineOfSymbols::ToPlotterString() const
+{
+	std::string result = "";
+	for( int i = 0; i < static_cast<int>( arrayOfSymbolPtrs.size() ); ++i ) {
+		result += arrayOfSymbolPtrs[i]->ToPlotterString();
+	}
+	return result;
+}

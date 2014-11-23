@@ -49,6 +49,9 @@ public:
 	// Является ли строка, строкой редактора(true) или сложного символа(false).
 	bool IsBase() const { return isBase; }
 
+	// Преобразование символа, в необходимый плоттеру формат.
+	std::string ToPlotterString() const;
+
 	const CSymbol* operator[] ( int index ) const { return arrayOfSymbolPtrs[index]; }
 	CSymbol* operator[] ( int index ) { return arrayOfSymbolPtrs[index]; }
 

@@ -38,6 +38,9 @@ public:
 	// Используются текущие FONT и PEN.
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const = 0;
 
+	// Преобразование символа, в необходимый плоттеру формат.
+	virtual std::string ToPlotterString() const = 0;
+
 	// Рассчитать ширину символа.
 	virtual int CalculateWidth( HDC displayHandle ) const = 0;
 protected:

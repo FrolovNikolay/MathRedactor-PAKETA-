@@ -23,3 +23,15 @@ int CSimpleSymbol::CalculateWidth( HDC displayHandle ) const
 	width = fontSizeStruct.cx + SideOffset;
 	return width;
 }
+
+// Преобразование символа, в необходимый плоттеру формат.
+std::string CSimpleSymbol::ToPlotterString() const
+{
+	if( symbol == ' ') {
+		return "";
+	}
+	char tmp[2];
+	tmp[1] = '\0';
+	::WideCharToMultiByte( CP_ACP, 0, &symbol, -1, tmp, 1, 0, 0);
+	return tmp;
+}

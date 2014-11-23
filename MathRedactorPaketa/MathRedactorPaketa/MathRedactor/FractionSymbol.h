@@ -1,20 +1,20 @@
-//Автор: Давлетшин Азат
+п»ї//РђРІС‚РѕСЂ: Р”Р°РІР»РµС‚С€РёРЅ РђР·Р°С‚
 
 #pragma once
 
 #include "Symbol.h"
 #include "LineOfSymbols.h" 
 
-//Сложный символ "дробь". Состоит из двух строк (LineOfSymbols).
+//РЎР»РѕР¶РЅС‹Р№ СЃРёРјРІРѕР» "РґСЂРѕР±СЊ". РЎРѕСЃС‚РѕРёС‚ РёР· РґРІСѓС… СЃС‚СЂРѕРє (LineOfSymbols).
 class CFractionSymbol : public CSymbol {
 public:
 
 	CFractionSymbol( int simpleSymbolHeight );
 
-	//Создание копии (deep) объекта. 
+	//РЎРѕР·РґР°РЅРёРµ РєРѕРїРёРё (deep) РѕР±СЉРµРєС‚Р°. 
 	virtual CSymbol* Clone( CLineOfSymbols* ) const;
 	virtual void UpdateParent( CLineOfSymbols* parent );
-	//Получить массив указателей на подстроки (может быть пустым)
+	//РџРѕР»СѓС‡РёС‚СЊ РјР°СЃСЃРёРІ СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° РїРѕРґСЃС‚СЂРѕРєРё (РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј)
 	virtual void GetSubstrings( std::vector<const CLineOfSymbols*>& substrings ) const;
 	virtual void GetSubstrings( std::vector<CLineOfSymbols*>& substrings );
 
@@ -27,20 +27,23 @@ public:
 	CLineOfSymbols& GetLowerLine( ) { return lowerLine; }
 	const CLineOfSymbols& GetLowerLine( ) const { return lowerLine; }
 
-	//Описание этих методов находится в Symbol.h
+	//РћРїРёСЃР°РЅРёРµ СЌС‚РёС… РјРµС‚РѕРґРѕРІ РЅР°С…РѕРґРёС‚СЃСЏ РІ Symbol.h
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const;
 	virtual int CalculateWidth( HDC displayHandle ) const;
 
+	// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ СЃРёРјРІРѕР»Р°, РІ РЅРµРѕР±С…РѕРґРёРјС‹Р№ РїР»РѕС‚С‚РµСЂСѓ С„РѕСЂРјР°С‚.
+	virtual std::string ToPlotterString() const;
+
 private:
-	//Верхняя и нижняя части дроби
+	//Р’РµСЂС…РЅСЏСЏ Рё РЅРёР¶РЅСЏСЏ С‡Р°СЃС‚Рё РґСЂРѕР±Рё
 	CLineOfSymbols upperLine;
 	CLineOfSymbols lowerLine;
 
-	//Методы определяют сдвиги относительно линии дроби и толщину самой линии
+	//РњРµС‚РѕРґС‹ РѕРїСЂРµРґРµР»СЏСЋС‚ СЃРґРІРёРіРё РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ Р»РёРЅРёРё РґСЂРѕР±Рё Рё С‚РѕР»С‰РёРЅСѓ СЃР°РјРѕР№ Р»РёРЅРёРё
 	int getUpperOffset( ) const { return 3; }
 	int getLowerOffset( ) const { return 3; }
 	int getStrokeHeight( ) const { return 1; }
-	//Добавка к ширине линии (добавляется с каждой стороны)
+	//Р”РѕР±Р°РІРєР° Рє С€РёСЂРёРЅРµ Р»РёРЅРёРё (РґРѕР±Р°РІР»СЏРµС‚СЃСЏ СЃ РєР°Р¶РґРѕР№ СЃС‚РѕСЂРѕРЅС‹)
 	int getStrokeAddition( ) const { return 1; }
 	int getSymbolBorder( ) const { return 1; }
 };

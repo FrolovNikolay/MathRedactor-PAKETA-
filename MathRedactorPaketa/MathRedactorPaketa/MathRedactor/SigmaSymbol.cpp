@@ -1,4 +1,4 @@
-#include "SigmaSymbol.h"
+п»ї#include "SigmaSymbol.h"
 #include <assert.h>
 #include <wingdi.h>
 #include <Windows.h>
@@ -43,7 +43,7 @@ void CSigmaSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbol
 	int lowerWidth = lowerLine.CalculateWidth( displayHandle );
 	width = max( upperWidth, lowerWidth );
 	
-	//Устанавливаем шрифт для сигмы
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ РґР»СЏ СЃРёРіРјС‹
 	HFONT oldFont = ( HFONT )::GetCurrentObject( displayHandle, OBJ_FONT );
 	assert( oldFont != 0 );
 
@@ -57,26 +57,26 @@ void CSigmaSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbol
 	SIZE fontSizeStruct;
 	::GetTextExtentPoint32( displayHandle, symbol, 1, &fontSizeStruct );
 
-	//Ширина символа сигмы
+	//РЁРёСЂРёРЅР° СЃРёРјРІРѕР»Р° СЃРёРіРјС‹
 	int sigmaWidth = fontSizeStruct.cx;
 	width = max( width, sigmaWidth );
 
-	//Вычисляем координаты для сигмы и рисуем её
+	//Р’С‹С‡РёСЃР»СЏРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ РґР»СЏ СЃРёРіРјС‹ Рё СЂРёСЃСѓРµРј РµС‘
 	int sigmaX = ( width - sigmaWidth ) / 2 + posX;
 	int sigmaY = posY - ( getSigmaHeight( simpleSymbolHeight ) - simpleSymbolHeight ) / 2;
 	sigmaY -= getSublinesOffset();
 	::TextOut( displayHandle, sigmaX, sigmaY, symbol, 1 );
 
-	//Возвращаем старый шрифт, удаляем созданный
+	//Р’РѕР·РІСЂР°С‰Р°РµРј СЃС‚Р°СЂС‹Р№ С€СЂРёС„С‚, СѓРґР°Р»СЏРµРј СЃРѕР·РґР°РЅРЅС‹Р№
 	::SelectObject( displayHandle, oldFont );
 	::DeleteObject( font );
 
-	//Рисуем верхнюю строку
+	//Р РёСЃСѓРµРј РІРµСЂС…РЅСЋСЋ СЃС‚СЂРѕРєСѓ
 	int upperX = posX + ( width - upperWidth ) / 2;
 	int upperY = sigmaY - upperLine.GetHeight();
 	upperLine.Draw( displayHandle, upperX, upperY );
 
-	//Рисуем нижнюю строку
+	//Р РёСЃСѓРµРј РЅРёР¶РЅСЋСЋ СЃС‚СЂРѕРєСѓ
 	int lowerX = posX + ( width - lowerWidth ) / 2;
 	int lowerY = sigmaY + getSigmaHeight( simpleSymbolHeight ) + getSublinesOffset();
 	lowerLine.Draw( displayHandle, lowerX, lowerY );
@@ -95,7 +95,7 @@ int CSigmaSymbol::CalculateWidth( HDC displayHandle ) const
 
 	width = max( upperWidth, lowerWidth );
 
-	//Устанавливаем шрифт для сигмы
+	//РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С€СЂРёС„С‚ РґР»СЏ СЃРёРіРјС‹
 	HFONT oldFont = ( HFONT )::GetCurrentObject( displayHandle, OBJ_FONT );
 	assert( oldFont != 0 );
 
@@ -109,11 +109,11 @@ int CSigmaSymbol::CalculateWidth( HDC displayHandle ) const
 	SIZE fontSizeStruct;
 	::GetTextExtentPoint32( displayHandle, symbol, 1, &fontSizeStruct );
 
-	//Ширина символа сигмы
+	//РЁРёСЂРёРЅР° СЃРёРјРІРѕР»Р° СЃРёРіРјС‹
 	int sigmaWidth = fontSizeStruct.cx;
 	width = max( width, sigmaWidth );
 
-	//Возвращаем старый шрифт, удаляем созданный
+	//Р’РѕР·РІСЂР°С‰Р°РµРј СЃС‚Р°СЂС‹Р№ С€СЂРёС„С‚, СѓРґР°Р»СЏРµРј СЃРѕР·РґР°РЅРЅС‹Р№
 	::SelectObject( displayHandle, oldFont );
 	::DeleteObject( font );
 
@@ -136,4 +136,11 @@ int CSigmaSymbol::GetBaselineOffset( int simpleSymbolHeight ) const
 int CSigmaSymbol::GetDescent( int simpleSymbolHeight ) const
 {
 	return lowerLine.GetHeight() + getSublinesOffset() + ( getSigmaHeight( simpleSymbolHeight ) + simpleSymbolHeight ) / 2;
+}
+
+// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ СЃРёРјРІРѕР»Р°, РІ РЅРµРѕР±С…РѕРґРёРјС‹Р№ РїР»РѕС‚С‚РµСЂСѓ С„РѕСЂРјР°С‚.
+std::string CSigmaSymbol::ToPlotterString() const
+{
+	// TODO: Plotter РЅРµ СЂР°Р±РѕС‚Р°РµС‚ СЃ Р°РіРіСЂРµРіРёСЂСѓСЋС‰РёРјРё С„СѓРЅРєС†РёСЏРјРё.
+	return "";
 }

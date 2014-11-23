@@ -41,6 +41,9 @@ public:
 	// Подсчет ширины символа в данном контексте устройства
 	virtual int CalculateWidth( HDC displayHandle ) const;
 
+	// Преобразование символа, в необходимый плоттеру формат.
+	virtual std::string ToPlotterString() const;
+
 private:
 	// то, что записано в индексе
 	CLineOfSymbols line;

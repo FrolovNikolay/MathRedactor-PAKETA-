@@ -1,6 +1,6 @@
-// Автор: Воротилов Владислав
-// Описание: Класс представляет любые функции с одним аргументом
-// в том числе синус, косинус и тд
+п»ї// РђРІС‚РѕСЂ: Р’РѕСЂРѕС‚РёР»РѕРІ Р’Р»Р°РґРёСЃР»Р°РІ
+// РћРїРёСЃР°РЅРёРµ: РљР»Р°СЃСЃ РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ Р»СЋР±С‹Рµ С„СѓРЅРєС†РёРё СЃ РѕРґРЅРёРј Р°СЂРіСѓРјРµРЅС‚РѕРј
+// РІ С‚РѕРј С‡РёСЃР»Рµ СЃРёРЅСѓСЃ, РєРѕСЃРёРЅСѓСЃ Рё С‚Рґ
 
 #pragma once
 
@@ -13,11 +13,11 @@ public:
 
 	CFunctionSymbol( int simpleSymbolHeight, wchar_t* _funcName );
 
-	// Создание копии (deep) объекта. 
+	// РЎРѕР·РґР°РЅРёРµ РєРѕРїРёРё (deep) РѕР±СЉРµРєС‚Р°. 
 	virtual CSymbol* Clone( CLineOfSymbols* parent ) const;
 	virtual void UpdateParent( CLineOfSymbols* parent );
 
-	// Получить массив указателей на подстроки (может быть пустым) 
+	// РџРѕР»СѓС‡РёС‚СЊ РјР°СЃСЃРёРІ СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° РїРѕРґСЃС‚СЂРѕРєРё (РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј) 
 	virtual void GetSubstrings( std::vector<const CLineOfSymbols*>& substrings ) const;
 	virtual void GetSubstrings( std::vector<CLineOfSymbols*>& substrings );
 
@@ -28,17 +28,20 @@ public:
 	CLineOfSymbols& GetArgumentLine() { return argumentLine; }
 	const CLineOfSymbols& GetArgumentLine() const { return argumentLine; }
 
-	// Описание этих методов находится в Symbol.h
+	// РћРїРёСЃР°РЅРёРµ СЌС‚РёС… РјРµС‚РѕРґРѕРІ РЅР°С…РѕРґРёС‚СЃСЏ РІ Symbol.h
 	virtual void Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const;
 	virtual int CalculateWidth( HDC displayHandle ) const;
 
+	// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ СЃРёРјРІРѕР»Р°, РІ РЅРµРѕР±С…РѕРґРёРјС‹Р№ РїР»РѕС‚С‚РµСЂСѓ С„РѕСЂРјР°С‚.
+	virtual std::string ToPlotterString() const;
+
 private:
 
-	// Название функции которое отображается на экране
+	// РќР°Р·РІР°РЅРёРµ С„СѓРЅРєС†РёРё РєРѕС‚РѕСЂРѕРµ РѕС‚РѕР±СЂР°Р¶Р°РµС‚СЃСЏ РЅР° СЌРєСЂР°РЅРµ
 	CLineOfSymbols functionName;
-	// Закрывающаяся круглая скобка идущая последним отображенным символом
+	// Р—Р°РєСЂС‹РІР°СЋС‰Р°СЏСЃСЏ РєСЂСѓРіР»Р°СЏ СЃРєРѕР±РєР° РёРґСѓС‰Р°СЏ РїРѕСЃР»РµРґРЅРёРј РѕС‚РѕР±СЂР°Р¶РµРЅРЅС‹Рј СЃРёРјРІРѕР»РѕРј
 	CLineOfSymbols closingBracket;
-	// Аргументы функции
+	// РђСЂРіСѓРјРµРЅС‚С‹ С„СѓРЅРєС†РёРё
 	CLineOfSymbols argumentLine;
 
 };

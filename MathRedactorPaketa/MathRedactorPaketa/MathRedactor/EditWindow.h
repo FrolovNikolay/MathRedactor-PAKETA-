@@ -51,6 +51,8 @@ public:
 	void HideCaret();
 	// Двигает каретку на шаг по направлению
 	void MoveCaret( TCaretDirection );
+	// Получить строку для плоттера.
+	std::string CalculateStringForPlotter() const;
 
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY
@@ -69,7 +71,6 @@ protected:
 	void OnLButUp( LPARAM );
 	// метод, вызываемый при получении окном сообщения WM_MOUSEMOVE
 	void OnLockedMouseMove( LPARAM );
-
 private:
 	// Класс каретки для этого типа окна
 	class CCaret {

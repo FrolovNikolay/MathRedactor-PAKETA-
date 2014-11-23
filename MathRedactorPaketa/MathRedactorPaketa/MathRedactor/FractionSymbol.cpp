@@ -92,3 +92,9 @@ int CFractionSymbol::GetDescent( int simpleSymbolHeight ) const
 {
 	return lowerLine.GetHeight() + getLowerOffset() + getStrokeHeight() + simpleSymbolHeight / 2;
 }
+
+// Преобразование символа, в необходимый плоттеру формат.
+std::string CFractionSymbol::ToPlotterString() const
+{
+	return "(" + upperLine.ToPlotterString() + ")/(" + lowerLine.ToPlotterString() + ")";
+}

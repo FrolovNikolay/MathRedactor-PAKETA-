@@ -1,4 +1,4 @@
-// Автор: Воротилов Владислав
+п»ї// РђРІС‚РѕСЂ: Р’РѕСЂРѕС‚РёР»РѕРІ Р’Р»Р°РґРёСЃР»Р°РІ
 
 #include "FunctionSymbol.h"
 #include "SimpleSymbol.h"
@@ -9,7 +9,7 @@
 CFunctionSymbol::CFunctionSymbol( int simpleSymbolHeight, wchar_t* _funcName ) :
 	argumentLine( simpleSymbolHeight ), functionName( simpleSymbolHeight ), closingBracket( simpleSymbolHeight )
 {
-	// Заполняем имя функции
+	// Р—Р°РїРѕР»РЅСЏРµРј РёРјСЏ С„СѓРЅРєС†РёРё
 	int i = 0;
 	while( _funcName[i] != 0 ) {
 		functionName.PushBack( new CSimpleSymbol( _funcName[i] ) );
@@ -45,19 +45,19 @@ void CFunctionSymbol::GetSubstrings( std::vector<CLineOfSymbols*>& substrings )
 void CFunctionSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSymbolHeight ) const
 {
 	int baselineOffset = max( functionName.getBaselineOffset(), argumentLine.getBaselineOffset() );
-	// Рисуем название
+	// Р РёСЃСѓРµРј РЅР°Р·РІР°РЅРёРµ
 	functionName.Draw( displayHandle, posX, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
 	int functionNameWidth = functionName.CalculateWidth( displayHandle );
 
-	//Рисуем аргумент
+	//Р РёСЃСѓРµРј Р°СЂРіСѓРјРµРЅС‚
 	argumentLine.Draw( displayHandle, posX + functionNameWidth, posY - GetBaselineOffset( simpleSymbolHeight ) );
 	int argumentWidth = argumentLine.CalculateWidth( displayHandle );
 
-	// Рисуем закрывающуюся скобку
+	// Р РёСЃСѓРµРј Р·Р°РєСЂС‹РІР°СЋС‰СѓСЋСЃСЏ СЃРєРѕР±РєСѓ
 	closingBracket.Draw( displayHandle, posX + functionNameWidth + argumentWidth, posY + baselineOffset - GetBaselineOffset( simpleSymbolHeight ) );
 	int closingBracketWidth = closingBracket.CalculateWidth( displayHandle );
 
-	//Обновляем информацию
+	//РћР±РЅРѕРІР»СЏРµРј РёРЅС„РѕСЂРјР°С†РёСЋ
 	x = posX;
 	width =  argumentWidth + functionNameWidth + closingBracketWidth;
 	height = simpleSymbolHeight;
@@ -65,11 +65,11 @@ void CFunctionSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSym
 
 int CFunctionSymbol::CalculateWidth( HDC displayHandle ) const
 {
-	// Ширина названия функции
+	// РЁРёСЂРёРЅР° РЅР°Р·РІР°РЅРёСЏ С„СѓРЅРєС†РёРё
 	int functionNameWidth = functionName.CalculateWidth( displayHandle );
-	// Ширина аргумента функции
+	// РЁРёСЂРёРЅР° Р°СЂРіСѓРјРµРЅС‚Р° С„СѓРЅРєС†РёРё
 	int argumentWidth = argumentLine.CalculateWidth( displayHandle );
-	// Ширина закрывающейся скобки
+	// РЁРёСЂРёРЅР° Р·Р°РєСЂС‹РІР°СЋС‰РµР№СЃСЏ СЃРєРѕР±РєРё
 	int closingBracketWidth = closingBracket.CalculateWidth( displayHandle );
 	width = functionNameWidth + argumentWidth + closingBracketWidth;
 	return width;
@@ -88,4 +88,10 @@ int CFunctionSymbol::GetBaselineOffset( int simpleSymbolHeight ) const
 int CFunctionSymbol::GetDescent( int simpleSymbolHeight ) const
 {
 	return max( functionName.GetHeight(), argumentLine.GetHeight() );
+}
+
+// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ СЃРёРјРІРѕР»Р°, РІ РЅРµРѕР±С…РѕРґРёРјС‹Р№ РїР»РѕС‚С‚РµСЂСѓ С„РѕСЂРјР°С‚.
+std::string CFunctionSymbol::ToPlotterString() const
+{
+	return functionName.ToPlotterString() + "(" + argumentLine.ToPlotterString() + ")";
 }

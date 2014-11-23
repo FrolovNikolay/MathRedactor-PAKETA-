@@ -80,3 +80,13 @@ int CIndexSymbol::calculateSublineHeight( int simpleSymbolHeight )
 {
 	return static_cast< int >( simpleSymbolHeight * sublineHeightRatio );
 }
+
+// Преобразование символа, в необходимый плоттеру формат.
+std::string CIndexSymbol::ToPlotterString() const
+{
+	if( type == ITUpper ) {
+		return "^(" + line.ToPlotterString() + ")";
+	} else {
+		return "_(" + line.ToPlotterString() + ")";
+	}
+}

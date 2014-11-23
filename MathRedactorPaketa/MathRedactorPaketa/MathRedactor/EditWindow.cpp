@@ -178,6 +178,16 @@ void CEditWindow::MoveCaret( CEditWindow::TCaretDirection direction )
 	::InvalidateRect( windowHandle, 0, true );
 }
 
+// Получить строку для плоттера.
+std::string CEditWindow::CalculateStringForPlotter() const
+{
+	std::string result = "";
+	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+		result += content[i].ToPlotterString() + "\n";
+	}
+	return result;
+}
+
 // protected методы
 
 void CEditWindow::OnWmDestroy() {

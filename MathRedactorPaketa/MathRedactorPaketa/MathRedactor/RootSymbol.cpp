@@ -135,3 +135,13 @@ int CRootSymbol::GetDescent( int simpleSymbolHeight ) const
 {
 	return radicandLine.GetHeight() - radicandLine.getBaselineOffset() + baseOffset();
 }
+
+// Преобразование символа, в необходимый плоттеру формат.
+std::string CRootSymbol::ToPlotterString() const
+{
+	if( exponentLine.Length() != 0 ) {
+		return "(" + radicandLine.ToPlotterString() + ")^(1/" + exponentLine.ToPlotterString() + ")"; 
+	} else {
+		return "(" + radicandLine.ToPlotterString() + ")^(1/2)"; 
+	}
+}
