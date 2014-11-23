@@ -3,31 +3,36 @@
 #include "PositionFinder.h"
 #include "instruments.h"
 
-CSymbolPosition* CPositionFinder::FindPosition( int x, int y, CSymbolPosition* baseLine ) const
+CSymbolPosition* CPositionFinder::FindPosition( int x, int y, int firstEnableSymbol, CSymbolPosition* baseLine ) const
 {
 	if( baseLine != 0 && baseLine->GetParent() != 0 ) {
 		return positionInLine( x, y, baseLine );
 	} else {
 		int lineIdx = 0;
-		int symbolIdx = 0;
 		int currentY = 0;
-		for( lineIdx = 0; lineIdx < static_cast<int>( content.size() ); ++lineIdx ) {
-			currentY += content[lineIdx].GetHeight();
-			if( currentY >= y ) {
-				break;
+		if( baseLine == 0 ) {
+			for( lineIdx = 0; lineIdx < static_cast<int>( content.size() ); ++lineIdx ) {
+				currentY += content[lineIdx].GetHeight();
+				if( currentY >= y ) {
+					break;
+				}
 			}
+			if( currentY < y ) {
+				return new CSymbolPosition( content[content.size() - 1].Length(), &content[content.size() - 1] );
+			}
+		} else {
+			lineIdx = -1;
+			while( &content[++lineIdx] != baseLine->CurrentLine ) { }
 		}
-		if( currentY < y ) {
-			return new CSymbolPosition( content[content.size() - 1].Length(), &content[content.size() - 1] );
-		}
-		int currentX = 0;
-		for( symbolIdx = 0; symbolIdx < content[lineIdx].Length(); ++symbolIdx ) {
+		int symbolIdx = firstEnableSymbol;
+		int currentX = content[lineIdx][symbolIdx - 1]->GetX() + content[lineIdx][symbolIdx - 1]->GetWidth();
+		for( ; symbolIdx < content[lineIdx].Length(); ++symbolIdx ) {
 			currentX += content[lineIdx][symbolIdx]->GetWidth();
 			if( currentX >= x ) {
 				break;
 			} 
 		}
-		if( currentX < x ) {
+		if( symbolIdx == content[lineIdx].Length() ) {
 			return new CSymbolPosition( content[lineIdx].Length(), &content[lineIdx] );
 		}
 		if( baseLine != 0 ) {

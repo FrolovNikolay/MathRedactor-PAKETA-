@@ -10,18 +10,18 @@ CItemSelector::CItemSelector( const CPositionFinder& _finder, const std::vector<
 	, end( 0 )
 { }
 
-void CItemSelector::SetStartPosition( int x, int y )
+void CItemSelector::SetStartPosition( int x, int y, int firstEnableSymbol )
 {
-	std::shared_ptr<CSymbolPosition> tmp( finder.FindPosition( x, y ) );
+	std::shared_ptr<CSymbolPosition> tmp( finder.FindPosition( x, y, firstEnableSymbol ) );
 	if( tmp->Index != -1 ) {
 		start.swap( tmp );
 	}
 }
 
-void CItemSelector::SetCurrentPosition( int x, int y )
+void CItemSelector::SetCurrentPosition( int x, int y, int firstEnableSymbol )
 {
 	if( start != 0 ) {
-		std::shared_ptr<CSymbolPosition> tmp( finder.FindPosition( x, y, start.get() ) );
+		std::shared_ptr<CSymbolPosition> tmp( finder.FindPosition( x, y, firstEnableSymbol, start.get() ) );
 		end.swap( tmp );
 	}
 }

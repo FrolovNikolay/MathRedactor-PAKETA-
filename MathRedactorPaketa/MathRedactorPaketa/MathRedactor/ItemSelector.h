@@ -14,9 +14,9 @@ public:
 	typedef std::pair<CSymbolPosition, CSymbolPosition> CSymbolInterval;
 
 	// Установка начальной позиции курсора
-	void SetStartPosition( int x, int y );
+	void SetStartPosition( int x, int y, int firstEnableSymbol = 0 );
 	// Установка текущей позиции курсора
-	void SetCurrentPosition( int x, int y );
+	void SetCurrentPosition( int x, int y, int firstEnableSymbol = 0 );
 	// Проверить наличие выделения.
 	bool HasSelection() const { return start != 0 && end != 0; }
 	// Снять выделение.

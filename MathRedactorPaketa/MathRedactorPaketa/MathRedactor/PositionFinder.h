@@ -13,7 +13,7 @@ public:
 	{ }
 
 	// Получить позицию, соответствующую указанной точке.
-	CSymbolPosition* FindPosition( int x, int y, CSymbolPosition* baseLine = 0 ) const;
+	CSymbolPosition* FindPosition( int x, int y, int firstEnableSymbol = 0, CSymbolPosition* baseLine = 0 ) const;
 
 private:
 	const std::vector<CLineOfSymbols>& content;
