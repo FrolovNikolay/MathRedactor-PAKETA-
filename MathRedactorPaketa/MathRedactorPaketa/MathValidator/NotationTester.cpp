@@ -68,7 +68,9 @@ bool CNotationTester::Test( const std::string& src, const std::set<std::string>&
 				assert( false );
 		}
 	}
-	if( numbersStack.size() != 1 || ( numbersStack.top().GetType() != TT_Computable && numbersStack.top().GetType() != TT_Number ) ) {
+	if( numbersStack.size() == 1 && numbersStack.top().GetType() == TT_Variable && knownVars.find( numbersStack.top().GetString() ) == knownVars.end() ) {
+		throw CErrorCatcher( "Unknown variable " + numbersStack.top().GetString(), tokens, currentNotation.second );
+	} else if( numbersStack.size() != 1 || ( numbersStack.top().GetType() != TT_Computable && numbersStack.top().GetType() != TT_Number ) ) {
 		// Ошибка, итоговой результат несвязен, либо не является вычислимым. - Здесь ошибочно все выражение, точнее выделить ошибку сложно.
 		throw CErrorCatcher( "Error", tokens, -1 );
 	}
@@ -227,6 +229,9 @@ CTexToken CNotationTester::tokenBinaryOperation( const CTexToken& operation, con
 		switch( operation.GetType() ) {
 			case TT_Pow:
 			case TT_BinOp:
+				if( operation.GetString() == "/" && arg2.GetType() == TT_Number && std::stod( arg2.GetString() ) == 0 ) {
+					throw CErrorCatcher( "Division by zero", tokens, currentNotation.second );
+				}
 				return CTexToken( TT_Computable, arg1.GetString() + operation.GetString() + arg2.GetString() );
 			case TT_ComparisonOp:
 				return CTexToken( TT_ComputableBool, arg1.GetString() + operation.GetString() + arg2.GetString() );

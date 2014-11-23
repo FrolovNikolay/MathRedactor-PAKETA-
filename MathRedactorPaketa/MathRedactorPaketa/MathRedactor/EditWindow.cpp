@@ -8,6 +8,7 @@
 #include <assert.h>
 #include <windowsx.h>
 #include "SymbolPosition.h"
+#include <MathValidator.h>
 
 // класс CEditWindow
 // константы
@@ -196,6 +197,18 @@ std::string CEditWindow::CalculateLatexString() const
 		result += content[i].ToLatexString() + "\n";
 	}
 	return result;
+}
+
+// Реакция на кнопку по осуществлению проверки на валидность.
+void CEditWindow::CheckValidity() const
+{
+	std::string error;
+	if( isInputValid( error ) ) {
+		::MessageBox( 0, L"Введенная в окне функция вычислима.", L"Проверка прошла успешно!", MB_OK );
+	} else {
+		std::wstring msg = std::wstring( L"Введенная в окне функция невычислима. " ) + std::wstring( error.begin(), error.end() );
+		::MessageBox( 0, msg.c_str(), L"Введенное выражение невычислимо.", MB_OK );
+	}
 }
 
 // protected методы
@@ -450,6 +463,18 @@ void CEditWindow::removeGlobalSelected( const CSymbolPosition& start, const CSym
 		content.erase( content.begin() + startIdx + 1, content.begin() + endIdx + 1 );
 		caret.MoveTo( CSymbolPosition( start.Index, start ) );
 	}
+}
+
+// Проверка вычислимости введенных данных.
+bool CEditWindow::isInputValid( std::string& error ) const
+{
+	try {
+		TestFormula( CalculateLatexString(), knownVariables );
+	} catch( const std::runtime_error& e ) {
+		error = e.what();
+		return false;
+	}
+	return true;
 }
 
 // проверяет, допустим ли данный символ

@@ -65,7 +65,7 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 			::MessageBox( 0, L"Здесь функция импорта", L"TODO", MB_OK );
 			break;
 		case ID_CMD_CHECK:
-			::MessageBox( 0, L"Здесь проверка на вычислимость", L"TODO", MB_OK );
+			editWindow->CheckValidity();
 			break;
 		case ID_CMD_SIGMA:
 		{

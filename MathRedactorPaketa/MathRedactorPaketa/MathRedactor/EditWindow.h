@@ -6,6 +6,7 @@
 
 #include <Windows.h>
 #include <vector>
+#include <set>
 #include "LineOfSymbols.h"
 #include "ItemSelector.h"
 #include "PositionFinder.h"
@@ -55,6 +56,9 @@ public:
 	std::string CalculateStringForPlotter() const;
 	// Получить содержимое редактора в Latex формате.
 	std::string CalculateLatexString() const;
+
+	// Реакция на кнопку по осуществлению проверки на валидность.
+	void CheckValidity() const;
 
 protected:
 	// метод, вызываемый при получении окном сообщения WM_DESTROY
@@ -136,6 +140,8 @@ private:
 	CItemSelector symbolSelector;
 	CEditWindowDrawer drawer;
 
+	std::set<std::string> knownVariables;
+
 	// каретка
 	CCaret caret;
 
@@ -146,6 +152,9 @@ private:
 	void removeLocalSelected( const CSymbolPosition&, const CSymbolPosition& );
 
 	void removeGlobalSelected( const CSymbolPosition&, const CSymbolPosition& );
+
+	// Проверка валидности данных введеных в окне. В случае ошибки описание передается через ссылку.
+	bool isInputValid( std::string& error ) const;
 
 	bool isSymbolAllowed( wchar_t ) const;
 	int getBaseLineIndex( const CLineOfSymbols* ) const;

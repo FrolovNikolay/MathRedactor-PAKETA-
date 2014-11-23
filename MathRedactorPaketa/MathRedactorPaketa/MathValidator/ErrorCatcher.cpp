@@ -11,7 +11,7 @@ CErrorCatcher::CErrorCatcher( const std::string& message, const std::vector<std:
 	}
 
 	for( int i = std::max(0, index - 10); i < std::min( static_cast<int>( tokens.size() ), index + 10 ); ++i ) {
-		subStr += tokens[i];
+		subStr += tokens[i] + " ";
 	}
 }
 
