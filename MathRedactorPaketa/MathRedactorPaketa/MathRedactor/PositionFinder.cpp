@@ -25,7 +25,7 @@ CSymbolPosition* CPositionFinder::FindPosition( int x, int y, int firstEnableSym
 			while( &content[++lineIdx] != baseLine->CurrentLine ) { }
 		}
 		int symbolIdx = firstEnableSymbol;
-		int currentX = content[lineIdx][symbolIdx - 1]->GetX() + content[lineIdx][symbolIdx - 1]->GetWidth();
+		int currentX = content[lineIdx][symbolIdx - 1]->GetX() - content[0].GetX() + content[lineIdx][symbolIdx - 1]->GetWidth();
 		for( ; symbolIdx < content[lineIdx].Length(); ++symbolIdx ) {
 			currentX += content[lineIdx][symbolIdx]->GetWidth();
 			if( currentX >= x ) {
