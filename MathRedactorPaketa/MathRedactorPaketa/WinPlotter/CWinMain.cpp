@@ -12,15 +12,12 @@ description:
 #include <Commctrl.h>
 #include "Messages.h"
 #include "Utils.h"
-const int indentFromBorder = 25;
-
 #include "CWinMain.h"
 #include <Windows.h>
 #include "resource.h"
 #include <assert.h>
 #include <cmath>
 
-WNDPROC CWinMain::defButtonProc = 0;
 WNDPROC CWinMain::defMouseProc = 0;
 
 bool CWinMain::registerClass( HINSTANCE hInstance )
@@ -41,49 +38,14 @@ bool CWinMain::registerClass( HINSTANCE hInstance )
 
 HWND CWinMain::create( HINSTANCE hInstance )
 {
-	handle = ::CreateWindow( L"CWinMain", L"Редактор формул -РАКЕТА-", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, this );
+	DWORD style = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+	handle = ::CreateWindow( L"CWinMain", L"Редактор формул -РАКЕТА-", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, this );
 	return handle;
 }
 
 void CWinMain::show( int cmdShow )
 {
 	::ShowWindow( handle, cmdShow );
-}
-
-HWND CWinMain::createButton( LPCWSTR title, int X, int Y, HWND parent, HMENU id )
-{
-	static bool init = false;
-	HINSTANCE hInstance = reinterpret_cast< HINSTANCE >( GetWindowLong( parent, GWL_HINSTANCE ) );
-	HWND handle = CreateWindow( L"BUTTON", title, WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, X, Y, buttonSize, buttonSize, parent, ( HMENU )ID_BUTTON_MOVE_BOT, hInstance, 0 );
-	if( init == false ) {
-		CWinMain::defButtonProc = ( WNDPROC )SetWindowLong( handle, GWL_WNDPROC, ( LONG )CWinMain::buttonProc );
-		init = true;
-	} else {
-		SetWindowLong( handle, GWL_WNDPROC, ( LONG )CWinMain::buttonProc );
-	}
-	return handle;
-}
-
-/* 
-обертка над дефолтным обработчиком нажатия кнопок
-*/
-LRESULT __stdcall CWinMain::buttonProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
-{
-	HWND parent = GetParent( hWnd );
-	CWinMain* wnd = reinterpret_cast<CWinMain*>( GetWindowLong( parent, GWL_USERDATA ) );
-	switch( uMsg ) {
-		case WM_LBUTTONDOWN:
-			wnd->IdentifyCommand( hWnd );
-			break;
-		case WM_LBUTTONUP:
-			wnd->curMove = false;
-			wnd->moveDirection = D_None;
-			wnd->rotateDirection = D_None;
-			wnd->zoom = Z_None;
-			break;
-			// assert не нужен, так как обертка
-	}
-	return CallWindowProc( defButtonProc, hWnd, uMsg, wParam, lParam );
 }
 
 /*
@@ -106,38 +68,6 @@ LRESULT __stdcall CWinMain::mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 			// assert не нужен, так как обертка
 	}
 	return CallWindowProc( defMouseProc, hWnd, uMsg, wParam, lParam );
-}
-
-void CWinMain::IdentifyCommand( HWND hWnd )
-{
-	if( hWnd == hButtonMoveBot ) {
-		moveDirection = D_Bot;
-	} else if( hWnd == hButtonMoveTop ) {
-		moveDirection = D_Top;
-	} else if( hWnd == hButtonMoveRight ) {
-		moveDirection = D_Right;
-	} else if( hWnd == hButtonMoveLeft ) {
-		moveDirection = D_Left;
-	} else if( hWnd == hButtonRotateDown ) {
-		rotateDirection = D_Bot;
-	} else if( hWnd == hButtonRotateUp ) {
-		rotateDirection = D_Top;
-	} else if( hWnd == hButtonRotateLeft ) {
-		rotateDirection = D_Left;
-	} else if( hWnd == hButtonRotateRight ) {
-		rotateDirection = D_Right;
-	} else if( hWnd == hButtonZoomMinus ) {
-		zoom = Z_Minus;
-	} else if( hWnd == hButtonZoomPlus ) {
-		zoom = Z_Plus;
-	} else {
-		assert( false );
-	}
-}
-
-void CWinMain::setButtonPos( HWND hWnd, int X, int Y )
-{
-	SetWindowPos( hWnd, HWND_TOP, X, Y, buttonSize, buttonSize, SWP_NOOWNERZORDER );
 }
 
 /*
@@ -176,71 +106,11 @@ LRESULT __stdcall CWinMain::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 		case WM_KEYUP:
 			return wnd->OnKeyUp( wParam, lParam );
 		case WM_MOUSEWHEEL:
-			wnd->winPlotter.zoom( static_cast<LONG>( GET_WHEEL_DELTA_WPARAM( wParam ) * wnd->MouseWheelSens ) );
+			wnd->winPlotter.zoom( static_cast<LONG>( GET_WHEEL_DELTA_WPARAM( wParam ) ) );
 			return 0;
 	}
 
 	return DefWindowProc( hWnd, uMsg, wParam, lParam );
-}
-
-void CWinMain::Move()
-{
-	switch( moveDirection ) {
-		case D_None:
-			break;
-		case D_Top:
-			winPlotter.moveY( -1 );
-			break;
-		case D_Bot:
-			winPlotter.moveY();
-			break;
-		case D_Left:
-			winPlotter.moveX( -1 );
-			break;
-		case D_Right:
-			winPlotter.moveX();
-			break;
-		default:
-			assert( false );
-	}
-
-	switch( rotateDirection ) {
-		case D_None:
-			break;
-		case D_Top:
-			winPlotter.rotateY( -1 );
-			break;
-		case D_Bot:
-			winPlotter.rotateY();
-			break;
-		case D_Left:
-			winPlotter.rotateX( -1 );
-			break;
-		case D_Right:
-			winPlotter.rotateX();
-			break;
-		default:
-			assert( false );
-	}
-
-	switch( zoom ) {
-		case Z_None:
-			break;
-		case Z_Plus:
-			winPlotter.zoom();
-			break;
-		case Z_Minus:
-			winPlotter.zoom( -1 );
-			break;
-		default:
-			assert( false );
-	}
-	if( curMove ) {
-		GetCursorPos( &curPos );
-		winPlotter.rotateX( oldCurPos.x - curPos.x );
-		winPlotter.rotateY( oldCurPos.y - curPos.y );
-		oldCurPos = curPos;
-	}
 }
 
 void CWinMain::OnDestroy() {
@@ -268,28 +138,6 @@ void CWinMain::OnCreate( HWND hWnd ) {
 	SetWindowPos( hPlotter, HWND_BOTTOM, 0, 0, width, height, 0 );
 	SetWindowPos( hRedactor, HWND_BOTTOM, 0, 0, width, height, 0 );
 	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hPlotter, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
-
-	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен размеру кнопки + 25
-	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен размеру кнопки + 25
-
-	hButtonMoveBot = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_BOT );
-	hButtonMoveTop = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_MOVE_TOP );
-	hButtonMoveLeft = createButton( L"<", buttonBlockPosX - buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_LEFT );
-	hButtonMoveRight = createButton( L">", buttonBlockPosX + buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_MOVE_RIGHT );
-
-	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;			// 2-ой отступ + 25 так как положение кнопки считается от левого верхнего угла
-	// buttonBlockPosY = height - buttonSize - indentFromBorder;
-
-	hButtonRotateDown = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_DOWN );
-	hButtonRotateUp = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_ROTATE_UP );
-	hButtonRotateLeft = createButton( L"<", buttonBlockPosX - buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_LEFT );
-	hButtonRotateRight = createButton( L">", buttonBlockPosX + buttonSize, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ROTATE_RIGHT );
-
-	buttonBlockPosX = width - buttonSize - indentFromBorder;
-	buttonBlockPosY = buttonSize + indentFromBorder;
-
-	hButtonZoomMinus = createButton( L".", buttonBlockPosX, buttonBlockPosY, hWnd, ( HMENU )ID_BUTTON_ZOOM_OUT );
-	hButtonZoomPlus = createButton( L"^", buttonBlockPosX, buttonBlockPosY - buttonSize, hWnd, ( HMENU )ID_BUTTON_ZOOM_ON );
 }
 
 void CWinMain::ResizeChildrens() {
@@ -299,28 +147,6 @@ void CWinMain::ResizeChildrens() {
 	int height = rect.bottom - rect.top;
 	SetWindowPos( hPlotter, HWND_TOP, 0, 0, width, height, SWP_NOOWNERZORDER );
 	SetWindowPos( hRedactor, HWND_BOTTOM, 0, 0, width, height, SWP_NOOWNERZORDER );
-
-	int buttonBlockPosX = buttonSize + indentFromBorder;				// отступ центральной кнопки равен размеру кнопки + 25
-	int buttonBlockPosY = height - buttonSize - indentFromBorder;		// отступ центральной кнопки равен размеру кнопки + 25
-
-	setButtonPos( hButtonMoveBot, buttonBlockPosX, buttonBlockPosY );
-	setButtonPos( hButtonMoveTop, buttonBlockPosX, buttonBlockPosY - buttonSize );
-	setButtonPos( hButtonMoveLeft, buttonBlockPosX - buttonSize, buttonBlockPosY );
-	setButtonPos( hButtonMoveRight, buttonBlockPosX + buttonSize, buttonBlockPosY );
-
-	buttonBlockPosX = width - 2 * buttonSize - indentFromBorder;
-	// buttonBlockPosY = height - buttonSize - indentFromBorder;
-
-	setButtonPos( hButtonRotateDown, buttonBlockPosX, buttonBlockPosY );
-	setButtonPos( hButtonRotateUp, buttonBlockPosX, buttonBlockPosY -buttonSize );
-	setButtonPos( hButtonRotateLeft, buttonBlockPosX - buttonSize, buttonBlockPosY );
-	setButtonPos( hButtonRotateRight, buttonBlockPosX + buttonSize, buttonBlockPosY );
-
-	buttonBlockPosX = width - buttonSize - indentFromBorder;
-	buttonBlockPosY = buttonSize + indentFromBorder;
-
-	setButtonPos( hButtonZoomMinus, buttonBlockPosX, buttonBlockPosY );
-	setButtonPos( hButtonZoomPlus, buttonBlockPosX, buttonBlockPosY - buttonSize );
 }
 
 LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
@@ -493,8 +319,10 @@ void CWinMain::buildPlot()
 		::MessageBox( hFormulaForm, L"Formula builder error", L"Error", MB_OK | MB_ICONERROR );
 	} else {
 		winPlotter.testObject.Clear();
+
 		const std::vector< C3DPoint >& points = builder.GetPoints();
 		const std::vector< std::pair< int, int > >& segmentsIds = builder.GetSegments();
+
 		for( int j = 0; j < static_cast< int >( points.size() ); j++ ) {
 			winPlotter.testObject.AddPoint( points[j] );
 		}
@@ -509,16 +337,16 @@ LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )
 {
 	switch( wParam ) {
 		case VK_LEFT:
-			moveDirection = D_Left;
+			rotation = D_Left;
 			return 0;
 		case VK_RIGHT:
-			moveDirection = D_Right;
+			rotation = D_Right;
 			return 0;
 		case VK_UP:
-			moveDirection = D_Top;
+			rotation = D_Top;
 			return 0;
 		case VK_DOWN:
-			moveDirection = D_Bot;
+			rotation = D_Bot;
 			return 0;
 	}
 	return DefWindowProc( handle, WM_KEYDOWN, wParam, lParam );
@@ -528,25 +356,54 @@ LRESULT CWinMain::OnKeyUp( WPARAM wParam, LPARAM lParam )
 {
 	switch( wParam ) {
 		case VK_LEFT:
-			if( moveDirection == D_Left ) {
-				moveDirection = D_None;
+			if( rotation == D_Left ) {
+				rotation = D_None;
 			}
 			return 0;
 		case VK_RIGHT:
-			if( moveDirection == D_Right ) {
-				moveDirection = D_None;
+			if( rotation == D_Right ) {
+				rotation = D_None;
 			}
 			return 0;
 		case VK_UP:
-			if( moveDirection == D_Top ) {
-				moveDirection = D_None;
+			if( rotation == D_Top ) {
+				rotation = D_None;
 			}
 			return 0;
 		case VK_DOWN:
-			if( moveDirection == D_Bot ) {
-				moveDirection = D_None;
+			if( rotation == D_Bot ) {
+				rotation = D_None;
 			}
 			return 0;
 	}
 	return DefWindowProc( handle, WM_KEYDOWN, wParam, lParam );
+}
+
+void CWinMain::Move()
+{
+	switch( rotation ) {
+		case D_None:
+			break;
+		case D_Top:
+			winPlotter.rotateY( -1 );
+			break;
+		case D_Bot:
+			winPlotter.rotateY();
+			break;
+		case D_Left:
+			winPlotter.rotateX( -1 );
+			break;
+		case D_Right:
+			winPlotter.rotateX();
+			break;
+		default:
+			assert( false );
+	}
+
+	if( curMove ) {
+		GetCursorPos( &curPos );
+		winPlotter.moveX( oldCurPos.x - curPos.x );
+		winPlotter.moveY( oldCurPos.y - curPos.y );
+		oldCurPos = curPos;
+	}
 }

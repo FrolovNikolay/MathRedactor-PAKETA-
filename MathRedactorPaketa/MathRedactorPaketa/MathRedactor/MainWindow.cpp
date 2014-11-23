@@ -32,6 +32,7 @@ bool CMainWindow::RegisterClass( HINSTANCE classOwnerInstance )
 	classInfo.lpszClassName = className;
 	classInfo.style = CS_HREDRAW | CS_VREDRAW;
 	classInfo.lpfnWndProc = &CMainWindow::windowProcedure;
+	classInfo.hCursor = ::LoadCursor( classOwnerInstance, IDC_ARROW );
 
 	return ( ::RegisterClassEx( &classInfo ) != 0 );
 }

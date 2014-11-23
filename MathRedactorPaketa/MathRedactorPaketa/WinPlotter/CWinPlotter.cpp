@@ -5,6 +5,8 @@
 
 #include "3DPoint.h"
 
+double time = 0;
+
 LRESULT __stdcall CWinPlotter::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	if( uMsg == WM_NCCREATE ) {
@@ -37,6 +39,7 @@ bool CWinPlotter::registerClass( HINSTANCE hInstance )
 	windowClass.lpfnWndProc = CWinPlotter::windowProc;
 	windowClass.hInstance = hInstance;
 	windowClass.lpszClassName = L"CWinPlotter";
+	windowClass.hCursor = ::LoadCursor( hInstance, IDC_CROSS );
 
 	ATOM res = ::RegisterClassEx( &windowClass );
 	return ( res != 0 );
@@ -44,7 +47,8 @@ bool CWinPlotter::registerClass( HINSTANCE hInstance )
 
 HWND CWinPlotter::create( HINSTANCE hInstance, HWND parent )
 {
-	handle = ::CreateWindowEx( 0, L"CWinPlotter", L"CWinPlotter", WS_CHILD | WS_BORDER | WS_VISIBLE | WS_CLIPSIBLINGS, 0, 0, 200, 200, parent, 0, hInstance, this );
+	DWORD style = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_CLIPSIBLINGS;
+	handle = ::CreateWindowEx( 0, L"CWinPlotter", L"CWinPlotter", style, 0, 0, 200, 200, parent, 0, hInstance, this );
 	return handle;
 }
 
@@ -67,7 +71,7 @@ void CWinPlotter::UpdateScreenSize()
 {
 	RECT rect;
 	GetClientRect(handle, &rect);
-	engine.SetWindowSize(rect.right - rect.left, rect.bottom - rect.top);
+	engine.SetWindowSize( rect.right - rect.left, rect.bottom - rect.top );
 }
 
 void CWinPlotter::OnCreate()
@@ -102,7 +106,7 @@ void CWinPlotter::OnCreate()
 	axisObject.AddSegment( 4, 5 );
 
 	// Устанавливаем позицию камеры
-	engine.SetPosition( C3DPoint( 12, 14, 6 ) );
+	engine.SetPosition( C3DPoint( 0, 10, 0 ) );
 	engine.SetViewPoint( C3DPoint( 0, 0, 0 ) );
 }
 
@@ -115,6 +119,7 @@ void CWinPlotter::PaintObject()
 	engine.Render( testObject, renderedObject );
 	// Делаем рендер осей
 	engine.Render( axisObject, axisRenderedObject );
+
 
 	RECT rect;
 	GetClientRect( handle, &rect );
@@ -134,50 +139,53 @@ void CWinPlotter::PaintObject()
 	HBRUSH pointBrush = ::CreateSolidBrush( RGB( 0, 255, 0 ) );
 	HBRUSH currentBrush = ( HBRUSH )::SelectObject( currentDC, pointBrush );
 	// Вершины
-	for (auto point = renderedObject.Points.begin(); point != renderedObject.Points.end(); point++) {
-		Ellipse( currentDC, static_cast<int>( point->X - 1 ), static_cast<int>( point->Y - 1 ), 
-			static_cast<int>( point->X + 1 ), static_cast<int>( point->Y + 1 ) );
+	/* может потом и потребуется их рисовать, но сейчас они лишь мешают
+	for( auto point = renderedObject.Points.begin(); point != renderedObject.Points.end(); point++ ) {
+		Ellipse( currentDC, static_cast< int >( point->X - 1 ), static_cast< int >( point->Y - 1 ),
+			static_cast< int >( point->X + 1 ), static_cast< int >( point->Y + 1 ) );
 	}
+	*/
 
 	// Отрезки
 	for( auto segment = renderedObject.Segments.begin(); segment != renderedObject.Segments.end(); segment++ ) {
-		MoveToEx( currentDC, 
-			static_cast<int>( renderedObject.Points[segment->First].X ), 
-			static_cast<int>( renderedObject.Points[segment->First].Y ), 
+		MoveToEx( currentDC,
+			static_cast< int >( renderedObject.Points[segment->First].X ),
+			static_cast< int >( renderedObject.Points[segment->First].Y ),
 			0 );
-		LineTo( currentDC, 
-			static_cast<int>( renderedObject.Points[segment->Second].X ), 
-			static_cast<int>( renderedObject.Points[segment->Second].Y ) );
+		LineTo( currentDC,
+			static_cast< int >( renderedObject.Points[segment->Second].X ),
+			static_cast< int >( renderedObject.Points[segment->Second].Y ) );
 	}
 	// Треугольники
 	for( auto triangle = renderedObject.Triangles.begin(); triangle != renderedObject.Triangles.end(); triangle++ ) {
-		MoveToEx( currentDC, 
-			static_cast<int>( renderedObject.Points[triangle->First].X ), 
-			static_cast<int>( renderedObject.Points[triangle->First].Y ), 
+		MoveToEx( currentDC,
+			static_cast< int >( renderedObject.Points[triangle->First].X ),
+			static_cast< int >( renderedObject.Points[triangle->First].Y ),
 			0 );
-		LineTo( currentDC, 
-			static_cast<int>( renderedObject.Points[triangle->Second].X ), 
-			static_cast<int>( renderedObject.Points[triangle->Second].Y ) );
-		LineTo( currentDC, 
-			static_cast<int>( renderedObject.Points[triangle->Third].X ), 
-			static_cast<int>( renderedObject.Points[triangle->Third].Y ) );
-		LineTo( currentDC, 
-			static_cast<int>( renderedObject.Points[triangle->First].X ), 
-			static_cast<int>( renderedObject.Points[triangle->First].Y ) );
+		LineTo( currentDC,
+			static_cast< int >( renderedObject.Points[triangle->Second].X ),
+			static_cast< int >( renderedObject.Points[triangle->Second].Y ) );
+		LineTo( currentDC,
+			static_cast< int >( renderedObject.Points[triangle->Third].X ),
+			static_cast< int >( renderedObject.Points[triangle->Third].Y ) );
+		LineTo( currentDC,
+			static_cast< int >( renderedObject.Points[triangle->First].X ),
+			static_cast< int >( renderedObject.Points[triangle->First].Y ) );
 	}
 
 	// Кисть для осей координат
-	HPEN axisPen = ::CreatePen(PS_SOLID, 1, RGB(41, 128, 185));
-	currentPen = (HPEN)::SelectObject(currentDC, axisPen);
-	for (auto segment = axisRenderedObject.Segments.begin(); segment != axisRenderedObject.Segments.end(); segment++) {
-		MoveToEx(currentDC, 
-			static_cast<int>( axisRenderedObject.Points[segment->First].X ),
-			static_cast<int>( axisRenderedObject.Points[segment->First].Y ), 
+	HPEN axisPen = ::CreatePen( PS_SOLID, 1, RGB( 41, 128, 185 ) );
+	currentPen = ( HPEN )::SelectObject( currentDC, axisPen );
+	for( auto segment = axisRenderedObject.Segments.begin(); segment != axisRenderedObject.Segments.end(); segment++ ) {
+		MoveToEx( currentDC,
+			static_cast< int >( axisRenderedObject.Points[segment->First].X ),
+			static_cast< int >( axisRenderedObject.Points[segment->First].Y ),
 			0 );
-		LineTo( currentDC, 
-			static_cast<int>( axisRenderedObject.Points[segment->Second].X ), 
-			static_cast<int>( axisRenderedObject.Points[segment->Second].Y ) );
+		LineTo( currentDC,
+			static_cast< int >( axisRenderedObject.Points[segment->Second].X ),
+			static_cast< int >( axisRenderedObject.Points[segment->Second].Y ) );
 	}
+
 
 	::DeleteObject( pointBrush );
 	::DeleteObject( currentBrush );
@@ -199,6 +207,18 @@ void CWinPlotter::Invalidate()
 	InvalidateRect( handle, &rect, true );
 }
 
+void CWinPlotter::rotateX( LONG times )
+{
+	engine.RotateSideAroundCenter( -times * engineRotationFactor );
+	Invalidate();
+}
+
+void CWinPlotter::rotateY( LONG times )
+{
+	engine.RotateUpAroundCenter( -times * engineRotationFactor );
+	Invalidate();
+}
+
 void CWinPlotter::moveX( LONG times )
 {
 	engine.MoveSide( times * engineMovementFactor );
@@ -208,18 +228,6 @@ void CWinPlotter::moveX( LONG times )
 void CWinPlotter::moveY( LONG times )
 {
 	engine.MoveUp( -times * engineMovementFactor );
-	Invalidate();
-}
-
-void CWinPlotter::rotateX( LONG times )
-{
-	engine.RotateSide(times * engineRotationFactor);
-	Invalidate();
-}
-
-void CWinPlotter::rotateY( LONG times )
-{
-	engine.RotateUp(times * engineRotationFactor);
 	Invalidate();
 }
 

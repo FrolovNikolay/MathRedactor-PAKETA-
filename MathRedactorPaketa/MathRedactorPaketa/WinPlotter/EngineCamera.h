@@ -31,19 +31,13 @@ public:
 	// Двигает камеру влево/вправо
 	void MoveSide(double speed = 1.0f);
 
-	// Вращает камеру на угол относительно осей OX, OY и OZ
-	void RotateByX(double angle);
-	void RotateByY(double angle);
-	void RotateByZ(double angle);
-
-	// Вращает камеру на угол вокруг заданной точки относительно осей
-	void RotateAroundPointByX(C3DPoint centerPoint, double angle);
-	void RotateAroundPointByY(C3DPoint centerPoint, double angle);
-	void RotateAroundPointByZ(C3DPoint centerPoint, double angle);
-
 	// Вращает камеру вверх/вниз и влево/вправо
-	void RotateSide(double angle);
-	void RotateUp(double angle);
+	void RotateSideAroundCenter( double angle );
+	void RotateUpAroundCenter( double angle );
+
+	void RotateSide( double angle );
+	void RotateUp( double angle );
+
 
 	// Устанавливает размеры клиентской области ширины и высоты окна
 	void SetWindowSize(int clientWidth, int clientHeight);
@@ -64,8 +58,13 @@ private:
 
 	// Вектор, направленный вправо (он же векторное произведение U = V x N)
 	C3DPoint RightVector;
+
+	// центр вращения
+	C3DPoint CenterPoint;
+
 	// Обновляет вектор U при изменений первых N или V
 	void UpdateRightVector();
+	void UpdateUpVector();
 
 	// Матрица преобразования координат из системы XYZ объекта в систему UVN
 	CMatrix44 TransformMatrix;
@@ -104,11 +103,5 @@ private:
 
 	// Возвращает преобразованные координаты точки при помощи матрицы преобразований
 	C3DPoint modifyPoint(C3DPoint originPoint) const;
-
-	// Вращает камеру относительно прямой, задаваемой уравнением x_value * X + y_value * Y + z_value * Z = 0
-	void rotate(double angle, double x_value, double y_value, double z_value);
-
-	// Вращает камеру вокруг точки относительно прямой
-	void rotateAroundPoint(C3DPoint point, double angle, double x_value, double y_value, double z_value);
 };
 

@@ -41,6 +41,7 @@ bool CEditWindow::RegisterClass( HINSTANCE classOwnerInstance )
 	classInfo.lpszClassName = className;
 	classInfo.style = CS_HREDRAW | CS_VREDRAW;
 	classInfo.lpfnWndProc = &CEditWindow::windowProcedure;
+	classInfo.hCursor = ::LoadCursor( classOwnerInstance, IDC_IBEAM );
 
 	return ( ::RegisterClassEx( &classInfo ) != 0 );
 }

@@ -35,11 +35,11 @@ private:
 	// Экземпляр движка, который будет заниматься рендером объекта
 	CEngineCamera engine;
 	// Коэффициент, с которым будет приближаться/удаляться объект
-	const double engineZoomFactor = 0.03f;
+	const double engineZoomFactor = 0.001f;
 	// Коэффициент, с которым будет вращаться объект
-	const double engineRotationFactor = 0.0005f;
+	const double engineRotationFactor = 0.005f;
 	// Коэффициент, с которым будет перемещаться камера
-	const double engineMovementFactor = 0.1f;
+	const double engineMovementFactor = 0.01f;
 
 	// Вспомогательный объект, содержащий оси координат (с направлением)
 	C3DModel axisObject;
@@ -50,6 +50,12 @@ private:
 	C2DModel renderedObject;
 	// Аналог для объекта с осями
 	C2DModel axisRenderedObject;
+
+
+	// Вспомогательный объект, debug
+	void debug();
+	C3DModel debugObject;
+	C2DModel debugRenderedObject;
 
 	static LRESULT __stdcall windowProc( HWND handle, UINT message, WPARAM wParam, LPARAM lParam );
 };
