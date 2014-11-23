@@ -6,6 +6,7 @@
 #include <Windows.h>
 #include <memory>
 #include <UIRibbon.h>
+#include <string.h>
 
 #include "EditWindow.h"
 #include "CommandHandler.h"
@@ -23,6 +24,9 @@ public:
 	HWND Create( HINSTANCE ownerInstance, HWND parent );
 	// Отображает окно
 	void Show( int );
+
+	// Возвращает строку для Plottera
+	std::string CalculateStringForPlotter() { return editWindow->CalculateStringForPlotter(); }
 
 	// реализация IUnknown
 	// добавить ссылку

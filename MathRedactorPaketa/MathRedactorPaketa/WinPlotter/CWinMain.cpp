@@ -38,7 +38,7 @@ bool CWinMain::registerClass( HINSTANCE hInstance )
 
 HWND CWinMain::create( HINSTANCE hInstance )
 {
-	handle = ::CreateWindow( L"CWinMain", L"CWinMain", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, this );
+	handle = ::CreateWindow( L"CWinMain", L"Редактор формул -РАКЕТА-", WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, this );
 	return handle;
 }
 
@@ -194,6 +194,8 @@ void CWinMain::Move()
 		case D_Right:
 			winPlotter.moveX();
 			break;
+		default:
+			assert( false );
 	}
 
 	switch( rotateDirection ) {
@@ -211,6 +213,8 @@ void CWinMain::Move()
 		case D_Right:
 			winPlotter.rotateX();
 			break;
+		default:
+			assert( false );
 	}
 
 	switch( zoom ) {
@@ -222,6 +226,8 @@ void CWinMain::Move()
 		case Z_Minus:
 			winPlotter.zoom( -1 );
 			break;
+		default:
+			assert( false );
 	}
 	if( curMove ) {
 		GetCursorPos( &curPos );
@@ -319,8 +325,8 @@ LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
 		case ID_NEWFORMULA:
 			ShowFormulaForm();
 			break;
-		case ID_CLEAR:
-			winPlotter.clear();
+		case ID_PARAMS:
+			ShowParamForm();
 			break;
 	}
 	return DefWindowProc( handle, WM_COMMAND, wParam, lParam );
@@ -328,19 +334,16 @@ LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
 
 void CWinMain::ShowFormulaForm()
 {
-	//HINSTANCE hInstance = reinterpret_cast<HINSTANCE>( GetWindowLong( handle, GWL_HINSTANCE ) );
-	if( hFormulaForm == 0 ) {
-		winRedactor.Show( SW_SHOW );
-		::EnableWindow( handle, false );
-	}
+	winRedactor.Show( SW_SHOW );
+	::EnableWindow( handle, false );
+}
 
-	/*
+void CWinMain::ShowParamForm()
+{
 	if( hFormulaForm == 0 ) {
 		hFormulaForm = ::CreateDialog( 0, MAKEINTRESOURCE( IDD_FORMULA_FORM ), handle, formulaDialogProc );
-		ShowWindow( hFormulaForm, SW_SHOW );
+		::ShowWindow( hFormulaForm, SW_SHOW );
 	}
-	*/
-	// оставлено, чтобы потом удалить все что идет от него
 }
 
 /*
@@ -367,14 +370,10 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 {
 	int wmId = LOWORD( wParam );
 
+	// временная заглушка
 	switch( wmId ) {
 		case IDOK:
-			TakeFormula();
-			EndDialog( hFormulaForm, 0 );
-			DestroyWindow( hFormulaForm );
-			hFormulaForm = 0;
-			return TRUE;
-		case IDCANCEL:
+		case IDCANCEL:		
 			EndDialog( hFormulaForm, 0 );
 			DestroyWindow( hFormulaForm );
 			hFormulaForm = 0;
@@ -386,21 +385,9 @@ LRESULT CWinMain::OnFormCommand( WPARAM wParam, LPARAM lParam )
 
 void CWinMain::TakeFormula()
 {
-	// объекты для считывания текста
-	size_t i;
-	LRESULT textLength = ::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXTLENGTH, 0, 0 ); // получение длинны текста
-	TCHAR* buff = new TCHAR[textLength + 1];
-	char* outbuff = new char[textLength + 1];
-
-	// считывание текста
-	::SendDlgItemMessage( hFormulaForm, IDC_EDIT_FORM, WM_GETTEXT, textLength + 1, ( LPARAM )buff );
-	// char -> TCHAR
-	wcstombs_s( &i, outbuff, textLength + 1, buff, textLength + 1 );
-	// своеобразный костыль, ибо билдер принимает строку
-	std::string data( outbuff );
 	CGraphBuilder builder;
 
-	if( !builder.buildPointGrid( data ) ) {
+	if( !builder.buildPointGrid( winRedactor.CalculateStringForPlotter() ) ) {
 		::MessageBox( hFormulaForm, L"Formula builder error", L"Error", MB_OK );
 	} else {
 		winPlotter.testObject.Clear();
@@ -414,9 +401,6 @@ void CWinMain::TakeFormula()
 		}
 		winPlotter.moveX( 0 );
 	}
-
-	delete[] buff;
-	delete[] outbuff;
 }
 
 LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )

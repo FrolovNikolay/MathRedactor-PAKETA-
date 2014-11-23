@@ -1,6 +1,7 @@
 ﻿#include "CWinPlotter.h"
 #include <Windows.h>
 #include "resource.h"
+#include <fstream>
 
 #include "3DPoint.h"
 
@@ -73,28 +74,33 @@ void CWinPlotter::UpdateScreenSize()
 
 void CWinPlotter::OnCreate()
 {
-	// Создаём тестовый объект - пирамидку
-	testObject.AddPoint( C3DPoint( 5, 5, 0 ) );
-	testObject.AddPoint( C3DPoint( 5, -5, 0 ) );
-	testObject.AddPoint( C3DPoint( -5, -5, 0 ) );
-	testObject.AddPoint( C3DPoint( -5, 5, 0 ) );
-	testObject.AddPoint( C3DPoint( 0, 0, 5 ) );
-	testObject.AddTriangle( 0, 1, 4 );
-	testObject.AddTriangle( 1, 2, 4 );
-	testObject.AddTriangle( 2, 3, 4 );
-	testObject.AddTriangle( 3, 0, 4 );
+	// Создаём тестовый объект - РАКЕТА
+	std::ifstream testText( "PAKETA.txt", std::ifstream::in );
+	int points, segments;
+	const double coef = 2;
+	testText >> points >> segments;
+	for( int i = 0; i < points; i++ ) {
+		double x, z;
+		testText >> x >> z;
+		testObject.AddPoint( C3DPoint( ( x - 4.25 ) * coef, 0, ( z + 0.1 ) * coef ) );
+	}
+	for( int i = 0; i < segments; i++ ) {
+		int first, second;
+		testText >> first >> second;
+		testObject.AddSegment( first, second );
+	}
 
 	// Создаём оси
-	axisObject.AddPoint( C3DPoint(axisLength, 0, 0) );
-	axisObject.AddPoint( C3DPoint(-axisLength, 0, 0) );
+	axisObject.AddPoint( C3DPoint( axisLength, 0, 0 ) );
+	axisObject.AddPoint( C3DPoint( -axisLength, 0, 0 ) );
 	axisObject.AddSegment( 0, 1 );
 
-	axisObject.AddPoint( C3DPoint(0, axisLength, 0) );
-	axisObject.AddPoint( C3DPoint(0, -axisLength, 0) );
+	axisObject.AddPoint( C3DPoint( 0, axisLength, 0 ) );
+	axisObject.AddPoint( C3DPoint( 0, -axisLength, 0 ) );
 	axisObject.AddSegment( 2, 3 );
 
-	axisObject.AddPoint( C3DPoint(0, 0, axisLength) );
-	axisObject.AddPoint( C3DPoint(0, 0, -axisLength) );
+	axisObject.AddPoint( C3DPoint( 0, 0, axisLength ) );
+	axisObject.AddPoint( C3DPoint( 0, 0, -axisLength ) );
 	axisObject.AddSegment( 4, 5 );
 
 	// Устанавливаем позицию камеры

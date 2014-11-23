@@ -32,6 +32,7 @@ protected:
 	LRESULT OnCommand( WPARAM wParam, LPARAM lParam );	// обработка WM_COMMAND
 	LRESULT OnFormCommand( WPARAM wParam, LPARAM lParam );	// обработка комманд в окне диалога
 	void ShowFormulaForm();								// отобразить диалог ввода формулы
+	void ShowParamForm();								// отобразить диалог редактирование параметров
 	void ResizeChildrens();								// смена положения и размеров дочерних окон
 	void Move();										// перемещение по графику (вызов соответсвующих функций у WinPlotter)
 	void IdentifyCommand( HWND hWnd );					// идентификация какая кнопка была нажата и последующие действия в зависимости от этого
