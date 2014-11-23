@@ -194,10 +194,9 @@
             <Button CommandName="cmdButtonPiMult" />
             <Button CommandName="cmdButtonSqrt" />
           </Group>
-          <Group CommandName="cmdGroupNumberOperations" SizeDefinition="ThreeButtons">
+          <Group CommandName="cmdGroupNumberOperations" SizeDefinition="TwoButtons">
             <Button CommandName="cmdButtonFraction" />
             <Button CommandName="cmdButtonUpperIndex" />
-            <Button CommandName="cmdButtonLowerIndex" />
           </Group>
           <Group CommandName="cmdTrigonometryGroup" SizeDefinition="FourButtons">
             <Button CommandName="cmdButtonSin" />
