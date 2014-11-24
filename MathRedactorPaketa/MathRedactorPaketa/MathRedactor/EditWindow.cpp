@@ -422,6 +422,11 @@ void CEditWindow::OnLButUp( LPARAM lParam )
 
 	if( symbolSelector.HasSelection() ) {
 		symbolSelector.SetCurrentPosition( x + moveX, y + moveY, firstEnablePosition );
+		CSymbolPosition start = symbolSelector.GetSelectionInfo().first;
+		if( start.Index == -1 || start.Index == start.CurrentLine->Length() ) {
+			symbolSelector.ResetSelection();
+			ShowCaret();
+		}
 	} else {
 		caret.MoveTo( x + moveX, y + moveY );
 		ShowCaret();
