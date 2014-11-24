@@ -48,7 +48,8 @@ const std::regex CNotationBuilder::numberRegex( "([0-9]+\\.[0-9]*)|([0-9]+)|(\\.
 const std::regex CNotationBuilder::variableRegex( "[a-z]*" );
 const std::regex CNotationBuilder::rightOpRegex( "([\\^_])" );
 const std::regex CNotationBuilder::leftOpRegex( "[\\+\\-\\*/=]|([<>])|(\\\\((le)|(ge)|(ne)|(vee)|(wedge)))" );
-const std::regex CNotationBuilder::unaryFunctionRegex( "\\\\((sin)|(cos)|(tg)|(ctg)|(sqrt))" );
+const std::regex CNotationBuilder::unaryFunctionRegex( "\\\\((sin)|(cos)|(tg)|(ctg))" );
+const std::regex CNotationBuilder::unarySpecifiedFunctionRegex( "\\\\((sqrt))" );
 const std::regex CNotationBuilder::binaryFunctionRegex( "\\\\((sqrt)|(frac)|(sqrt\\[))" );
 const std::regex CNotationBuilder::agregationFunctionRegex( "\\\\((mul)|(sum))" );
 
@@ -65,7 +66,7 @@ CNotationBuilder::CNotationBuilder( const std::string& src ) : tokens( Consturct
 	for( int i = 0; i < static_cast<int>( tokens.size() ); ++i ) {	
 		currentToken = tokens[i];
 		// Функции одного аргумента, требующие аргумент в { } скобках.
-		if( std::regex_match( currentToken, unaryFunctionRegex ) && checkUnaryBracketsSyntax( i, "{" ) ) {
+		if( ( std::regex_match( currentToken, unarySpecifiedFunctionRegex ) && checkUnaryBracketsSyntax( i, "{" ) ) || std::regex_match( currentToken, unaryFunctionRegex ) ) {
 			tempStack.push( std::pair<std::string, int>( currentToken, i ) );
 			mayUnary = false;
 		// Бинарные операторы с особым синтаксисом.
@@ -228,7 +229,9 @@ void CNotationBuilder::processClosingBracket() {
 	}
 
 	// Если следом за скобкам в стеке оказалась унарная функция, значит это были ее аргументы.
-	if( ( !tempStack.empty() ) && ( std::regex_match( tempStack.top().first, unaryFunctionRegex ) ) ) {
+	if( ( !tempStack.empty() ) && ( ( std::regex_match( tempStack.top().first, unaryFunctionRegex ) 
+			|| ( std::regex_match( tempStack.top().first, unarySpecifiedFunctionRegex ) ) ) ) ) 
+	{
 		outputNotation.push( tempStack.top() );
 		tempStack.pop();
 	}

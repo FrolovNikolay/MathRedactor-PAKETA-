@@ -904,14 +904,13 @@ bool CEditWindow::writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) c
 	} else if( fileName + fileExtentionPos == std::wstring( L"mml" ) ) {
 		format = SF_MATHML;
 	}
-	if( format != SF_LATEX ) {
-		std::string tmp;
-		ConvertFormula( outputString, SF_LATEX, format, tmp );
-		outputString = tmp;
-	}
-
 	DWORD countBytes = 0;
-	::WriteFile( file, std::wstring( outputString.begin(), outputString.end() ).c_str(), outputString.size() * sizeof( WCHAR ), &countBytes, 0 );
+	::WriteFile( file, outputString.c_str(), outputString.size(), &countBytes, 0 );
 	::CloseHandle( file );
-	return outputString.size() * sizeof( WCHAR ) == countBytes;
+	if( format != SF_LATEX ) {
+		std::wstring input( fileName );
+		std::string inputAsString( input.begin(), input.end() );
+		ConvertFormula( inputAsString, SF_LATEX, format, inputAsString );
+	}
+	return outputString.size() == countBytes;
 }

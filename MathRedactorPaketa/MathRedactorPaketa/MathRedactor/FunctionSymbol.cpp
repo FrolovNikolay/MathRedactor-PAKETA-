@@ -104,5 +104,5 @@ std::string CFunctionSymbol::ToPlotterString() const
 // Преобразование символа в Latex формат.
 std::string CFunctionSymbol::ToLatexString() const
 {
-	return "\\" + functionName.ToLatexString() + "{" + argumentLine.ToLatexString() + "}";
+	return "\\" + functionName.ToLatexString() + "(" + argumentLine.ToLatexString() + ")";
 }

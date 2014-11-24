@@ -15,4 +15,4 @@ enum TSupportedFormats {
 #define MATHTRANSLATORDLL_API __declspec(dllimport) 
 #endif
 
-void MATHTRANSLATORDLL_API ConvertFormula( std::string inputFile, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string& outputFile );
+void MATHTRANSLATORDLL_API ConvertFormula( std::string inputFile, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string outputFile );

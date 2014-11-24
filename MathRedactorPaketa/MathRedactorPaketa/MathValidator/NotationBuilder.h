@@ -32,6 +32,7 @@ private:
 	static const std::regex rightOpRegex;
 	static const std::regex leftOpRegex;
 	static const std::regex unaryFunctionRegex;
+	static const std::regex unarySpecifiedFunctionRegex;
 	static const std::regex binaryFunctionRegex;
 	static const std::regex agregationFunctionRegex;
 
