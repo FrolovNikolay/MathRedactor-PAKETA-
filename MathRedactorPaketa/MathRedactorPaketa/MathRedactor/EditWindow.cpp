@@ -100,7 +100,7 @@ void CEditWindow::RemoveSign()
 		ShowCaret();
 	} else {
 		CLineOfSymbols* currentLine = GetCaretLine();
-		if( caret.GetIndex() > firstEnablePosition ) {
+		if( caret.GetIndex() > firstEnablePosition || ( getBaseLineIndex( caret.GetLine() ) == -1 && caret.GetIndex() > 0 ) ) {
 			currentLine->Delete( caret.GetIndex() - 1 );
 			caret.Move( CD_Left );
 		}
@@ -705,7 +705,7 @@ void CEditWindow::CCaret::moveDown()
 // сдвигает каретку на единицу влево
 void CEditWindow::CCaret::moveLeft()
 {
-	if( caretPosition.Index > window->firstEnablePosition ) {
+	if( caretPosition.Index > window->firstEnablePosition || ( caretPosition.GetParent() != 0 && caretPosition.Index > 0 ) ) {
 		--caretPosition.Index;
 		moveToNewCoordinates();
 	} 
