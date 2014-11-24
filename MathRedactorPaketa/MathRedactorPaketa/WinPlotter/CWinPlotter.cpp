@@ -232,14 +232,6 @@ void CWinPlotter::zoom( LONG times )
 	Invalidate();
 }
 
-void CWinPlotter::clear()
-{
-	testObject.Clear();
-	Invalidate();
-
-	::EnableMenuItem( GetMenu( parentHandle ), ID_PARAMS, MF_GRAYED );
-}
-
 void CWinPlotter::reset()
 {
 	engine.Reset();

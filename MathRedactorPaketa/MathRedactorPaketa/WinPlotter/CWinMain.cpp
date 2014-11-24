@@ -351,11 +351,9 @@ LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )
 		case VK_SPACE:
 			winPlotter.reset();
 			return 0;
-		case VK_ESCAPE:
-			winPlotter.clear();
-			return 0;
+		default:
+			return DefWindowProc( handle, WM_KEYDOWN, wParam, lParam );
 	}
-	return DefWindowProc( handle, WM_KEYDOWN, wParam, lParam );
 }
 
 LRESULT CWinMain::OnKeyUp( WPARAM wParam, LPARAM lParam )

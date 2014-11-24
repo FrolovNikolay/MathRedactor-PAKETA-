@@ -17,7 +17,6 @@ public:
 	void rotateX( LONG times = 1 );
 	void rotateY( LONG times = 1 );
 	void zoom( LONG times = 1 );
-	void clear();
 	void reset();
 
 protected:
