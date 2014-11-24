@@ -10,7 +10,7 @@
 #include <fstream>  
 #include "ConvertLatex.h"
 
-void ConvertFormula( std::string inputFileName, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string outputFileName) 
+void ConvertFormula( std::string inputFileName, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string& outputFileName) 
 {
 		shared_ptr<FormulaObj> obj(new FormulaObj(NT_MAIN));
 		MathMLParser mmlparser;

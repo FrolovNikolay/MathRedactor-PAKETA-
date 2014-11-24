@@ -9,6 +9,7 @@
 #include <windowsx.h>
 #include "SymbolPosition.h"
 #include <MathValidator.h>
+#include <TranslatorDLLInterface.h>
 
 // класс CEditWindow
 // константы
@@ -242,6 +243,32 @@ void CEditWindow::CheckValidity() const
 		::MessageBox( 0, msg.c_str(), L"Введенное выражение невычислимо.", MB_OK );
 	}
 }
+
+void CEditWindow::ExportSelected() const
+{
+	if( !symbolSelector.HasSelection() ) {
+		::MessageBox( 0, L"Выделите необходимую для экспорта часть функции.", L"Нечего экспортировать!", MB_OK );
+	} else {
+		OPENFILENAME openFileName;
+		
+		WCHAR szFileName[MAX_PATH] = L"";
+		::ZeroMemory( &openFileName, sizeof( openFileName ) );
+		openFileName.lStructSize = sizeof( OPENFILENAME );
+		openFileName.hwndOwner = windowHandle;
+		openFileName.lpstrFilter = reinterpret_cast<LPCWSTR>( L"Latex File (*.tex)\0*.tex\0MathMl File (*.mml)\0*.mml\0OpenMath File (*.xml)\0*.xml\0" );
+		openFileName.lpstrFile = reinterpret_cast<LPWSTR>( szFileName );
+		openFileName.nMaxFile = MAX_PATH;
+		openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+		openFileName.lpstrDefExt = reinterpret_cast<LPWSTR>( L"tex" );
+		if( ::GetSaveFileName( &openFileName ) ) {
+			if( !writeSelectedInFile( openFileName.lpstrFile, openFileName.nFileExtension ) ) {
+				::MessageBox( 0, L"При экспорте файла что-то пошло не так. Возможно, что файл сохранен некорректно.",
+					  L"Непредвиденная ошибка.", MB_OK | MB_ICONWARNING );
+			}
+		}
+	}
+}
+
 
 void CEditWindow::SendAccept() const
 {
@@ -857,4 +884,34 @@ void CEditWindow::insertTwoParametrFunc( wchar_t funcName, wchar_t firstParametr
 	content[i].PushBack( new CSimpleSymbol( secondParametrName ) );
 	content[i].PushBack( new CSimpleSymbol( ')' ) );
 	content[i].PushBack( new CSimpleSymbol( '=' ) );
+}
+
+bool CEditWindow::writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) const
+{
+	HANDLE file = ::CreateFile( fileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, 0,
+		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0 );
+	CLineOfSymbols tmp( simpleSymbolHeight );
+	CItemSelector::CSymbolInterval selectedInterval = symbolSelector.GetSelectionInfo();
+	CSymbolPosition start = selectedInterval.first;
+	CSymbolPosition end = selectedInterval.second;
+	for( int i = start.Index; i <= end.Index; ++i ) {
+		tmp.PushBack( ( *start.CurrentLine )[i]->Clone( &tmp ) );
+	}
+	std::string outputString = tmp.ToLatexString();
+	TSupportedFormats format = SF_LATEX;
+	if( fileName + fileExtentionPos == std::wstring( L"xml" ) ) {
+		format = SF_OPENMATH;
+	} else if( fileName + fileExtentionPos == std::wstring( L"mml" ) ) {
+		format = SF_MATHML;
+	}
+	if( format != SF_LATEX ) {
+		std::string tmp;
+		ConvertFormula( outputString, SF_LATEX, format, tmp );
+		outputString = tmp;
+	}
+
+	DWORD countBytes = 0;
+	::WriteFile( file, std::wstring( outputString.begin(), outputString.end() ).c_str(), outputString.size() * sizeof( WCHAR ), &countBytes, 0 );
+	::CloseHandle( file );
+	return outputString.size() * sizeof( WCHAR ) == countBytes;
 }

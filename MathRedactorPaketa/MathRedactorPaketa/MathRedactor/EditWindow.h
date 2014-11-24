@@ -72,6 +72,8 @@ public:
 	// Реакция на кнопку по осуществлению проверки на валидность.
 	void CheckValidity() const;
 
+	void ExportSelected() const;
+
 	// отправляет родительскому окну сообщение о закрытии
 	void SendClose() const { ::SendMessage( parentHandle, WM_CLOSE, 0, 0 ); }
 	void SendAccept() const;
@@ -198,6 +200,8 @@ private:
 	void insertOneParametrFunc( wchar_t , wchar_t );
 
 	void insertTwoParametrFunc( wchar_t, wchar_t, wchar_t );
+
+	bool writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) const;
 
 	static LRESULT __stdcall windowProcedure( HWND, UINT, WPARAM, LPARAM );
 };

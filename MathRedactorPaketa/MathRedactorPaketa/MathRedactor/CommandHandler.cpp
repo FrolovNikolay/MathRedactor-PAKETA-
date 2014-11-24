@@ -59,7 +59,7 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 			editWindow->SendClose();
 			break;
 		case ID_CMD_EXPORT:
-			::MessageBox( 0, L"Здесь функция экспорта", L"TODO", MB_OK );
+			editWindow->ExportSelected();
 			break;
 		case ID_CMD_IMPORT:
 			::MessageBox( 0, L"Здесь функция импорта", L"TODO", MB_OK );

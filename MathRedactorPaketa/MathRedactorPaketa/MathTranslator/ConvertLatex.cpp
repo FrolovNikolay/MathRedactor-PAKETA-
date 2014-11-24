@@ -9,7 +9,6 @@ using namespace std;
 
 shared_ptr<MathObj> CConvertLatex::ConvertFromLatex( const string& input )
 {
-	cout << input;
 	parser.Init();
 
 	// Стартовое состояние лексера - TT_SPACE, т.к. оно игнорируется парсером и принимает любые символы
