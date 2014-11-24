@@ -142,9 +142,9 @@ int CSigmaSymbol::GetDescent( int simpleSymbolHeight ) const
 std::string CSigmaSymbol::ToPlotterString() const
 {
 	if( symbol[0] == bigSigmaSymbol ) {
-		return "sum(" + lowerLine.ToPlotterString() + ", " + upperLine.ToPlotterString() + ")";
+		return "sum(" + lowerLine.ToPlotterString() + "; " + upperLine.ToPlotterString() + ")";
 	} else if( symbol[0] == bigPiSymbol ) {
-		return "mul(" + lowerLine.ToPlotterString() + ", " + upperLine.ToPlotterString() + ")";
+		return "mul(" + lowerLine.ToPlotterString() + "; " + upperLine.ToPlotterString() + ")";
 	} else {
 		assert( false );
 	}

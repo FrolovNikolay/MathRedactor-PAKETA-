@@ -68,3 +68,23 @@ private:
 	// тип функции
 	FUNC type;
 };
+
+// Множественный оператор
+class CSetOperator : public IOperator {
+public:
+	CSetOperator( char variable, IOperator* expression, IOperator* start, IOperator* condition, SETOPTYPE type );
+
+	double Calculate( const std::map<char, double>& variables ) const;
+
+private:
+	// имя переменной
+	char variable;
+	// выражение, вычисляющееся на каждой итерации оператора
+	std::shared_ptr<IOperator> expression;
+	// начальное значение
+	std::shared_ptr<IOperator> start;
+	// выражение, в условии окончания
+	std::shared_ptr<IOperator> condition;
+	// тип оператор
+	SETOPTYPE type;
+};
