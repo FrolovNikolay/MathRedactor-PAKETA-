@@ -255,7 +255,7 @@ void CEditWindow::ExportSelected() const
 		::ZeroMemory( &openFileName, sizeof( openFileName ) );
 		openFileName.lStructSize = sizeof( OPENFILENAME );
 		openFileName.hwndOwner = windowHandle;
-		openFileName.lpstrFilter = reinterpret_cast<LPCWSTR>( L"Latex File (*.tex)\0*.tex" );  // Убрано, до появление адекватного траслятора. \0MathMl File (*.mml)\0*.mml\0OpenMath File (*.xml)\0*.xml\0" );
+		openFileName.lpstrFilter = reinterpret_cast<LPCWSTR>( L"Latex File (*.tex)\0*.tex\0MathMl File (*.mml)\0*.mml\0OpenMath File (*.xml)\0*.xml\0" );
 		openFileName.lpstrFile = reinterpret_cast<LPWSTR>( szFileName );
 		openFileName.nMaxFile = MAX_PATH;
 		openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
