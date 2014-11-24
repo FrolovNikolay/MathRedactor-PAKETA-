@@ -47,6 +47,7 @@ bool CWinPlotter::registerClass( HINSTANCE hInstance )
 HWND CWinPlotter::create( HINSTANCE hInstance, HWND parent )
 {
 	DWORD style = WS_CHILD | WS_BORDER | WS_VISIBLE | WS_CLIPSIBLINGS;
+	parentHandle = parent;
 	handle = ::CreateWindowEx( 0, L"CWinPlotter", L"CWinPlotter", style, 0, 0, 200, 200, parent, 0, hInstance, this );
 	return handle;
 }
@@ -103,10 +104,6 @@ void CWinPlotter::OnCreate()
 	axisObject.AddPoint( C3DPoint( 0, 0, axisLength ) );
 	axisObject.AddPoint( C3DPoint( 0, 0, -axisLength ) );
 	axisObject.AddSegment( 4, 5 );
-
-	// Устанавливаем позицию камеры
-	engine.SetPosition( C3DPoint( 0, 10, 0 ) );
-	engine.SetViewPoint( C3DPoint( 0, 0, 0 ) );
 }
 
 void CWinPlotter::PaintObject()
@@ -117,7 +114,7 @@ void CWinPlotter::PaintObject()
 	// Делаем рендер объекта
 	engine.Render( testObject, renderedObject );
 	// Делаем рендер осей
-	engine.Render( axisObject, axisRenderedObject );
+	engine.Render( axisObject, axisRenderedObject, false );
 
 
 	RECT rect;
@@ -238,5 +235,13 @@ void CWinPlotter::zoom( LONG times )
 void CWinPlotter::clear()
 {
 	testObject.Clear();
+	Invalidate();
+
+	::EnableMenuItem( GetMenu( parentHandle ), ID_PARAMS, MF_GRAYED );
+}
+
+void CWinPlotter::reset()
+{
+	engine.Reset();
 	Invalidate();
 }

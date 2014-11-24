@@ -18,6 +18,7 @@ public:
 	void rotateY( LONG times = 1 );
 	void zoom( LONG times = 1 );
 	void clear();
+	void reset();
 
 protected:
 	void OnCreate();
@@ -31,6 +32,7 @@ protected:
 
 private:
 	HWND handle;
+	HWND parentHandle;
 
 	// Экземпляр движка, который будет заниматься рендером объекта
 	CEngineCamera engine;
@@ -44,7 +46,7 @@ private:
 	// Вспомогательный объект, содержащий оси координат (с направлением)
 	C3DModel axisObject;
 	// Длина отрисовки осей в каждое из направлений
-	const int axisLength = 10;
+	const int axisLength = 20;
 
 	// Структура двухмерного объекта, который будет непосредственно переводиться в вызовы WinAPI
 	C2DModel renderedObject;

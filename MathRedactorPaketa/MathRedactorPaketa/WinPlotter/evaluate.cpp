@@ -7,6 +7,7 @@
 #include <regex>
 #include <vector>
 
+
 bool CGraphBuilder::buildPointGrid( const CFormula& formula, std::map< char, std::pair< double, double > > args, double eps )
 {
 	try {

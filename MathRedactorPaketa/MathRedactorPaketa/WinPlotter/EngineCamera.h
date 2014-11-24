@@ -40,11 +40,14 @@ public:
 
 
 	// Устанавливает размеры клиентской области ширины и высоты окна
-	void SetWindowSize(int clientWidth, int clientHeight);
+	void SetWindowSize( int clientWidth, int clientHeight );
 
 	// Ключевой метод, который обрабатывает трёхмерный объект. По ссылке renderedObject записывает двухмерные примитивы для
 	// отрисовки в окне программы
-	void Render(const C3DModel& object, C2DModel& renderedObject);
+	void Render( const C3DModel& object, C2DModel& renderedObject, bool filtrate = true );
+
+	// функция возвращающая движок в начальное состояние
+	void Reset();
 
 private:
 	// Положение камеры в трёхмерном пространстве
@@ -86,22 +89,21 @@ private:
 	double AspectRatio;
 
 	// Исключение, вызываемое при неверно переданных параметрах размеров проекции
-	class IncorrectWindowSize {
-	};
+	class IncorrectWindowSize {};
 
 	// Структура, хранящая координаты модели в пространстве камеры
 	C3DModel cameraModel;
 
 	// Внутренний метод, который создаёт локальную версию объекта с координатами камеры
-	void transform(const C3DModel& object);
+	void transform( const C3DModel& object );
 	
 	// Фильтрует узлы и элементы модели, которые не попадают в область обзора камеры
 	void filter();
 
 	// Проецирует точки внутренней структуры в двухмерную модель для отрисовки на экране
-	void render(C2DModel& renderedObject);
+	void render( C2DModel& renderedObject ) const;
 
 	// Возвращает преобразованные координаты точки при помощи матрицы преобразований
-	C3DPoint modifyPoint(C3DPoint originPoint) const;
+	C3DPoint modifyPoint( C3DPoint originPoint ) const;
 };
 

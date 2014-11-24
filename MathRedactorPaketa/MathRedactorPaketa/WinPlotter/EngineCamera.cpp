@@ -9,14 +9,26 @@ const double CEngineCamera::FarZ = 100;
 CEngineCamera::CEngineCamera( int clientWidth, int clientHeight ) :
 ViewDistance( 1 ), ClientHeight( clientHeight ), ClientWidth( clientWidth ), stepSize( 1 )
 {
+	// устанваливаем движок в начальное положение 
+	Reset();
+}
+
+void CEngineCamera::Reset()
+{
 	// Задаём начальное положение камеры
-	Position = C3DPoint( 0, 10, 0 );
+	Position = C3DPoint( 0, 20, 0 );
 	ViewDirection = C3DPoint( 0, -1, 0 );
 	UpVector = C3DPoint( 0, 0, 1 );
 	CenterPoint = C3DPoint( 0, 0, 0 );
 
 	UpdateRightVector();
 	UpdateTransformMatrix();
+
+	// своеобразная калибровка
+	RotateSideAroundCenter( 0 );
+	MoveSide( 0 );
+	RotateUpAroundCenter( 0 );
+	MoveUp( 0 );
 }
 
 void CEngineCamera::UpdateRightVector()
@@ -52,10 +64,12 @@ void CEngineCamera::UpdateTransformMatrix()
 	TransformMatrix.Set( 3, 3, 1 );
 }
 
-void CEngineCamera::Render( const C3DModel& object, C2DModel& renderedObject )
+void CEngineCamera::Render( const C3DModel& object, C2DModel& renderedObject, bool filtrate )
 {
 	transform( object );
-	filter();
+	if( filtrate == true ) {
+		filter();
+	}
 	render( renderedObject );
 }
 
@@ -131,7 +145,7 @@ void CEngineCamera::filter()
 	}
 }
 
-void CEngineCamera::render( C2DModel& renderedObject )
+void CEngineCamera::render( C2DModel& renderedObject ) const
 {
 	// TODO: преобразование трёхмерных координат точек в контексте камеры в двухмерные координаты в контексте окна
 	renderedObject.Clear();

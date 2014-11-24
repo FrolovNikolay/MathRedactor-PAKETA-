@@ -348,6 +348,12 @@ LRESULT CWinMain::OnKeyDown( WPARAM wParam, LPARAM lParam )
 		case VK_DOWN:
 			rotation = D_Bot;
 			return 0;
+		case VK_SPACE:
+			winPlotter.reset();
+			return 0;
+		case VK_ESCAPE:
+			winPlotter.clear();
+			return 0;
 	}
 	return DefWindowProc( handle, WM_KEYDOWN, wParam, lParam );
 }
