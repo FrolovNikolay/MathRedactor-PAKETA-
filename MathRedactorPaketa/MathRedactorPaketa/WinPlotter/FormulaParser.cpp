@@ -10,19 +10,12 @@
 namespace {
 	
 	// возвращает размер пространства, в котором задается формула
-	int GetSpaceDimension( const std::string& text ) 
+	int GetSpaceDimension( const std::vector<std::string>& equations ) 
 	{
-		int res = 3;
-		if( text.find( 'x' ) == std::string::npos ) {
-			res--;
+		if( equations.size() == 2 || ( equations.size() == 1 && equations[0][0] == 'y' ) ) {
+			return 2;
 		}
-		if( text.find( 'y' ) == std::string::npos ) {
-			res--;
-		}
-		if( text.find( 'z' ) == std::string::npos ) {
-			res--;
-		}
-		return res;
+		return 3;
 	}
 
 	// возвращает индекс парной скобки
@@ -50,7 +43,7 @@ namespace {
 	bool IsParameterT( const std::string& text, int i ) 
 	{
 		return( text[i] == 't' && ( i == 0 || text[i - 1] != 'r' ) 
-			&& ( i + 1 < static_cast<int>( text.size() ) || text[i + 1] != 'g' ) );
+			&& ( i + 1 >= static_cast<int>( text.size() ) || text[i + 1] != 'g' ) );
 	}
 
 	// является ли данный символ переменной l
@@ -60,23 +53,27 @@ namespace {
 	}
 
 	// получить размерность графика (т.е. кол-во его параметров: 2 - поверхность. 1 - кривая)
-	int GetPlotDimension( const std::string& text )
+	int GetPlotDimension( const std::vector<std::string>& equations )
 	{
-		int nonParametricDimension = GetSpaceDimension( text ) - 1;
-		bool tParameterFound = false;
-		bool lParameterFound = false;
-		for( int i = 0; i < static_cast<int>( text.size() ); ++i ) {
-			if( IsParameterT( text, i ) ) {
-				tParameterFound = true;
+		if( equations.size() != 1 ) {
+			bool lFound = false, tFound = false;
+			for( int i = 0; i < static_cast<int>( equations.size() ); ++i ) {
+				for( int j = 0; j < static_cast< int >( equations[i].length() ); ++j ) {
+					if( IsParameterT( equations[i], j ) ) {
+						tFound = true;
+					} else if( IsParameterL( equations[i], j ) ) {
+						lFound = true;
+					}
+				}
 			}
-			if( IsParameterL( text, i ) ) {
-				lParameterFound = true;
+			return std::max( 1, static_cast< int >( lFound ) +static_cast< int >( tFound ) );
+		} else {
+			if( equations[0][0] == 'y' ) {
+				return 1;
+			} else {
+				return 2;
 			}
 		}
-		if( !tParameterFound && !lParameterFound ) {
-			return nonParametricDimension;
-		}
-		return static_cast<int>( tParameterFound ) + static_cast<int>( tParameterFound );
 	}
 
 	// проверить префиксы уравнений
@@ -93,20 +90,30 @@ namespace {
 	std::vector<char> GetEquationsVariables( const std::vector<std::string>& equations )
 	{
 		std::vector<char> res;
-		std::string variables = "xyz";
-		for( int i = 0; i < static_cast<int>( equations.size() ); ++i ) {
-			for( int j = 2; j < static_cast<int>( equations[i].size() ); ++j ) {
-				if( IsParameterL( equations[i], j ) ) {
-					res.push_back( 'l' );
-				} else if( IsParameterT( equations[i], j ) ) {
-					res.push_back( 't' );
-				} else if( variables.find( equations[i][j] ) != std::string::npos ) {
-					res.push_back( equations[i][j] );
+		
+		if( equations.size() == 1 ) {
+			res.push_back( 'x' );
+			if( equations[0][0] == 'z' ) {
+				res.push_back( 'y' );
+			}
+		} else {
+			bool tFound = false, lFound = false;
+			for( int i = 0; i < static_cast<int>( equations.size() ); ++i ) {
+				for( int j = 0; j < static_cast< int >( equations[i].length() ); ++j ) {
+					if( IsParameterT( equations[i], j ) ) {
+						tFound = true;
+					} else if( IsParameterL( equations[i], j ) ) {
+						lFound = true;
+					}
 				}
 			}
+			if( lFound ) {
+				res.push_back( 'l' );
+			}
+			if( tFound || res.empty() ) {
+				res.push_back( 't' );
+			}
 		}
-		std::sort( res.begin(), res.end() );
-		res.resize( std::distance( res.begin(), std::unique( res.begin(), res.end() ) ) );
 		return res;
 	}
 
@@ -390,9 +397,6 @@ namespace {
 
 // Парсит всю формулу (которая может содержать несоклько уравнений)
 CFormula ParseFormula( const std::string& text ) {
-	int spaceDimension = GetSpaceDimension( text );
-	assert( spaceDimension >= 2 );
-	int plotDimension = GetPlotDimension( text );
 	std::vector<std::string> equations( 1 );
 	std::string spaces = " \t\n\r";
 	for( int i = 0; i < static_cast<int>( text.size() ); ++i ) {
@@ -406,6 +410,9 @@ CFormula ParseFormula( const std::string& text ) {
 		equations.back().push_back( text[i] );
 	}
 	CheckEquationsCorrectness( equations );
+	int spaceDimension = GetSpaceDimension( equations );
+	assert( spaceDimension >= 2 );
+	int plotDimension = GetPlotDimension( equations );
 	std::vector<char> variables = GetEquationsVariables( equations );
 	CFormula formula( spaceDimension, plotDimension, variables );
 	for( int i = 0; i < static_cast<int>( equations.size() ); ++i ) {
