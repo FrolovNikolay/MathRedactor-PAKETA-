@@ -369,9 +369,9 @@ namespace {
 			argumentEnd = GetTokenEnd( equation, argumentEnd + 2 );
 		}
 
-		return _equation.substr( 0, rightBracket ).append( ";" )
-			.append( _equation.substr( argumentBegin, argumentEnd - argumentBegin + 1 ) )
-			.append( ")" ).append( _equation.substr( argumentEnd + 1 ) );
+		return equation.substr( 0, rightBracket ).append( ";" )
+			.append( equation.substr( argumentBegin, argumentEnd - argumentBegin + 1 ) )
+			.append( ")" ).append( equation.substr( argumentEnd + 1 ) );
 	}
 
 	// Приводит операторы mul, sum к виду, с которым умеет работать Plotter
