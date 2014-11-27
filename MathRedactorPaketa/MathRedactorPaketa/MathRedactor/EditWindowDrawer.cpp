@@ -84,7 +84,7 @@ void CEditWindowDrawer::RePaint( HWND windowHandle ) const
 
 	int offsetY = 0;
 	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
-		content[i].Draw( tempHDC, leftTopX, leftTopY + offsetY );
+		content[i].Draw( tempHDC, -leftTopX, -leftTopY + offsetY );
 		offsetY += content[i].GetHeight();
 	}
 
@@ -146,9 +146,16 @@ void CEditWindowDrawer::drawLocalSelection( const CSymbolPosition& start, const 
 	HBRUSH lastBrush = static_cast<HBRUSH>( ::SelectObject( tempHDC, selectionBrush ) );
 	HPEN oldPen = static_cast<HPEN>( ::SelectObject( tempHDC, selectionPen ) );
 
-	int leftTopX = ( *start.CurrentLine )[start.Index]->GetX();
-	int rightBotX = ( *end.CurrentLine )[end.Index]->GetX();
-	int leftTopY = start.CurrentLine->GetY();
+	int moveX = 0;
+	int moveY = 0;
+	{
+		int width, height;
+		getWindowInfo( moveX, moveY, width, height, windowHandle );
+	}
+
+	int leftTopX = ( *start.CurrentLine )[start.Index]->GetX() - content[0].GetX() - moveX;
+	int rightBotX = ( *end.CurrentLine )[end.Index]->GetX() - content[0].GetX() - moveX;
+	int leftTopY = start.CurrentLine->GetY() - content[0].GetY() - moveY;
 	int rightBotY = leftTopY + start.CurrentLine->GetHeight();
 	if( leftTopX > rightBotX ) {
 		std::swap( leftTopX, rightBotX );
@@ -169,9 +176,9 @@ void CEditWindowDrawer::getWindowInfo( int& leftTopX, int& leftTopY, int& width,
 	scrollInfo.cbSize = sizeof( SCROLLINFO );
 	scrollInfo.fMask = SIF_ALL;
 	::GetScrollInfo( windowHandle, SB_HORZ, &scrollInfo );
-	leftTopX = - scrollInfo.nPos * hScrollUnit;
+	leftTopX = scrollInfo.nPos * hScrollUnit;
 	::GetScrollInfo( windowHandle, SB_VERT, &scrollInfo );
-	leftTopY = - scrollInfo.nPos * vScrollUnit;
+	leftTopY = scrollInfo.nPos * vScrollUnit;
 
 	//Получаем размеры клиентского окна
 	RECT clientRect;
