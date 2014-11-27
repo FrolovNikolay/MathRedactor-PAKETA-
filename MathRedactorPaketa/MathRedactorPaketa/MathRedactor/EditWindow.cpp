@@ -725,13 +725,25 @@ void CEditWindow::CCaret::MoveTo( const CSymbolPosition& newPosition )
 // сдвигает каретку на единицу вверх
 void CEditWindow::CCaret::moveUp()
 {
-
+	if( caretPosition.GetParent() == 0 ) {
+		int lineIdx = window->getBaseLineIndex( caretPosition.CurrentLine );
+		if( lineIdx > 0 ) {
+			caretPosition = CSymbolPosition( min( caretPosition.Index, window->content[lineIdx - 1].Length() ), &window->content[lineIdx - 1] );
+		}
+	}
+	moveToNewCoordinates();
 }
 
 // сдвигает каретку на единицу вниз
 void CEditWindow::CCaret::moveDown()
 {
-
+	if( caretPosition.GetParent() == 0 ) {
+		int lineIdx = window->getBaseLineIndex( caretPosition.CurrentLine );
+		if( lineIdx != window->content.size() - 1 ) {
+			caretPosition = CSymbolPosition( min( caretPosition.Index, window->content[lineIdx + 1].Length() ), &window->content[lineIdx + 1] );
+		}
+	}
+	moveToNewCoordinates();
 }
 
 // сдвигает каретку на единицу влево
@@ -739,18 +751,64 @@ void CEditWindow::CCaret::moveLeft()
 {
 	if( caretPosition.Index > window->firstEnablePosition || ( caretPosition.GetParent() != 0 && caretPosition.Index > 0 ) ) {
 		--caretPosition.Index;
-		moveToNewCoordinates();
-	} 
+		if( caretPosition.CurrentLine->Length() != caretPosition.Index ) {
+			std::vector<const CLineOfSymbols*> tmpSubstrings;
+			( *caretPosition.CurrentLine )[caretPosition.Index]->GetSubstrings( tmpSubstrings );
+			if( tmpSubstrings.size() != 0 ) {
+				std::unique_ptr<CSymbolPosition> newParent( new CSymbolPosition( caretPosition ) );
+				caretPosition = CSymbolPosition( tmpSubstrings[tmpSubstrings.size() - 1]->Length(),
+															   tmpSubstrings[tmpSubstrings.size() - 1], newParent.release() );
+			}
+		}
+	} else if( caretPosition.GetParent() != 0 && caretPosition.Index == 0 ) {
+		std::vector<const CLineOfSymbols*> tmpSubstrings;
+		const CSymbolPosition* parent = caretPosition.GetParent();
+		( *parent->CurrentLine )[parent->Index]->GetSubstrings( tmpSubstrings );
+		int currentLineIdx;
+		for( currentLineIdx = tmpSubstrings.size() - 1; currentLineIdx >= 0; --currentLineIdx ) {
+			if( tmpSubstrings[currentLineIdx] == caretPosition.CurrentLine ) {
+				break;
+			}
+		}
+		if( --currentLineIdx >= 0 ) {
+			caretPosition = CSymbolPosition( tmpSubstrings[currentLineIdx]->Length(), tmpSubstrings[currentLineIdx], new CSymbolPosition( *parent ) );
+		} else {
+			caretPosition = CSymbolPosition( *parent );
+		}
+	}
+	moveToNewCoordinates();
 }
 
 // сдвигает каретку на единицу в право
 void CEditWindow::CCaret::moveRight()
 {
-	int lineIndex = window->getBaseLineIndex( caretPosition.CurrentLine );
 	if( caretPosition.CurrentLine->Length() > caretPosition.Index ) {
-		++caretPosition.Index;
-		moveToNewCoordinates();
+		std::vector<const CLineOfSymbols*> tmpSubstrings;
+		( *caretPosition.CurrentLine )[caretPosition.Index]->GetSubstrings( tmpSubstrings );
+		if( tmpSubstrings.size() == 0 ) {
+			++caretPosition.Index;
+		} else {
+			std::unique_ptr<CSymbolPosition> newParent( new CSymbolPosition( caretPosition ) );
+			caretPosition = CSymbolPosition( 0, tmpSubstrings[0], newParent.release() );
+		}
+	} else if( caretPosition.GetParent() != 0 ) {
+		std::vector<const CLineOfSymbols*> tmpSubstrings;
+		const CSymbolPosition* parent = caretPosition.GetParent();
+		( *parent->CurrentLine )[parent->Index]->GetSubstrings( tmpSubstrings );
+		int currentLineIdx = 0;
+		for( ; currentLineIdx < tmpSubstrings.size(); ++currentLineIdx ) {
+			if( tmpSubstrings[currentLineIdx] == caretPosition.CurrentLine ) {
+				break;
+			}
+		}
+		if( currentLineIdx + 1 == tmpSubstrings.size() ) {
+			caretPosition = CSymbolPosition( *parent );
+			++caretPosition.Index;
+		} else {
+			caretPosition = CSymbolPosition( 0, tmpSubstrings[currentLineIdx + 1], new CSymbolPosition( *parent ) );
+		}
 	}
+	moveToNewCoordinates();
 }
 
 void CEditWindow::CCaret::moveToNewCoordinates()

@@ -112,7 +112,7 @@ CTexToken CNotationTester::tokenUnaryOperation( const CTexToken& operation, cons
 			case TT_Tan:
 				return CTexToken( TT_Number, std::to_string( std::tan( std::stod( arg.GetString() ) ) ) );
 			case TT_Ctan:
-				return CTexToken( TT_Number, std::to_string( std::tan( std::stod( arg.GetString() ) ) ) );
+				return CTexToken( TT_Number, std::to_string( ( 1.0 / std::tan( std::stod( arg.GetString() ) ) ) ) );
 			case TT_SimpleSqrt:
 				return CTexToken( TT_Number, std::to_string( sqrt( std::stod( arg.GetString() ) ) ) );
 			default:
