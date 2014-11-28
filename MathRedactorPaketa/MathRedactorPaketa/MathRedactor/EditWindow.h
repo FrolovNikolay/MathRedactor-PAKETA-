@@ -13,17 +13,19 @@
 #include "EditWindowDrawer.h"
 #include "Messages.h"
 
+// Поддерживаемые виды функций.
 enum TFunctionType {
 	FT_YfromX,
 	FT_ZfromXY,
 	FT_XYfromT,
 	FT_XYZfromT,
-	FT_XYZfromTL
+	FT_XYZfromTL,
+	FT_Undefined		// Используется в начальный момент времени.
 };
 
 class CEditWindow {
 public:
-	// возможные направления движения каретки
+	// Возможные направления движения каретки.
 	enum TCaretDirection {
 		CD_Up,
 		CD_Down,
@@ -33,33 +35,33 @@ public:
 
 	CEditWindow();
 
-	// регистрирует класс окна
+	// Регистрирует класс окна.
 	static bool RegisterClass( HINSTANCE );
-
-	int GetSimpleSymbolHeight() const { return simpleSymbolHeight; }
-
-	CLineOfSymbols* GetCaretLine() { return const_cast<CLineOfSymbols*>( caret.GetLine() ); }
-
-	// Создает окно
+	// Создать окно.
 	HWND Create( HWND, HINSTANCE );
-	// Отображается окно
+	// Отобразить окно.
 	void Show( int );
-	
-	// Добавляет символ и уведомляет окно о том, что надо перерисоваться
-	void AddSymbol( CSymbol* );
-	// Добавляет знак с клавиатуры
-	void AddSign( wchar_t );
-	// Удаляет символ (например, при нажатии Backspace)
-	void RemoveSign();
-	// Переводит строчку
-	void NewLine();
-	
-	// Отображает каретку
+
+	// Отображает каретку.
 	void ShowCaret();
-	// Скрывает каретку
+	// Скрывает каретку.
 	void HideCaret();
-	// Двигает каретку на шаг по направлению
+	// Двигает каретку на шаг по направлению.
 	void MoveCaret( TCaretDirection );
+
+	// Получить высоту простых символов.
+	int GetSimpleSymbolHeight() const { return simpleSymbolHeight; }
+	// Получение линии, в которой находится каретка.
+	CLineOfSymbols* GetCaretLine() { return const_cast<CLineOfSymbols*>( caret.GetLine() ); }
+	
+	// Добавляет символ и уведомляет окно о том, что надо перерисоваться.
+	void AddSymbol( CSymbol* );
+	// Добавляет знак с клавиатуры.
+	void AddSign( wchar_t );
+	// Удаляет символ по текущему положению каретки.
+	void RemoveSign();
+	// Переводит строчку.
+	void NewLine();
 
 	// Получить содержимое редактора в формате для плоттера.
 	std::string CalculateStringForPlotter() const;
@@ -68,140 +70,161 @@ public:
 
 	// Установка нового типа обрабатываемой функции.
 	void SetFunctionType( TFunctionType );
-
 	// Реакция на кнопку по осуществлению проверки на валидность.
 	void CheckValidity() const;
-
+	// Экспортировать выделенную часть ввода.
 	void ExportSelected() const;
 
-	// отправляет родительскому окну сообщение о закрытии
+	// Отправляет родительскому окну сообщение о закрытии
 	void SendClose() const { ::SendMessage( parentHandle, WM_CLOSE, 0, 0 ); }
+	// Передать плоттеру содержимое и сообщить родительскому окну о закрытии.
 	void SendAccept() const;
 
 protected:
-	// метод, вызываемый при получении окном сообщения WM_DESTROY
+	// Метод, вызываемый при получении окном сообщения WM_DESTROY.
 	void OnWmDestroy();
-	// метод, вызываемый при получении окном сообщения WM_PAINT
+	// Метод, вызываемый при получении окном сообщения WM_PAINT.
 	void OnWmPaint();
-	// скроллирование окон
+
+	// Обработка изменения размера окна. пересчитывает некоторые свойства скроллов.
+	void OnWmSize( LPARAM );
+	// Обработка сообщений о скроллировании.
 	void OnWmHScroll( WPARAM, LPARAM );
 	void OnWmVScroll( WPARAM, LPARAM );
-	// обработка изменения размера окна
-	// пересчитывает некоторые свойства скроллов
-	void OnWmSize( LPARAM );
-	// метод, вызываемый при получении окном сообщения WM_LBUTTONDOWN
+
+	// Метод, вызываемый при получении окном сообщения WM_LBUTTONDOWN.
 	void OnLButDown( LPARAM );
-	// метод, вызываемый при получении окном сообщения WM_LBUTTONUP
+	// Метод, вызываемый при получении окном сообщения WM_LBUTTONUP.
 	void OnLButUp( LPARAM );
-	// метод, вызываемый при получении окном сообщения WM_MOUSEMOVE
+	// Метод, вызываемый при получении окном сообщения WM_MOUSEMOVE.
 	void OnLockedMouseMove( LPARAM );
+
 private:
-	// Класс каретки для этого типа окна
+	// Класс каретки для этого типа окна.
 	class CCaret {
 	public:
 		CCaret( CEditWindow* , const CLineOfSymbols* baseLine );
 
-		const CLineOfSymbols* GetLine() const { return caretPosition.CurrentLine; }
-		int GetIndex() const { return caretPosition.Index; }
-
-		// видит ли пользователь каретку в данный момент
-		bool IsShown() const { return shown; }
-
 		void Create();
 		void Destroy();
 
-		// показывает/скрывает каретку
+		const CLineOfSymbols* GetLine() const { return caretPosition.CurrentLine; }
+		int GetIndex() const { return caretPosition.Index; }
+
+		// Отображается ли в данный момент каретка.
+		bool IsShown() const { return isShown; }
+
+		// Показать каретку.
 		void Show();
+		// Скрыть каретку.
 		void Hide();
 		
-		// сдвигает каретку на единицу в данном направлении
+		// Сдвигает каретку на единицу в данном направлении.
 		void Move( TCaretDirection );
-		// сдвигает каретку в определенную позицию
+		// Сдвигает каретку в определенную позицию.
 		void MoveTo( const CSymbolPosition& );
-
+		// Переместить каретку в соответствии с координатами в окне.
 		void MoveTo( int x, int y );
-
 	private:
-		// окно, которому принадлежит каретка
+		// Окно, которому принадлежит каретка.
 		CEditWindow* window;
-		// положение каретки
+
+		// Положение каретки.
 		CSymbolPosition caretPosition;
-		// текущий размер каретки
+
+		// Текущие размеры каретки.
 		int width;
 		int height;
-		// отображается ли каретка в данный момент
-		bool shown;
 
+		// Отображается ли каретка.
+		bool isShown;
+
+		// Изменить высоту каретки.
+		void changeHeight( int );
+
+		// Передвижения каретки для каждого из 4-ех направлений.
 		void moveLeft();
 		void moveRight();
 		void moveUp();
 		void moveDown();
 
+		// Сместить каретку к заданной в ней позиции.
 		void moveToNewCoordinates();
-		void changeHeight( int );
 	};
-	// хэндл окна, которому соответствует этот объект класса.
+
+	// Хэндл окна, которому соответствует этот объект класса.
 	HWND windowHandle;
-	// хэндл родителя
+
+	// Хэндл родителя.
 	HWND parentHandle;
-	// имя класса окна
+	// Имя класса окна.
 	static const wchar_t* className;
 	
+	// Высота простых символов в окне.
 	const int simpleSymbolHeight;
 
-	//Содержимое редактора (массив строк)
+	// Содержимое редактора (массив строк).
 	std::vector<CLineOfSymbols> content;
 
-	// для скроллирования
+	// Константы, связанные со скроллированием.
 	const int horizontalScrollUnit;
 	const int verticalScrollUnit;
 
-	// Отвечает за поиск символа по координате.
+	// Механизм, отвечающий за поиск символа по координате.
 	CPositionFinder finder;
-	// Отвечает за выделение.
+	// Механизм, отвечающий за выделение.
 	CItemSelector symbolSelector;
-	// Отвечает за прорисовку окна.
+	// Механизм, отвечающий за отрисовку окна.
 	CEditWindowDrawer drawer;
 
 	// Текущий заданный тип функции.
 	TFunctionType currentFunctionType;
 	// Набор переменных, от которых определна функция.
 	std::set<std::string> knownVariables;
-	// До этой позиции в линиях находится служебная информация.
+	// До этой позиции в линиях находятся недоступные для редактирования пользователем данные.
 	int firstEnablePosition;
 
-	// каретка
+	// Каретка.
 	CCaret caret;
 
-	CLineOfSymbols* isLineBase( CLineOfSymbols* currentBaseLine, int x, int y );
-
+	// Удалить выделенные символы редактора.
 	void removeSelectedItems();
 
+	// Удалить символы, заданные позициями, в одной строке.
 	void removeLocalSelected( const CSymbolPosition&, const CSymbolPosition& );
 
+	// Удалить символы, заданные позициями, из редактора.
 	void removeGlobalSelected( const CSymbolPosition&, const CSymbolPosition& );
 
 	// Проверка валидности данных введеных в окне. В случае ошибки описание передается через ссылку.
 	bool isInputValid( std::wstring& error ) const;
 
+	// Допустим ли данный символ на ввод.
 	bool isSymbolAllowed( wchar_t ) const;
+
+	// Получить номер строки в массиве. Возвращается -1 для строк, не являющися базовыми.
 	int getBaseLineIndex( const CLineOfSymbols* ) const;
 
+	// Пересчет параметров, связанных со скролированием.
 	void recalculateVertScrollParams() const;
 	void recalculateHorzScrollParams() const;
 
-	// Установить известные переменные в соответствии с типом.
+	// Установить известные переменные в соответствии с типом функции.
 	void setVariables();
+
 	// Установить первую доступную позицию в строке.
 	void setFirstEnablePosition();
+
 	// Установка базового ввода.
 	void setBaseContent();
 
+	// Вставка в массив строк явных описаний функций.
 	void insertOneParametrFunc( wchar_t , wchar_t );
-
 	void insertTwoParametrFunc( wchar_t, wchar_t, wchar_t );
 
+	// Запись в файл выделенных символов.
 	bool writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) const;
 
+	// Стандартная процедура обработки сообщений окном.
 	static LRESULT __stdcall windowProcedure( HWND, UINT, WPARAM, LPARAM );
 };

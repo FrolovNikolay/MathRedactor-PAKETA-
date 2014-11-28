@@ -1,9 +1,10 @@
-﻿#include "EditWindow.h"
+﻿// Автор: Федюнин Валерий.
+
+#include "EditWindow.h"
 #include "SimpleSymbol.h"
 #include "FractionSymbol.h"
 #include "SigmaSymbol.h"
 #include "IndexSymbol.h"
-#include <typeinfo>
 #include "instruments.h"
 #include <assert.h>
 #include <windowsx.h>
@@ -11,12 +12,10 @@
 #include <MathValidator.h>
 #include <TranslatorDLLInterface.h>
 
-// класс CEditWindow
-// константы
-
+// Имя класса окна.
 const wchar_t* CEditWindow::className = L"MathRedactorEditWindowClass";
 
-// public методы
+// public методы.
 
 CEditWindow::CEditWindow() 
 		: horizontalScrollUnit( 30 )
@@ -27,12 +26,13 @@ CEditWindow::CEditWindow()
 		, finder( content )
 		, symbolSelector( finder, content )
 		, drawer( content, symbolSelector, horizontalScrollUnit, verticalScrollUnit, simpleSymbolHeight )
-		, currentFunctionType( FT_ZfromXY )
+		, currentFunctionType( FT_Undefined )
 {
 	SetFunctionType( FT_YfromX );
 	windowHandle = 0;
 }
 
+// Регистрирует класс окна.
 bool CEditWindow::RegisterClass( HINSTANCE classOwnerInstance )
 {
 	WNDCLASSEX classInfo;
@@ -47,6 +47,7 @@ bool CEditWindow::RegisterClass( HINSTANCE classOwnerInstance )
 	return ( ::RegisterClassEx( &classInfo ) != 0 );
 }
 
+// Создать окно.
 HWND CEditWindow::Create( HWND parent, HINSTANCE ownerInstance )
 {
 	DWORD style = WS_CHILD | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL;
@@ -56,27 +57,69 @@ HWND CEditWindow::Create( HWND parent, HINSTANCE ownerInstance )
 	return windowHandle;
 }
 
+// Отобразить окно.
 void CEditWindow::Show( int nCmdShow )
 {
 	::ShowWindow( windowHandle, nCmdShow );
 }
 
+// Отображает каретку.
+void CEditWindow::ShowCaret()
+{
+	if( !caret.IsShown() ) {
+		caret.Create();
+		caret.Show();
+	}
+}
+
+// Скрывает каретку.
+void CEditWindow::HideCaret()
+{
+	if( caret.IsShown() ) {
+		caret.Hide();
+		caret.Destroy();
+	}
+}
+
+// Двигает каретку на шаг по направлению.
+void CEditWindow::MoveCaret( CEditWindow::TCaretDirection direction )
+{
+	// Если были выделенные символы, то перемещаем особым образом.
+	if( symbolSelector.HasSelection() ) {
+		if( direction == CD_Left || direction == CD_Up ) {
+			caret.MoveTo( symbolSelector.GetSelectionInfo().first );
+		} else {
+			caret.MoveTo( symbolSelector.GetSelectionInfo().second );
+			caret.Move( CD_Right );
+		}
+		symbolSelector.ResetSelection();
+		ShowCaret();
+	} else {
+		caret.Move( direction );
+	}
+	ShowCaret();
+	::InvalidateRect( windowHandle, 0, true );
+}
+
+// Добавляет символ и уведомляет окно о том, что надо перерисоваться.
 void CEditWindow::AddSymbol( CSymbol* symbol )
 {
+	// Если были выделенны символы, то удаляем их и отображаем каретку.
 	if( symbolSelector.HasSelection() ) {
 		removeSelectedItems();
 		symbolSelector.ResetSelection();
 		ShowCaret();
 	}
-
+	
+	// Если добавляется сложный символ, необходимо установить родителя его подстрок.
 	std::vector<CLineOfSymbols*> substrings;
 	symbol->GetSubstrings( substrings );
-
 	CLineOfSymbols* currentLine = GetCaretLine();
-
-	for( int i = 0; i < static_cast<int>( substrings.size() ); ++i ) {
+	for( size_t i = 0; i < substrings.size(); ++i ) {
 		substrings[i]->SetParent( currentLine );
 	}
+
+	// После вставки перемещает каретку и пересчитываем связные параметры.
 	currentLine->Insert( caret.GetIndex(), symbol );
 	caret.Move( CD_Right );
 	recalculateHorzScrollParams();
@@ -84,22 +127,27 @@ void CEditWindow::AddSymbol( CSymbol* symbol )
 	::RedrawWindow( windowHandle, 0, 0, RDW_INVALIDATE | RDW_ERASE );
 }
 
+// Добавляет знак с клавиатуры.
 void CEditWindow::AddSign( wchar_t sign )
 {
+	// Если символ не разрешен, то не делаем ничего.
 	if( isSymbolAllowed( sign ) ) {
 		AddSymbol( new CSimpleSymbol( sign ) );
+		ShowCaret();
+		::InvalidateRect( windowHandle, 0, true );
 	}
-	ShowCaret();
-	::InvalidateRect( windowHandle, 0, true );
 }
 
+// Удаляет символ по текущему положению каретки.
 void CEditWindow::RemoveSign()
 {
+	// Если были выделены символы, то просто удаляем их.
 	if( symbolSelector.HasSelection() ) {
 		removeSelectedItems();
 		symbolSelector.ResetSelection();
 		ShowCaret();
 	} else {
+		// Иначе избавляемся от одного символа и пересчитываем параметры.
 		CLineOfSymbols* currentLine = GetCaretLine();
 		if( caret.GetIndex() > firstEnablePosition || ( getBaseLineIndex( caret.GetLine() ) == -1 && caret.GetIndex() > 0 ) ) {
 			currentLine->Delete( caret.GetIndex() - 1 );
@@ -111,16 +159,18 @@ void CEditWindow::RemoveSign()
 	}
 }
 
+// Переводит строчку.
 void CEditWindow::NewLine()
 {
+	// Если были выделены символы, то удаляем их.
 	if( symbolSelector.HasSelection() ) {
 		removeSelectedItems();
 		symbolSelector.ResetSelection();
 		ShowCaret();
 	}
 
+	// Добавляем строку в зависимости от текущего положения каретки.
 	CLineOfSymbols* currentLine = GetCaretLine();
-
 	int lineIndex = getBaseLineIndex( currentLine );
 	if( lineIndex != -1 ) {
 		if( lineIndex == content.size() - 1 ) {
@@ -140,49 +190,19 @@ void CEditWindow::NewLine()
 	}
 }
 
-void CEditWindow::ShowCaret()
-{
-	if( !caret.IsShown() ) {
-		caret.Create();
-		caret.Show();
-	}
-}
-
-void CEditWindow::HideCaret()
-{
-	if( caret.IsShown() ) {
-		caret.Hide();
-		caret.Destroy();
-	}
-}
-
-void CEditWindow::MoveCaret( CEditWindow::TCaretDirection direction )
-{
-	if( symbolSelector.HasSelection() ) {
-		if( direction == CD_Left || direction == CD_Up ) {
-			caret.MoveTo( symbolSelector.GetSelectionInfo().first );
-		} else {
-			caret.MoveTo( symbolSelector.GetSelectionInfo().second );
-			caret.Move( CD_Right );
-		}
-		symbolSelector.ResetSelection();
-		ShowCaret();
-	} else {
-		caret.Move( direction );
-	}
-	ShowCaret();
-	::InvalidateRect( windowHandle, 0, true );
-}
-
 // Получить содержимое редактора в формате для плоттера.
 std::string CEditWindow::CalculateStringForPlotter() const
 {
 	std::string result = "";
-	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+	for( size_t i = 0; i < content.size(); ++i ) {
+		// Для каждой из строк добавляем описание функции.
 		result += content[i][0]->ToPlotterString();
 		result += "=";
+
+		// Далее добавляем саму фнкцию.
 		result += content[i].ToPlotterString( firstEnablePosition );
-		if( i != static_cast<int>( content.size() - 1 ) ) {
+		if( i + 1 != content.size() ) {
+			// Разделитель между формулами.
 			 result += ", ";
 		} else {
 			result += "\n";
@@ -195,7 +215,7 @@ std::string CEditWindow::CalculateStringForPlotter() const
 std::string CEditWindow::CalculateLatexString() const
 {
 	std::string result = "";
-	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+	for( size_t i = 0; i < content.size(); ++i ) {
 		result += content[i].ToLatexString() + "\n";
 	}
 	return result;
@@ -207,20 +227,25 @@ void CEditWindow::SetFunctionType( TFunctionType fType )
 	if( fType == currentFunctionType ) {
 		return;
 	}
+
+	// Проверяем были ли какой-либо ввод.
 	bool hasChanges = false;
-	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+	for( size_t i = 0; i < content.size(); ++i ) {
 		if( content[i].Length() > firstEnablePosition ) {
 			hasChanges = true;
 			break;
 		}
 	}
+
+	// Если что-то было введено, то предупреждаем пользователя о возможной потере информации.
 	if( hasChanges ) {
-		// Ползователь не хочет потерять введенную информацию.
 		if( IDNO == ::MessageBox( 0, L"Смена типа вводимой функции повлечет потерю уже введенных данных. Продолжить?",
 					  L"Осторожно, возможна потеря данных!", MB_YESNO | MB_ICONWARNING ) ) {
 			return;
 		}
 	}
+
+	// Устанавливаем содержимое окна в соответствии с выбором пользователя.
 	content.clear();
 	knownVariables.clear();
 	// Важно! Установка типа должна произойти до изменяющих устанавливающих функций.
@@ -244,13 +269,14 @@ void CEditWindow::CheckValidity() const
 	}
 }
 
+// Экспортировать выделенную часть ввода.
 void CEditWindow::ExportSelected() const
 {
 	if( !symbolSelector.HasSelection() ) {
 		::MessageBox( 0, L"Выделите необходимую для экспорта часть функции.", L"Нечего экспортировать!", MB_OK );
 	} else {
+
 		OPENFILENAME openFileName;
-		
 		WCHAR szFileName[MAX_PATH] = L"";
 		::ZeroMemory( &openFileName, sizeof( openFileName ) );
 		openFileName.lStructSize = sizeof( OPENFILENAME );
@@ -260,6 +286,7 @@ void CEditWindow::ExportSelected() const
 		openFileName.nMaxFile = MAX_PATH;
 		openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 		openFileName.lpstrDefExt = reinterpret_cast<LPWSTR>( L"tex" );
+
 		if( ::GetSaveFileName( &openFileName ) ) {
 			if( !writeSelectedInFile( openFileName.lpstrFile, openFileName.nFileExtension ) ) {
 				::MessageBox( 0, L"При экспорте файла что-то пошло не так. Возможно, что файл сохранен некорректно.",
@@ -269,10 +296,11 @@ void CEditWindow::ExportSelected() const
 	}
 }
 
-
+// Передать плоттеру содержимое и сообщить родительскому окну о закрытии.
 void CEditWindow::SendAccept() const
 {
 	std::wstring error;
+	// Если введенная формула невалидна, то передача ее плоттеру невозможна.
 	if( !isInputValid( error ) ) {
 		std::wstring msg = std::wstring( L"Построение графика невозможно. Введенная в окне функция невычислима. " ) + error;
 		::MessageBox( 0, msg.c_str(), L"Введенное выражение невычислимо.", MB_OK );
@@ -281,12 +309,14 @@ void CEditWindow::SendAccept() const
 	}
 }
 
-// protected методы
+// protected методы.
 
+// Метод, вызываемый при получении окном сообщения WM_DESTROY.
 void CEditWindow::OnWmDestroy() {
 	::PostQuitMessage( 0 );
 }
 
+// Метод, вызываемый при получении окном сообщения WM_PAINT.
 void CEditWindow::OnWmPaint()
 {
 	// мы запоминаем состояние каретки до перерисовки
@@ -301,6 +331,14 @@ void CEditWindow::OnWmPaint()
 	}
 }
 
+// Обработка изменения размера окна. пересчитывает некоторые свойства скроллов.
+void CEditWindow::OnWmSize( LPARAM lParam ) 
+{
+	recalculateHorzScrollParams();
+	recalculateVertScrollParams();
+}
+
+// Обработка сообщений о скроллировании.
 void CEditWindow::OnWmHScroll( WPARAM wParam, LPARAM lParam )
 {
 	if( lParam == 0 ) {
@@ -339,6 +377,7 @@ void CEditWindow::OnWmHScroll( WPARAM wParam, LPARAM lParam )
 	}
 }
 
+// Обработка сообщений о скроллировании.
 void CEditWindow::OnWmVScroll( WPARAM wParam, LPARAM lParam )
 {
 	if( lParam == 0 ) {
@@ -378,12 +417,7 @@ void CEditWindow::OnWmVScroll( WPARAM wParam, LPARAM lParam )
 	}
 }
 
-void CEditWindow::OnWmSize( LPARAM lParam ) 
-{
-	recalculateHorzScrollParams();
-	recalculateVertScrollParams();
-}
-
+// Метод, вызываемый при получении окном сообщения WM_LBUTTONDOWN.
 void CEditWindow::OnLButDown( LPARAM lParam )
 {
 	SCROLLINFO scrollInfo;
@@ -405,6 +439,7 @@ void CEditWindow::OnLButDown( LPARAM lParam )
 	HideCaret();
 }
 
+// Метод, вызываемый при получении окном сообщения WM_LBUTTONUP.
 void CEditWindow::OnLButUp( LPARAM lParam )
 {
 	int x = GET_X_LPARAM( lParam );
@@ -434,6 +469,7 @@ void CEditWindow::OnLButUp( LPARAM lParam )
 	InvalidateRect( windowHandle, 0, true );
 }
 
+// Метод, вызываемый при получении окном сообщения WM_MOUSEMOVE.
 void CEditWindow::OnLockedMouseMove( LPARAM lParam )
 {
 	if( symbolSelector.HasSelection() ) {
@@ -454,51 +490,9 @@ void CEditWindow::OnLockedMouseMove( LPARAM lParam )
 	InvalidateRect( windowHandle, 0, true );
 }
 
-// private методы
-// процедура обрабатывающая сообщения для окна редактора
-LRESULT __stdcall CEditWindow::windowProcedure( HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam )
-{
-	if( message == WM_NCCREATE ) {
-		::SetWindowLong( windowHandle, GWL_USERDATA, reinterpret_cast<LONG>( reinterpret_cast<CREATESTRUCT*>( lParam )->lpCreateParams ) );
-	}
+// private методы.
 
-	CEditWindow* window = reinterpret_cast<CEditWindow*>( ::GetWindowLong( windowHandle, GWL_USERDATA ) );
-
-	switch( message ) {
-	case WM_REDACTOR_OK:
-		::SendMessage( window->parentHandle, WM_REDACTOR_OK, 0, 0 );
-		return 0;
-	case WM_CLOSE:
-		window->OnWmDestroy();
-		break;
-	case WM_PAINT:
-		window->OnWmPaint();
-		break;
-	case WM_HSCROLL:
-		window->OnWmHScroll( wParam, lParam );
-		break;
-	case WM_VSCROLL:
-		window->OnWmVScroll( wParam, lParam );
-		break;
-	case WM_SIZE:
-		window->OnWmSize( lParam );
-		break;
-	case WM_LBUTTONDOWN:
-		window->OnLButDown( lParam );
-		break;
-	case WM_MOUSEMOVE:
-		if( wParam & MK_LBUTTON ) {
-			window->OnLockedMouseMove( lParam );
-		}
-		break;
-	case WM_LBUTTONUP:
-		window->OnLButUp( lParam );
-		break;
-	}
-	return ::DefWindowProc( windowHandle, message, wParam, lParam );
-
-}
-
+// Удалить выделенные символы редактора.
 void CEditWindow::removeSelectedItems()
 {
 	CItemSelector::CSymbolInterval interval = symbolSelector.GetSelectionInfo();
@@ -513,6 +507,7 @@ void CEditWindow::removeSelectedItems()
 	}
 }
 
+// Удалить символы, заданные позициями, в одной строке.
 void CEditWindow::removeLocalSelected( const CSymbolPosition& start, const CSymbolPosition& end )
 {
 	CLineOfSymbols* currentLine = const_cast<CLineOfSymbols*>( start.CurrentLine );
@@ -522,6 +517,7 @@ void CEditWindow::removeLocalSelected( const CSymbolPosition& start, const CSymb
 	caret.MoveTo( CSymbolPosition( start.Index, start ) );
 }
 
+// Удалить символы, заданные позициями, из редактора.
 void CEditWindow::removeGlobalSelected( const CSymbolPosition& start, const CSymbolPosition& end )
 {
 	int startIdx = getBaseLineIndex( start.CurrentLine );
@@ -544,10 +540,10 @@ void CEditWindow::removeGlobalSelected( const CSymbolPosition& start, const CSym
 	}
 }
 
-// Проверка вычислимости введенных данных.
+// Проверка валидности данных введеных в окне. В случае ошибки описание передается через ссылку.
 bool CEditWindow::isInputValid( std::wstring& error ) const
 {
-	int i = 0;
+	size_t i = 0;
 	try {
 		for( i = 0; i < content.size(); ++i ) {
 			TestFormula( content[i].ToLatexString( firstEnablePosition ), knownVariables );
@@ -560,7 +556,7 @@ bool CEditWindow::isInputValid( std::wstring& error ) const
 	return true;
 }
 
-// проверяет, допустим ли данный символ
+// Допустим ли данный символ на ввод.
 bool CEditWindow::isSymbolAllowed( wchar_t symbol ) const
 {
 	std::wstring allowedOperators = L"+-/*=().";
@@ -568,12 +564,10 @@ bool CEditWindow::isSymbolAllowed( wchar_t symbol ) const
 		( symbol >= 'a'  &&  symbol <= 'z' ) || ( symbol >= 'A'  &&  symbol <= 'Z' ) );
 }
 
-// проверка, является CLineOFSYmbols одной из основных строк редактора
-// если является - вернет индекс
-// если нет - вернет -1
+// Получить номер строки в массиве. Возвращается -1 для строк, не являющися базовыми.
 int CEditWindow::getBaseLineIndex( const CLineOfSymbols* line ) const
 {
-	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+	for( size_t i = 0; i < content.size(); ++i ) {
 		if( line == &content[i] ) {
 			return i;
 		}
@@ -582,7 +576,7 @@ int CEditWindow::getBaseLineIndex( const CLineOfSymbols* line ) const
 	return -1;
 }
 
-// пересчитывает параметры горизонтального скролла
+// Пересчет параметров, связанных со скролированием.
 void CEditWindow::recalculateHorzScrollParams() const
 {
 	RECT clientRect;
@@ -590,7 +584,7 @@ void CEditWindow::recalculateHorzScrollParams() const
 
 	int width = 0;
 
-	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+	for( size_t i = 0; i < content.size(); ++i ) {
 		width = max( content[i].GetWidth(), width );
 	}
 
@@ -611,7 +605,7 @@ void CEditWindow::recalculateHorzScrollParams() const
 	::SetScrollInfo( windowHandle, SB_HORZ, &scrollInfo, TRUE );
 }
 
-// пересчитывает параметры вертикального скролла
+// Пересчет параметров, связанных со скролированием.
 void CEditWindow::recalculateVertScrollParams() const
 {
 	RECT clientRect;
@@ -619,7 +613,7 @@ void CEditWindow::recalculateVertScrollParams() const
 
 	int height = 0;
 
-	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
+	for( size_t i = 0; i < content.size(); ++i ) {
 		height += content[i].GetHeight();
 	}
 
@@ -640,13 +634,10 @@ void CEditWindow::recalculateVertScrollParams() const
 	::SetScrollInfo( windowHandle, SB_VERT, &scrollInfo, TRUE );
 }
 
-
-// класс CCaret
-
 CEditWindow::CCaret::CCaret( CEditWindow* _window, const CLineOfSymbols* baseLine ) : caretPosition( 0, baseLine )
 {
 	window = _window;
-	shown = false;
+	isShown = false;
 	height = window->simpleSymbolHeight;
 	width = 2;
 }
@@ -657,28 +648,31 @@ void CEditWindow::CCaret::Create()
 	::SetCaretBlinkTime( 300 );
 }
 
+// Показать каретку.
 void CEditWindow::CCaret::Show()
 {
 	moveToNewCoordinates();
-	if( !shown ) {
-		shown = ::ShowCaret( window->windowHandle ) != 0;
+	if( !isShown ) {
+		isShown = ::ShowCaret( window->windowHandle ) != 0;
 	}
 }
 
+// Скрыть каретку.
 void CEditWindow::CCaret::Hide()
 {
-	if( shown ) {
+	if( isShown ) {
 		::HideCaret( window->windowHandle );
-		shown = false;
+		isShown = false;
 	}
 }
 
 void CEditWindow::CCaret::Destroy()
 {
-	shown = false;
+	isShown = false;
 	::DestroyCaret();
 }
 
+// Сдвигает каретку на единицу в данном направлении.
 void CEditWindow::CCaret::Move( CEditWindow::TCaretDirection direction )
 {
 	switch( direction ) {
@@ -697,6 +691,14 @@ void CEditWindow::CCaret::Move( CEditWindow::TCaretDirection direction )
 	}
 }
 
+// Сдвигает каретку в определенную позицию.
+void CEditWindow::CCaret::MoveTo( const CSymbolPosition& newPosition ) 
+{
+	CSymbolPosition tmp( newPosition );
+	std::swap( caretPosition, tmp );
+}
+
+// Переместить каретку в соответствии с координатами в окне.
 void CEditWindow::CCaret::MoveTo( int x, int y )
 {
 	std::unique_ptr<const CSymbolPosition> tmp( window->finder.FindPosition( x, y, window->firstEnablePosition ) );
@@ -713,16 +715,19 @@ void CEditWindow::CCaret::MoveTo( int x, int y )
 	}
 }
 
-void CEditWindow::CCaret::MoveTo( const CSymbolPosition& newPosition ) 
+// Изменить высоту каретки.
+void CEditWindow::CCaret::changeHeight( int newHeight )
 {
-	CSymbolPosition tmp( newPosition );
-	std::swap( caretPosition, tmp );
+	bool wasShown = isShown;
+	height = newHeight;
+	Destroy();
+	Create();
+	if( wasShown ) {
+		Show();
+	}
 }
 
-// этот код вынесен в отдельные методы
-// для того чтобы функция CEditWindow::CCaret::Move не получилась слишком большой
-
-// сдвигает каретку на единицу вверх
+// Передвижения каретки для каждого из 4-ех направлений.
 void CEditWindow::CCaret::moveUp()
 {
 	if( caretPosition.GetParent() == 0 ) {
@@ -734,7 +739,7 @@ void CEditWindow::CCaret::moveUp()
 	moveToNewCoordinates();
 }
 
-// сдвигает каретку на единицу вниз
+// Передвижения каретки для каждого из 4-ех направлений.
 void CEditWindow::CCaret::moveDown()
 {
 	if( caretPosition.GetParent() == 0 ) {
@@ -746,7 +751,7 @@ void CEditWindow::CCaret::moveDown()
 	moveToNewCoordinates();
 }
 
-// сдвигает каретку на единицу влево
+// Передвижения каретки для каждого из 4-ех направлений.
 void CEditWindow::CCaret::moveLeft()
 {
 	if( caretPosition.Index > window->firstEnablePosition || ( caretPosition.GetParent() != 0 && caretPosition.Index > 0 ) ) {
@@ -779,7 +784,7 @@ void CEditWindow::CCaret::moveLeft()
 	moveToNewCoordinates();
 }
 
-// сдвигает каретку на единицу в право
+// Передвижения каретки для каждого из 4-ех направлений.
 void CEditWindow::CCaret::moveRight()
 {
 	if( caretPosition.CurrentLine->Length() > caretPosition.Index ) {
@@ -795,7 +800,7 @@ void CEditWindow::CCaret::moveRight()
 		std::vector<const CLineOfSymbols*> tmpSubstrings;
 		const CSymbolPosition* parent = caretPosition.GetParent();
 		( *parent->CurrentLine )[parent->Index]->GetSubstrings( tmpSubstrings );
-		int currentLineIdx = 0;
+		size_t currentLineIdx = 0;
 		for( ; currentLineIdx < tmpSubstrings.size(); ++currentLineIdx ) {
 			if( tmpSubstrings[currentLineIdx] == caretPosition.CurrentLine ) {
 				break;
@@ -811,6 +816,7 @@ void CEditWindow::CCaret::moveRight()
 	moveToNewCoordinates();
 }
 
+// Сместить каретку к заданной в ней позиции.
 void CEditWindow::CCaret::moveToNewCoordinates()
 {
 	const CLineOfSymbols* caretLine = caretPosition.CurrentLine;
@@ -834,19 +840,7 @@ void CEditWindow::CCaret::moveToNewCoordinates()
 	::SetCaretPos( x, y );
 }
 
-// меняет высоту каретки
-void CEditWindow::CCaret::changeHeight( int newHeight )
-{
-	bool wasShown = shown;
-	height = newHeight;
-	Destroy();
-	Create();
-	if( wasShown ) {
-		Show();
-	}
-}
-
-// Установить известные переменные в соответствии с типом.
+// Установить известные переменные в соответствии с типом функции.
 void CEditWindow::setVariables()
 {
 	switch( currentFunctionType ) {
@@ -925,10 +919,11 @@ void CEditWindow::setBaseContent()
 	}
 }
 
+// Вставка в массив строк явных описаний функций.
 void CEditWindow::insertOneParametrFunc( wchar_t funcName, wchar_t parametrName )
 {
 	content.push_back( CLineOfSymbols( simpleSymbolHeight, true ) );
-	int i = static_cast<int>( content.size() - 1 );
+	size_t i = content.size() - 1;
 	content[i].PushBack( new CSimpleSymbol( funcName ) );
 	content[i].PushBack( new CSimpleSymbol( '(' ) );
 	content[i].PushBack( new CSimpleSymbol( parametrName ) );
@@ -936,10 +931,11 @@ void CEditWindow::insertOneParametrFunc( wchar_t funcName, wchar_t parametrName 
 	content[i].PushBack( new CSimpleSymbol( '=' ) );
 }
 
+// Вставка в массив строк явных описаний функций.
 void CEditWindow::insertTwoParametrFunc( wchar_t funcName, wchar_t firstParametrName, wchar_t secondParametrName )
 {
 	content.push_back( CLineOfSymbols( simpleSymbolHeight, true ) );
-	int i = static_cast<int>( content.size() - 1 );
+	size_t i = content.size() - 1;
 	content[i].PushBack( new CSimpleSymbol( funcName ) );
 	content[i].PushBack( new CSimpleSymbol( '(' ) );
 	content[i].PushBack( new CSimpleSymbol( firstParametrName ) );
@@ -949,6 +945,7 @@ void CEditWindow::insertTwoParametrFunc( wchar_t funcName, wchar_t firstParametr
 	content[i].PushBack( new CSimpleSymbol( '=' ) );
 }
 
+// Запись в файл выделенных символов.
 bool CEditWindow::writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) const
 {
 	HANDLE file = ::CreateFile( fileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, 0,
@@ -976,4 +973,47 @@ bool CEditWindow::writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) c
 		ConvertFormula( inputAsString, SF_LATEX, format, inputAsString );
 	}
 	return outputString.size() == countBytes;
+}
+
+// Стандартная процедура обработки сообщений окном.
+LRESULT __stdcall CEditWindow::windowProcedure( HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam )
+{
+	if( message == WM_NCCREATE ) {
+		::SetWindowLong( windowHandle, GWL_USERDATA, reinterpret_cast<LONG>( reinterpret_cast<CREATESTRUCT*>( lParam )->lpCreateParams ) );
+	}
+
+	CEditWindow* window = reinterpret_cast<CEditWindow*>( ::GetWindowLong( windowHandle, GWL_USERDATA ) );
+
+	switch( message ) {
+	case WM_REDACTOR_OK:
+		::SendMessage( window->parentHandle, WM_REDACTOR_OK, 0, 0 );
+		return 0;
+	case WM_CLOSE:
+		window->OnWmDestroy();
+		break;
+	case WM_PAINT:
+		window->OnWmPaint();
+		break;
+	case WM_HSCROLL:
+		window->OnWmHScroll( wParam, lParam );
+		break;
+	case WM_VSCROLL:
+		window->OnWmVScroll( wParam, lParam );
+		break;
+	case WM_SIZE:
+		window->OnWmSize( lParam );
+		break;
+	case WM_LBUTTONDOWN:
+		window->OnLButDown( lParam );
+		break;
+	case WM_MOUSEMOVE:
+		if( wParam & MK_LBUTTON ) {
+			window->OnLockedMouseMove( lParam );
+		}
+		break;
+	case WM_LBUTTONUP:
+		window->OnLButUp( lParam );
+		break;
+	}
+	return ::DefWindowProc( windowHandle, message, wParam, lParam );
 }

@@ -1,13 +1,13 @@
-﻿// Автор: Федюнин Валерий
-// Описание: обработчик команд Ribbon'а
+﻿// Автор: Федюнин Валерий.
+
+// Описание: обработчик команд Ribbon'а.
 
 #pragma once
 
 #include <UIRibbon.h>
-
 #include "EditWindow.h"
 
-// обработчик команд Ribbon'а в приложении MathRedactor
+// обработчик команд Ribbon'а в приложении MathRedactor.
 class CCommandHandler : public IUICommandHandler {
 public:
 	CCommandHandler( CEditWindow* );
