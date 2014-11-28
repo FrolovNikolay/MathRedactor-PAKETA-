@@ -45,9 +45,6 @@
     <ClCompile Include="IndexSymbol.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
-    <ClCompile Include="instruments.cpp">
-      <Filter>Файлы исходного кода</Filter>
-    </ClCompile>
     <ClCompile Include="RootSymbol.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
@@ -93,9 +90,6 @@
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="IndexSymbol.h">
-      <Filter>Заголовочные файлы</Filter>
-    </ClInclude>
-    <ClInclude Include="instruments.h">
       <Filter>Заголовочные файлы</Filter>
     </ClInclude>
     <ClInclude Include="RootSymbol.h">

@@ -1,7 +1,6 @@
 ﻿// Автор: Николай Фролов.
 
 #include "ItemSelector.h"
-#include "PositionFinder.h"
 
 CItemSelector::CItemSelector( const CPositionFinder& _finder, const std::vector<CLineOfSymbols>& _content ) 
 	: finder( _finder )
@@ -10,21 +9,27 @@ CItemSelector::CItemSelector( const CPositionFinder& _finder, const std::vector<
 	, end( 0 )
 { }
 
+// Установка начальной позиции курсора.
 void CItemSelector::SetStartPosition( int x, int y, int firstEnableSymbol )
 {
 	std::shared_ptr<CSymbolPosition> tmp( finder.FindPosition( x, y, firstEnableSymbol ) );
+	// Если индекс -1, то пытаемся выделить в пустой подстроке символа, значит выделять нечего.
 	if( tmp->Index != -1 ) {
 		start.swap( tmp );
 	}
 }
 
+// Установка текущей позиции курсора.
 void CItemSelector::SetCurrentPosition( int x, int y, int firstEnableSymbol )
 {
+	// Если начальное положение не задано, то ничего не выделяем.
 	if( start != 0 ) {
 		std::shared_ptr<CSymbolPosition> tmp( finder.FindPosition( x, y, firstEnableSymbol, start.get() ) );
 		end.swap( tmp );
 	}
 }
+
+// Снять выделение.
 void CItemSelector::ResetSelection()
 {
 	std::shared_ptr<CSymbolPosition> tmpStart( 0 );
@@ -33,8 +38,10 @@ void CItemSelector::ResetSelection()
 	end.swap( tmpEnd );
 }
 
+// Информация о выделенных объектах.
 CItemSelector::CSymbolInterval CItemSelector::GetSelectionInfo() const
 {
+	// В случае выделения по всему редактору нужна дополнительна обработка.
 	if( start->GetParent() == 0 ) {
 		int startIdx = -1;
 		while( &content[++startIdx] != start->CurrentLine )	{ }
@@ -60,6 +67,7 @@ CItemSelector::CSymbolInterval CItemSelector::GetSelectionInfo() const
 			}
 		}
 	} else {
+		// Упорядочиваем позиции символов.
 		if( start->Index > end->Index ) {
 			return std::make_pair( *end, *start );
 		} else {
@@ -68,6 +76,7 @@ CItemSelector::CSymbolInterval CItemSelector::GetSelectionInfo() const
 	}
 }
 
+// Переход к следующему непустому символу.
 void CItemSelector::goToNextSymbol( int& lineIdx, CSymbolPosition& position ) const
 {
 	if( position.CurrentLine->Length() == position.Index ) {
@@ -80,6 +89,7 @@ void CItemSelector::goToNextSymbol( int& lineIdx, CSymbolPosition& position ) co
 	}
 }
 
+// Переход к предыдущему непустому символу.
 void CItemSelector::goToPrevSymbol( int& lineIdx, CSymbolPosition& position ) const
 {
 	if( position.CurrentLine->Length() == position.Index ) {

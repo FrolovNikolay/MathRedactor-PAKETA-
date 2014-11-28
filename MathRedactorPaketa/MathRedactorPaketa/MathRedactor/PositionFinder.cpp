@@ -1,10 +1,11 @@
 ﻿// Автор: Николай Фролов.
 
 #include "PositionFinder.h"
-#include "instruments.h"
 
+// Получить позицию, соответствующую указанной точке.
 CSymbolPosition* CPositionFinder::FindPosition( int x, int y, int firstEnableSymbol, CSymbolPosition* baseLine ) const
 {
+	// Если задана родительская линия, и она не базовая, то просто ищем в ней.
 	if( baseLine != 0 && baseLine->GetParent() != 0 ) {
 		return positionInLine( x, y, baseLine );
 	} else {
@@ -43,6 +44,7 @@ CSymbolPosition* CPositionFinder::FindPosition( int x, int y, int firstEnableSym
 	}
 }
 
+// Попытаться уточнить связанную с координатами позицию.
 CSymbolPosition* CPositionFinder::exactPosition( int x, int y, CSymbolPosition* parent ) const
 {
 	std::vector<const CLineOfSymbols*> substings;
@@ -53,9 +55,10 @@ CSymbolPosition* CPositionFinder::exactPosition( int x, int y, CSymbolPosition* 
 	if( substings.size() == 0 ) {
 		return parent;
 	} else {
+		// Смещение связанное со скроллом.
 		int moveX = content[0].GetX();
 		int moveY = content[0].GetY();
-		for( int i = 0; i < static_cast<int>( substings.size() ); ++i ) {
+		for( size_t i = 0; i < substings.size(); ++i ) {
 			if( IsLineContainPoint( substings[i], x + moveX, y + moveY ) ) {
 				std::unique_ptr<CSymbolPosition> tmp( new CSymbolPosition( 0, substings[i], parent ) );
 				return exactPosition( x, y, positionInLine( x, y, tmp.get() ) );
@@ -65,6 +68,7 @@ CSymbolPosition* CPositionFinder::exactPosition( int x, int y, CSymbolPosition* 
 	}
 }
 
+// Найти значение позиции символа внутри строки.
 CSymbolPosition* CPositionFinder::positionInLine( int x, int y, CSymbolPosition* baseLine ) const
 { 
 	if( baseLine->CurrentLine->Length() == 0 ) {
@@ -79,4 +83,18 @@ CSymbolPosition* CPositionFinder::positionInLine( int x, int y, CSymbolPosition*
 		}
 	}
 	return new CSymbolPosition( baseLine->CurrentLine->Length() - 1, *baseLine ); 
+}
+
+// Проверям попадает ли данная точка в данную линию.
+bool CPositionFinder::IsLineContainPoint( const CLineOfSymbols* line, int x, int y )
+{
+	int leftTopX = line->GetX();
+	int leftTopY = line->GetY();
+	int height = line->GetHeight();
+	int width = line->GetWidth();
+	if( leftTopX <= x && x <= leftTopX + width && leftTopY <= y && y <= leftTopY + height ) {
+		return true;
+	} else {
+		return false;
+	}
 }

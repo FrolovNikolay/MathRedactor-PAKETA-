@@ -78,7 +78,6 @@
     <ClCompile Include="FractionSymbol.cpp" />
     <ClCompile Include="FunctionSymbol.cpp" />
     <ClCompile Include="IndexSymbol.cpp" />
-    <ClCompile Include="instruments.cpp" />
     <ClCompile Include="ItemSelector.cpp" />
     <ClCompile Include="LineOfSymbols.cpp" />
     <ClCompile Include="main.cpp" />
@@ -99,7 +98,6 @@
     <ClInclude Include="EditWindowDrawer.h" />
     <ClInclude Include="FractionSymbol.h" />
     <ClInclude Include="FunctionSymbol.h" />
-    <ClInclude Include="instruments.h" />
     <ClInclude Include="ItemSelector.h" />
     <ClInclude Include="LineOfSymbols.h" />
     <ClInclude Include="MainWindow.h" />
