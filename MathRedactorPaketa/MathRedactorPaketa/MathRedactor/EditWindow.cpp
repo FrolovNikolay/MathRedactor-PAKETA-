@@ -2,15 +2,11 @@
 
 #include "EditWindow.h"
 #include "SimpleSymbol.h"
-#include "FractionSymbol.h"
-#include "SigmaSymbol.h"
-#include "IndexSymbol.h"
-#include "instruments.h"
-#include <assert.h>
-#include <windowsx.h>
-#include "SymbolPosition.h"
 #include <MathValidator.h>
 #include <TranslatorDLLInterface.h>
+
+#include <assert.h>
+#include <windowsx.h>
 
 // Имя класса окна.
 const wchar_t* CEditWindow::className = L"MathRedactorEditWindowClass";

@@ -1,9 +1,6 @@
-﻿// Автор: Федюнин Валерий
+﻿// Автор: Федюнин Валерий.
 
 #include "CommandHandler.h"
-
-#include <assert.h>
-
 #include "FractionSymbol.h"
 #include "SimpleSymbol.h"
 #include "SigmaSymbol.h"
@@ -12,21 +9,28 @@
 #include "RibbonIDs.h"
 #include "FunctionSymbol.h"
 
-CCommandHandler::CCommandHandler( CEditWindow* _editWindow) {
+#include <assert.h>
+
+CCommandHandler::CCommandHandler( CEditWindow* _editWindow ) {
 	editWindow = _editWindow;
 	referenceCount = 1;
 }
 
+// Реализация IUnknown.
+
+// Добавить ссылку.
 STDMETHODIMP_( ULONG ) CCommandHandler::AddRef()
 {
 	return ::InterlockedIncrement( &referenceCount );
 }
 
+// Убрать ссылку.
 STDMETHODIMP_( ULONG ) CCommandHandler::Release()
 {
 	return ::InterlockedDecrement( &referenceCount );
 }
 
+// Передать объект как указатель на нужный тип.
 STDMETHODIMP CCommandHandler::QueryInterface( REFIID type, void** res )
 {
 	if( type == __uuidof( IUnknown ) ) {
@@ -42,12 +46,16 @@ STDMETHODIMP CCommandHandler::QueryInterface( REFIID type, void** res )
 	return S_OK;
 }
 
+// Реализация IUICommandHandler.
+
+// Изменяет свойства Ribbon'а.
 STDMETHODIMP CCommandHandler::UpdateProperty( UINT nCmdId, REFPROPERTYKEY key, const PROPVARIANT* propvarCurrentValue,
 	PROPVARIANT* propvarNewValue )
 {
 	return E_NOTIMPL;
 }
 
+// Выполняет нужную команду из этого обработчика.
 STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const PROPERTYKEY* key,
 	const PROPVARIANT* propvarValue, IUISimplePropertySet* pCommandExecutionProperties )
 {

@@ -4,14 +4,15 @@
 
 #pragma once
 
-#include <Windows.h>
-#include <vector>
-#include <set>
 #include "LineOfSymbols.h"
 #include "ItemSelector.h"
 #include "PositionFinder.h"
 #include "EditWindowDrawer.h"
 #include "Messages.h"
+
+#include <Windows.h>
+#include <vector>
+#include <set>
 
 // Поддерживаемые виды функций.
 enum TFunctionType {

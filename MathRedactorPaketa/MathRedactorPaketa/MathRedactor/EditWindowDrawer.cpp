@@ -56,6 +56,7 @@ CEditWindowDrawer& CEditWindowDrawer::operator = ( const CEditWindowDrawer& src 
 	return *this;
 }
 
+// Выполнить перерисовку окна.
 void CEditWindowDrawer::RePaint( HWND windowHandle ) const
 {
 	PAINTSTRUCT paintInfo;
@@ -76,12 +77,14 @@ void CEditWindowDrawer::RePaint( HWND windowHandle ) const
 	::Rectangle( tempHDC, 0, 0, width, height );
 	::SelectObject( tempHDC, oldBgBrush );
 
+	// Отрисовка выделения.
 	drawSelection( windowHandle );
 
 	HFONT oldFont = static_cast<HFONT>( ::SelectObject( tempHDC, font ) );
 	HPEN oldLinePen = static_cast<HPEN>( ::SelectObject( tempHDC, linePen ) );
 	::SetBkMode( tempHDC, TRANSPARENT );
 
+	// Отрисовка символов в редакторе.
 	int offsetY = 0;
 	for( int i = 0; i < static_cast<int>( content.size() ); ++i ) {
 		content[i].Draw( tempHDC, -leftTopX, -leftTopY + offsetY );
@@ -100,17 +103,21 @@ void CEditWindowDrawer::RePaint( HWND windowHandle ) const
 	::EndPaint( windowHandle, &paintInfo );
 }
 
+// Отрисовать в окне выделение.
 void CEditWindowDrawer::drawSelection( HWND windowHandle ) const
 {
 	if( selector.HasSelection() ) {
 		CItemSelector::CSymbolInterval interval = selector.GetSelectionInfo();
 		CSymbolPosition start = interval.first;
 		CSymbolPosition end = interval.second;
+		// Если начальные индексы -1, то значит выделение отсутствует.
 		if( start.Index == -1 || end.Index == -1 ) {
 			return;
 		}
+		// Если заданные символы из базовых строк, то необходимо глобальное выделение.
 		if( start.GetParent() == 0 && end.GetParent() == 0 ) {
 			drawGlobalSelection( start, end, windowHandle );
+		// Иначе выделение происходит в пределах одной внутренней строки.
 		} else if( start.GetParent() != 0 && end.GetParent() != 0 ) {
 			drawLocalSelection( start, end, windowHandle );
 		} else {
@@ -120,6 +127,7 @@ void CEditWindowDrawer::drawSelection( HWND windowHandle ) const
 	}
 }
 
+// Отрисовать выделение в редакторе в зависимости от заданных начального и конечного символов.
 void CEditWindowDrawer::drawGlobalSelection( const CSymbolPosition& start, const CSymbolPosition& end, HWND windowHandle ) const
 {
 	if( start.CurrentLine == end.CurrentLine ) {
@@ -141,11 +149,14 @@ void CEditWindowDrawer::drawGlobalSelection( const CSymbolPosition& start, const
 	}
 }
 
+// Отрисовать выделение в редакторе в пределах строки в зависимости от заданных начального и конечного символов.
 void CEditWindowDrawer::drawLocalSelection( const CSymbolPosition& start, const CSymbolPosition& end, HWND windowHandle ) const
 {
 	HBRUSH lastBrush = static_cast<HBRUSH>( ::SelectObject( tempHDC, selectionBrush ) );
 	HPEN oldPen = static_cast<HPEN>( ::SelectObject( tempHDC, selectionPen ) );
 
+	// Так как символы еще не отрисованы, то в них не обновилась информация
+	// соответствующая скроллированию. Необходимо просчитать ее здесь заранее.
 	int moveX = 0;
 	int moveY = 0;
 	{
@@ -169,6 +180,7 @@ void CEditWindowDrawer::drawLocalSelection( const CSymbolPosition& start, const 
 	::SelectObject( tempHDC, oldPen );
 }
 
+// Получить размеры и смещение скролла окна-владельца.
 void CEditWindowDrawer::getWindowInfo( int& leftTopX, int& leftTopY, int& width, int& height, HWND windowHandle ) const
 {
 	SCROLLINFO scrollInfo;

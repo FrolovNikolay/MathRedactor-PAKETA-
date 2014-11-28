@@ -12,19 +12,21 @@ class CCommandHandler : public IUICommandHandler {
 public:
 	CCommandHandler( CEditWindow* );
 
-	// реализация IUnknown
-	// добавить ссылку
+	// Реализация IUnknown.
+
+	// Добавить ссылку.
 	STDMETHOD_( ULONG, AddRef() );
-	// убрать ссылку
+	// Убрать ссылку.
 	STDMETHOD_( ULONG, Release() );
-	// передать объект как указатель на нужный тип
+	// Передать объект как указатель на нужный тип.
 	STDMETHOD( QueryInterface( REFIID type, void** res ) );
 
-	// реализация IUICommandHandler
-	// изменяет свойства Ribbon'а
+	// Реализация IUICommandHandler.
+
+	// Изменяет свойства Ribbon'а.
 	STDMETHOD( UpdateProperty )( UINT nCmdID, REFPROPERTYKEY key, 
 		const PROPVARIANT* ppropvarCurrentValue, PROPVARIANT* ppropvarNewValue );
-	// выполняет нужную команду из этого обработчика
+	// Выполняет нужную команду из этого обработчика.
 	STDMETHOD( Execute )( UINT nCmdID, UI_EXECUTIONVERB verb, const PROPERTYKEY* key,
 		const PROPVARIANT* ppropvarValue, IUISimplePropertySet* pCommandExecutionProperties );
 
