@@ -62,6 +62,7 @@ void CFunctionSymbol::Draw( HDC displayHandle, int posX, int posY, int simpleSym
 
 	//Обновляем информацию
 	x = posX;
+	y = posY;
 	width =  argumentWidth + functionNameWidth + closingBracketWidth + openingBracketWidth;
 	height = simpleSymbolHeight;
 }
@@ -92,7 +93,7 @@ int CFunctionSymbol::GetBaselineOffset( int simpleSymbolHeight ) const
 
 int CFunctionSymbol::GetDescent( int simpleSymbolHeight ) const
 {
-	return max( functionName.GetHeight(), argumentLine.GetHeight() );
+	return max( functionName.GetHeight() - functionName.getBaselineOffset(), argumentLine.GetHeight() - argumentLine.getBaselineOffset() );
 }
 
 // Преобразование символа в необходимый плоттеру формат.

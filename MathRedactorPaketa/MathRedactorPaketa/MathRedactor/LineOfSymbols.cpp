@@ -152,6 +152,8 @@ void CLineOfSymbols::Recalculate()
 {
 	if( !isBase && arrayOfSymbolPtrs.empty() ) {
 		height = simpleSymbolHeight;
+		int descent = simpleSymbolHeight;
+		baselineOffset = 0;
 	} else {
 		int descent = simpleSymbolHeight;
 		baselineOffset = 0;
