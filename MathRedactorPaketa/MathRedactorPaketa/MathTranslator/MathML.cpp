@@ -490,6 +490,22 @@ void linkNewElem( TiXmlElement* parent, const char* param, const char* val )
     parent->LinkEndChild( element );
 }
 
+std::string getFunctionName( TNodeType type ) {
+	switch( type )
+	{
+	case NT_SIN:
+		return "sin";
+	case NT_COS:
+		return "cos";
+	case NT_TAN:
+		return "tg";
+	case NT_COT:
+		return "ctg";
+	default:
+		assert( false );
+	}
+	return "";
+}
 void saveTreeToXml( TiXmlElement* pElem, shared_ptr<MathObj> obj, bool isNewRow )
 {
     if( isNewRow ) {
@@ -504,7 +520,7 @@ void saveTreeToXml( TiXmlElement* pElem, shared_ptr<MathObj> obj, bool isNewRow 
     if( objType == "class ParamObj" ) 
     {
         std::string val = static_pointer_cast< ParamObj >( obj )->GetVal();
-        if( val[0] < 48 || val[0] > 57 ) // если значение начинается с буквы, то - идентификатор 
+		if( val[0] < '0' || val[0] > '9' ) // если значение начинается с буквы, то - идентификатор 
         {
             linkNewElem( pElem, "mi", val.c_str() );
         }
@@ -629,6 +645,15 @@ void saveTreeToXml( TiXmlElement* pElem, shared_ptr<MathObj> obj, bool isNewRow 
             saveTreeToXml( pElem, *itLast, isNewRow );
             break;
 
+		case NT_SIN:
+		case NT_COS:
+		case NT_TAN:
+		case NT_COT:
+		{
+			linkNewElem( pElem, "mo", getFunctionName( type ).c_str() );
+			saveTreeToXml( pElem, *it, false );
+			break;
+		}
         default:
             std::cerr << "Ошибка, не поддерживаемый (пока) тип оператора, код: " << type << std::endl;
         }

@@ -1,4 +1,6 @@
-﻿#include "stdafx.h"
+﻿#pragma once
+
+#include "stdafx.h"
 #include "MathFormObj.h"
 #include "targetver.h"
 #include "tinystr.h"
@@ -46,5 +48,7 @@ void addArgToData( TiXmlElement* elem, vector<shared_ptr<MathObj>>::iterator pla
 void addRowToData( TiXmlElement* elem, vector<shared_ptr<MathObj>>::iterator place );
 
 void saveTreeToXml( TiXmlElement*, shared_ptr<MathObj>, bool ); // преобразует дерево разбора в xml документ, начиная с определенной вершины
+
+std::string getFunctionName( TNodeType type );
 
 void linkNewElem( TiXmlElement*, shared_ptr<char>, shared_ptr<std::string> ); // добавляет в xml документе новый элемент с заданным тегом и значением
