@@ -10,7 +10,7 @@ CTokenFinder::CTokenFinder()
 	functions["cos"] = TT_COS;
 	functions["cot"] = TT_COT;
 	functions["frac"] = TT_FRAC;
-	functions["prod"] = TT_PROD;
+	functions["mul"] = TT_PROD;
 	functions["sin"] = TT_SIN;
 	functions["sum"] = TT_SUM;
 	functions["tan"] = TT_TAN;

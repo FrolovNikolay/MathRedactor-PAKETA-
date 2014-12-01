@@ -645,15 +645,30 @@ void saveTreeToXml( TiXmlElement* pElem, shared_ptr<MathObj> obj, bool isNewRow 
             saveTreeToXml( pElem, *itLast, isNewRow );
             break;
 
+		case NT_SUM:
+		case NT_PROD:
+		{
+			element = new TiXmlElement( "munderover" );
+			pElem->LinkEndChild( element );
+			TiXmlElement* sign = new TiXmlElement( "mo" );
+			if( type == NT_PROD ) {
+				sign->LinkEndChild( new TiXmlText( "∏" ) );
+			} else {
+				sign->LinkEndChild( new TiXmlText( "∑" ) );
+			}
+			element->LinkEndChild( sign );
+			saveTreeToXml( element, *it, true );
+			saveTreeToXml( element, *( ++it ), true );
+			saveTreeToXml( pElem, *itLast, isNewRow );
+		}
+			break;
 		case NT_SIN:
 		case NT_COS:
 		case NT_TAN:
 		case NT_COT:
-		{
 			linkNewElem( pElem, "mo", getFunctionName( type ).c_str() );
 			saveTreeToXml( pElem, *it, false );
 			break;
-		}
         default:
             std::cerr << "Ошибка, не поддерживаемый (пока) тип оператора, код: " << type << std::endl;
         }
