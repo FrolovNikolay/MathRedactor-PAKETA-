@@ -13,16 +13,16 @@ public:
 	CEngineCamera(int clientWidth = 640, int clientHeight = 480);
 
 	// Устанавливает камеру в заданную точку трёхмерного пространства
-	void SetPosition(C3DPoint position);
+	void SetPosition( const C3DPoint& position);
 
 	// Устанавливает вектор, в направлении которого "смотрит" камера
-	void SetViewDirection(C3DPoint viewDirection);
+	void SetViewDirection( const C3DPoint& viewDirection);
 
 	// Устанавливает точку, куда "смотрит" камера
-	void SetViewPoint(C3DPoint viewPoint);
+	void SetViewPoint(const C3DPoint& viewPoint);
 
 	// Устанавливает вертикальный вектор камеры (куда "смотрит" вверх камеры)
-	void SetUpVector(C3DPoint upVector);
+	void SetUpVector( const C3DPoint& upVector);
 
 	// Двигает камеру вперёд/назад
 	void MoveForward(double speed = 1.0f);

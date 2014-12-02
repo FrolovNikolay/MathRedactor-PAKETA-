@@ -91,7 +91,7 @@ void CEngineCamera::SetWindowSize( int clientWidth_, int clientHeight_ )
 void CEngineCamera::transform( const C3DModel& object )
 {
 	// Копируем исходный объект
-	cameraModel = C3DModel( object );
+	cameraModel = object;
 
 	// Пробегаемся по всем его точкам и модифицируем при помощи матрицы преобразований
 	for( auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++ ) {
@@ -105,12 +105,13 @@ void CEngineCamera::filter()
 
 	// В первом приближении мы просто будем удалять те отрезки и треугольники, у которых хотя бы одна вершина попадает
 	// вне области видимости камеры 
-	std::set<int> pointNumbersForErase; // индексы удаляемых точек
+	
+	std::vector<bool> pointNumbersForErase( cameraModel.Points.size(), false ); // индексы удаляемых точек
 	int counter = 0;
 	for( auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++ ) {
 		// Если точка находится вне области видимости
 		if( point->Z < NearZ || point->Z > FarZ || std::abs( point->X ) > point->Z ) {
-			pointNumbersForErase.insert( counter );
+			pointNumbersForErase[ counter ] = true;
 		}
 		counter += 1;
 	}
@@ -119,8 +120,7 @@ void CEngineCamera::filter()
 	auto segment = cameraModel.Segments.begin();
 	while( segment != cameraModel.Segments.end() ) {
 		// Если попадает под условие (один из концов находится среди удаляемых точек), то удаляем
-		if( pointNumbersForErase.find( segment->First ) != pointNumbersForErase.end() &&
-			pointNumbersForErase.find( segment->Second ) != pointNumbersForErase.end() ) {
+		if (pointNumbersForErase[segment->First] &&	pointNumbersForErase[segment->Second] ) {
 			segment = cameraModel.Segments.erase( segment );
 		}
 		// Иначе переходим к следующему элементу
@@ -133,9 +133,10 @@ void CEngineCamera::filter()
 	auto triangle = cameraModel.Triangles.begin();
 	while( triangle != cameraModel.Triangles.end() ) {
 		// Если попадает под условие (одна из вершин треугольника попадает в точки), то удаляем
-		if( pointNumbersForErase.find( triangle->First ) != pointNumbersForErase.end() &&
-			pointNumbersForErase.find( triangle->Second ) != pointNumbersForErase.end() &&
-			pointNumbersForErase.find( triangle->Third ) != pointNumbersForErase.end() ) {
+		if( pointNumbersForErase[triangle->First] &&
+			pointNumbersForErase[triangle->Second] &&
+			pointNumbersForErase[triangle->Third] )
+		{
 			triangle = cameraModel.Triangles.erase( triangle );
 		}
 		// Иначе переходим к следующему элементу
@@ -168,25 +169,25 @@ C3DPoint CEngineCamera::modifyPoint( C3DPoint originPoint ) const
 	return TransformMatrix.ProjectPoint( originPoint );
 }
 
-void CEngineCamera::SetPosition( C3DPoint point )
+void CEngineCamera::SetPosition( const C3DPoint& point )
 {
 	Position = point;
 	UpdateRightVector();
 	UpdateTransformMatrix();
 }
 
-void CEngineCamera::SetViewDirection( C3DPoint viewDirection_ )
+void CEngineCamera::SetViewDirection( const C3DPoint& viewDirection_ )
 {
 	ViewDirection = viewDirection_.normalize();
 	UpdateTransformMatrix();
 }
 
-void CEngineCamera::SetViewPoint( C3DPoint viewPoint )
+void CEngineCamera::SetViewPoint( const C3DPoint& viewPoint )
 {
 	SetViewDirection( viewPoint - Position );
 }
 
-void CEngineCamera::SetUpVector( C3DPoint upVector_ )
+void CEngineCamera::SetUpVector( const C3DPoint& upVector_ )
 {
 	UpVector = upVector_.normalize();
 	UpdateRightVector();
