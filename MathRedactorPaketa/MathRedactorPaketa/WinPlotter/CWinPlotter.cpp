@@ -116,19 +116,13 @@ void CWinPlotter::PaintObject()
 	// Делаем рендер осей
 	engine.Render( axisObject, axisRenderedObject, false );
 
-
 	RECT rect;
 	GetClientRect( handle, &rect );
 	PAINTSTRUCT paintStruct;
 
 	HDC currentDC = BeginPaint( handle, &paintStruct );
-
-	HBITMAP currentBitmap;
-
-	currentBitmap = CreateCompatibleBitmap( currentDC, rect.right - rect.left, rect.bottom - rect.top );
 	PatBlt( currentDC, 0, 0, rect.right - rect.left, rect.bottom - rect.top, BLACKNESS );
-
-
+	
 	HPEN linePen = ::CreatePen( PS_SOLID, 1, RGB( 0, 255, 0 ) );
 	HPEN currentPen = ( HPEN )::SelectObject( currentDC, linePen );
 
@@ -189,7 +183,6 @@ void CWinPlotter::PaintObject()
 	::DeleteObject( axisPen );
 
 	::SelectObject( currentDC, currentPen );
-	::DeleteObject( currentBitmap );
 	DeleteDC( currentDC );
 
 	EndPaint( handle, &paintStruct );
