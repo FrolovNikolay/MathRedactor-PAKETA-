@@ -189,7 +189,7 @@ void CEditWindow::NewLine()
 // Получить содержимое редактора в формате для плоттера.
 std::string CEditWindow::CalculateStringForPlotter() const
 {
-	std::string result = "";
+	std::string result;
 	for( size_t i = 0; i < content.size(); ++i ) {
 		// Для каждой из строк добавляем описание функции.
 		result += content[i][0]->ToPlotterString();
@@ -210,7 +210,7 @@ std::string CEditWindow::CalculateStringForPlotter() const
 // Получить содержимое редактора в Latex формате.
 std::string CEditWindow::CalculateLatexString() const
 {
-	std::string result = "";
+	std::string result;
 	for( size_t i = 0; i < content.size(); ++i ) {
 		result += content[i].ToLatexString() + "\n";
 	}
@@ -242,6 +242,7 @@ void CEditWindow::SetFunctionType( TFunctionType fType )
 	}
 
 	// Устанавливаем содержимое окна в соответствии с выбором пользователя.
+	symbolSelector.ResetSelection();
 	content.clear();
 	knownVariables.clear();
 	// Важно! Установка типа должна произойти до изменяющих устанавливающих функций.
