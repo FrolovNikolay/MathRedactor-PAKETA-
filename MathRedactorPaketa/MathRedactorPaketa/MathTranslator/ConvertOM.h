@@ -13,5 +13,3 @@ void ConvertToOM( std::string, shared_ptr<MathObj> ); // Конвертируе�
 void ConvertObjToElem( AttrCollection*, TiXmlElement*, shared_ptr<MathObj> ); // Конвертирует в DOM, принимая на вход указатель на текущий элемент MathObj
 void SetFormulaElementAttribute( AttrCollection*, TiXmlElement*, const TNodeType ); // Устанавливает элементу DOM нужные атрибуты
 void SetFormulaObjType( IdCollection*, shared_ptr<FormulaObj>, std::string*, std::string* ); // Устанавливает элементу FormulaObj нужный флаг в зависимости от атрибутов 
-void LoadIdTable( IdCollection* ); // Подгружает таблицу операторов
-void LoadAttrTable( AttrCollection* ); // Подгружает таблицу атрибутов

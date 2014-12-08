@@ -9,55 +9,12 @@
 #include <fstream>
 
 
-void LoadIdTable( IdCollection* ids )
-{
-    std::ifstream fin( "OMTable.txt" ); //  в данном файле содержится таблица соответствия атрибутов операндов идентификаторам
-    std::string type, contDict, name;
-    int id;
-    while( fin ) // считываем файл и заполняем контейнер данными из таблицы
-    {
-        fin >> id >> type >> contDict >> name;
-        if( fin )
-        {
-            if( name == "times" ) // так как умножения два, то пока что такой костыль.
-            {
-                if( contDict == "arith1" )
-                {
-                    ( *ids )[name + "1"] = std::make_pair( contDict, id );
-                }
-                else
-                {
-                    ( *ids )[name + "2"] = std::make_pair( contDict, id );
-                }
-            }
-            else
-            {
-                ( *ids )[name] = std::make_pair( contDict, id );
-            }
-        }
-    }
-    fin.close( );
-}
-void LoadAttrTable( AttrCollection* attrs )
-{
-    std::ifstream fin( "OMTable.txt" ); //  в данном файле содержится таблица соответствия атрибутов операндов идентификаторам
-    std::string type, contDict, name;
-    int id;
-    while( fin ) // считываем файл и заполняем контейнер данными из таблицы
-    {
-        fin >> id >> type >> contDict >> name;
-        if( fin )
-        {
-            ( *attrs )[id] = std::make_pair( contDict, name );
-        }
-    }
-    fin.close( );
-}
+
 void ConvertFromOM( std::string inputFileName, shared_ptr<MathObj> obj ) 
 {
-   
-    IdCollection ids;
-    LoadIdTable( &ids );
+
+    //OpenMathIdTable.cpp
+    extern IdCollection ids;
 
 	TiXmlDocument doc;
 	doc.LoadFile( inputFileName.data() );
@@ -147,8 +104,9 @@ void ConvertToOM( std::string outputFileName, shared_ptr<MathObj> obj )
 	element->SetAttribute( "xmlns", "http://www.openmath.org/OpenMath" );
 	doc.LinkEndChild( element );
 
-    AttrCollection attrs;
-    LoadAttrTable( &attrs );
+    //OpenMathIdTable.cpp
+    extern AttrCollection attrs;
+
     ConvertObjToElem( &attrs, element, static_pointer_cast<FormulaObj>( obj )->params[0] );
 
     doc.SaveFile( outputFileName.data() );
