@@ -53,6 +53,14 @@ void CLineOfSymbols::Insert( int index, CSymbol* symbol )
 	Recalculate();
 }
 
+void CLineOfSymbols::Concatenate( CLineOfSymbols* line ) 
+{
+    std::vector<CSymbol*>::iterator it;
+    for( it = line->arrayOfSymbolPtrs.begin(); it != line->arrayOfSymbolPtrs.end(); ++it ) {
+        arrayOfSymbolPtrs.push_back( *it );
+    }
+}
+
 void CLineOfSymbols::Delete( int index )
 {
 	delete( arrayOfSymbolPtrs[index] );

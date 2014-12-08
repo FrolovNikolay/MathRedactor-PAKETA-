@@ -40,6 +40,9 @@ public:
 	// Добавление символа в позицию index.
 	void Insert( int index, CSymbol* symbol );
 
+    // Конкатенация строк
+    void Concatenate( CLineOfSymbols* line );
+
 	// Убирает символ с текущей позиции.
 	void Delete( int index );
 
