@@ -1,5 +1,7 @@
 #include"MathML.h"
 
+#include <codecvt>
+
 void CTreeBuilder::Push( TiXmlElement* elem )
 {
 	if( uminus )
@@ -431,6 +433,26 @@ void addArgToData( TiXmlElement* elem, vector<shared_ptr<MathObj>>::iterator pla
 		{
 			addRowToData( childElem, place );
 		}
+		return;
+	}
+	// суммирование или произведение
+	if( elem->Value() == string( "munderover" ) ) {
+		TiXmlElement* childElem( elem->FirstChildElement() );
+		wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+		wstring op = converter.from_bytes( childElem->GetText() );
+		shared_ptr<FormulaObj> child( new FormulaObj() );
+		if( op[0] == L'\u2211' ) {
+			child->SetType( NT_SUM );
+		} else if( op[0] == L'\u220F' ) {
+			child->SetType( NT_PROD );
+		} else {
+			assert( false );
+		}
+		childElem = childElem->NextSiblingElement();
+		child->params.resize( 2, 0 );
+		addArgToData( childElem, child->params.begin() );
+		childElem = childElem->NextSiblingElement();
+		addArgToData( childElem, ++( child->params.begin() ) );
 		return;
 	}
 }
