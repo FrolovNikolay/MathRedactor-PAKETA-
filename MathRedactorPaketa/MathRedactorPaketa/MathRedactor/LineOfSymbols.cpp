@@ -56,11 +56,13 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
         Concatenate( &CLineOfSymbols( height, fobj->params[0] ) );
         PushBack( new CSimpleSymbol( '*' ) );
         Concatenate( &CLineOfSymbols( height, fobj->params[1] ) );
+        break;
     case NT_DIV:
         CFractionSymbol frac( height );
         frac.GetUpperLine() = CLineOfSymbols( height, fobj->params[0] );
         frac.GetLowerLine() = CLineOfSymbols( height, fobj->params[1] );
         PushBack( &frac );
+        break;
     }
 }
 
