@@ -101,6 +101,7 @@
     <ClCompile Include="LatexTokens.cpp" />
     <ClCompile Include="MathFormObj.cpp" />
     <ClCompile Include="MathML.cpp" />
+    <ClCompile Include="OpenMathTable.cpp" />
     <ClCompile Include="ParsingTable.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="tinystr.cpp" />
