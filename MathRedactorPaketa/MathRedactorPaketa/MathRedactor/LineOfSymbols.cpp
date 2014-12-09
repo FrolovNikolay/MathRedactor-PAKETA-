@@ -115,7 +115,7 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
 			assert( false );
 		}
 		CFunctionSymbol* func = new CFunctionSymbol( height, name );
-		func->GetArgumentLine() = CLineOfSymbols( height, fobj->params[0] );
+		func->GetArgumentLine() = *(new CLineOfSymbols( height, fobj->params[0] ) );
 		func->GetArgumentLine().parent = this;
 		PushBack( func );
 		break;
@@ -123,8 +123,8 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
 	case NT_ROOT:
 	{
 		CRootSymbol* root = new CRootSymbol( height );
-		root->GetRadicandLine() = *( new CLineOfSymbols( height, fobj->params[1] ) );
-		root->GetExponentLine() = *( new CLineOfSymbols( height, fobj->params[0] ) );
+		root->GetRadicandLine() = *( new CLineOfSymbols( root->GetRadicandLine().GetHeight(), fobj->params[1] ) );
+		root->GetExponentLine() = *( new CLineOfSymbols( root->GetExponentLine().GetHeight(), fobj->params[0] ) );
 		root->GetRadicandLine().parent = this;
 		root->GetExponentLine().parent = this;
 		PushBack( root );
