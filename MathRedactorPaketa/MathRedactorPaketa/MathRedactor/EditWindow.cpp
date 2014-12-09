@@ -294,7 +294,7 @@ void CEditWindow::ExportSelected() const
 }
 
 // Импортировать формулу из файла.
-void CEditWindow::ImportSelected() const 
+void CEditWindow::ImportSelected()  
 {
     OPENFILENAME openFileName;
     WCHAR szFileName[MAX_PATH] = L"";
@@ -996,7 +996,9 @@ bool CEditWindow::writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) c
 }
 
 // Чтение из выбранного файла для импорта формулы.
-bool CEditWindow::readSelectedFromFile( LPWSTR fileName, int fileExtentionPos ) const {
+bool CEditWindow::readSelectedFromFile( LPWSTR fileName, int fileExtentionPos ) 
+{
+
     TSupportedFormats format = SF_LATEX;
     if( fileName + fileExtentionPos == std::wstring( L"xml" ) ) {
         format = SF_OPENMATH;
@@ -1009,7 +1011,13 @@ bool CEditWindow::readSelectedFromFile( LPWSTR fileName, int fileExtentionPos ) 
     std::string inputAsString( input.begin( ), input.end( ) );
     shared_ptr<MathObj> tree = ConvertToTree( inputAsString, format );
 
-    CLineOfSymbols tmp( simpleSymbolHeight, tree );
+    CLineOfSymbols* currentLine = GetCaretLine();
+    currentLine->Concatenate( new CLineOfSymbols( simpleSymbolHeight, tree ) );
+
+    recalculateHorzScrollParams( );
+    recalculateVertScrollParams( );
+    ::RedrawWindow( windowHandle, 0, 0, RDW_INVALIDATE | RDW_ERASE );
+
 
     return true;
 }

@@ -35,33 +35,44 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
         assert( pobj != 0 );
         string val = pobj->GetVal( );
         for( string::iterator it = val.begin( ); it != val.end( ); ++it ) {
-            CSimpleSymbol tmpSymbol( *it );
-            PushBack( &tmpSymbol );
+            PushBack( new CSimpleSymbol( *it ));
         }
+        return;
     }
 
+
+    CFractionSymbol frac( height );
     switch( fobj->GetType( ) )
     {
+        
+    case NT_MAIN:
+        Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
+        break;
     case NT_PLUS:
-        Concatenate( &CLineOfSymbols( height, fobj->params[0] ) );
+        Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
         PushBack( new CSimpleSymbol( '+' ) );
-        Concatenate( &CLineOfSymbols( height, fobj->params[1] ) );
+        Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
         break;
     case NT_MINUS:
-        Concatenate( &CLineOfSymbols( height, fobj->params[0] ) );
+        Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
         PushBack( new CSimpleSymbol( '-' ) );
-        Concatenate( &CLineOfSymbols( height, fobj->params[1] ) );
+        Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
         break;
     case NT_MULTCM:
-        Concatenate( &CLineOfSymbols( height, fobj->params[0] ) );
+        Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
         PushBack( new CSimpleSymbol( '*' ) );
-        Concatenate( &CLineOfSymbols( height, fobj->params[1] ) );
+        Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
         break;
     case NT_DIV:
-        CFractionSymbol frac( height );
         frac.GetUpperLine() = CLineOfSymbols( height, fobj->params[0] );
+        frac.GetUpperLine().parent = this;
         frac.GetLowerLine() = CLineOfSymbols( height, fobj->params[1] );
+        frac.GetLowerLine().parent = this;
         PushBack( &frac );
+        break;
+    default:
+        // Будем так помечать неизвестные структуры в файле.
+        PushBack( new CSimpleSymbol( '?' ) );
         break;
     }
 }
@@ -102,6 +113,7 @@ void CLineOfSymbols::Concatenate( CLineOfSymbols* line )
     for( it = line->arrayOfSymbolPtrs.begin(); it != line->arrayOfSymbolPtrs.end(); ++it ) {
         arrayOfSymbolPtrs.push_back( *it );
     }
+    Recalculate();
 }
 
 void CLineOfSymbols::Delete( int index )
