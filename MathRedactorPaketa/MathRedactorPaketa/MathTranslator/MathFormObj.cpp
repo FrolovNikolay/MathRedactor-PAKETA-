@@ -10,21 +10,6 @@ FormulaObj::FormulaObj( TNodeType t ) : type(t)
 	params.clear(); 
 }
 
-TNodeType FormulaObj::GetType() 
-{ 
-	return type; 
-}
-
-void FormulaObj::SetType( TNodeType t ) 
-{
-	type = t;
-}
-
 ParamObj::ParamObj() {}
 
 ParamObj::ParamObj( std::string s ) : val(s) {}
-
-std::string ParamObj::GetVal() 
-{ 
-	return val; 
-}

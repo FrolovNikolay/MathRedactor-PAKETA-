@@ -69,3 +69,30 @@ void ConvertFormula( std::string inputFileName, TSupportedFormats inputFormat, T
 		ofs.close();
 	}
 }
+
+shared_ptr<MathObj> ConvertToTree( std::string inputFileName, TSupportedFormats inputFormat ) 
+{
+
+    shared_ptr<FormulaObj> obj( new FormulaObj( NT_MAIN ) );
+    MathMLParser mmlparser;
+    CConvertLatex latexConverter;
+    shared_ptr<MathObj> latexObj;
+
+    if( inputFormat == SF_OPENMATH ) {
+        ConvertFromOM( inputFileName, obj );
+        return obj;
+    }
+    if( inputFormat == SF_MATHML ) {
+        mmlparser.Pars( inputFileName );
+        return mmlparser.GetData();
+    }
+
+    if( inputFormat == SF_LATEX ) {
+        ifstream ifs( inputFileName );
+        string str( ( istreambuf_iterator<char>( ifs ) ), istreambuf_iterator<char>( ) );
+        latexObj = latexConverter.ConvertFromLatex( str );
+        ifs.close( );
+        return latexObj;
+    }
+}
+

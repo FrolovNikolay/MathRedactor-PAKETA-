@@ -7,6 +7,8 @@
 #include <Windows.h>
 #include <vector>
 #include "Symbol.h"
+#include <MathFormObj.h>
+
 
 // Класс представляет собой строку символов. Умеет отрисовывать себя в hdc.
 class CLineOfSymbols {
@@ -14,6 +16,7 @@ public:
 	// isBase это флаг показывающий, является ли строка строкой редактора( то есть одной из базовых ), или подстрокой символа.
 	CLineOfSymbols( int _simpleSymbolHeight, bool _isBase = false );
 	CLineOfSymbols( const CLineOfSymbols& src );
+    CLineOfSymbols( int _simpleSymbolHeight, const std::shared_ptr<MathObj> tree );
 	~CLineOfSymbols();
 
 	CLineOfSymbols& operator=( const CLineOfSymbols& src );

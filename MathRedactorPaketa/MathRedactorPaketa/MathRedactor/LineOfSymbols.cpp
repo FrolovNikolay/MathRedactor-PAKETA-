@@ -1,5 +1,7 @@
 ﻿#include "LineOfSymbols.h"
 #include "SimpleSymbol.h"
+#include "FractionSymbol.h"
+#include <TranslatorDLLInterface.h>
 #include <assert.h>
 #include <typeinfo>
 
@@ -21,6 +23,45 @@ CLineOfSymbols::CLineOfSymbols( const CLineOfSymbols& src ) :
 		assert( src[i] != 0 );
 		PushBack( src[i]->Clone( this ) );
 	}
+}
+
+CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj> node ) : height( _simpleSymbolHeight ) 
+{
+    shared_ptr<FormulaObj> fobj = dynamic_pointer_cast<FormulaObj>( node );
+
+    if( fobj == 0 ) {
+        // ParamObj, дбавляем в строку
+        shared_ptr<ParamObj> pobj = dynamic_pointer_cast<ParamObj>( node );
+        assert( pobj != 0 );
+        string val = pobj->GetVal( );
+        for( string::iterator it = val.begin( ); it != val.end( ); ++it ) {
+            CSimpleSymbol tmpSymbol( *it );
+            PushBack( &tmpSymbol );
+        }
+    }
+
+    switch( fobj->GetType( ) )
+    {
+    case NT_PLUS:
+        Concatenate( &CLineOfSymbols( height, fobj->params[0] ) );
+        PushBack( new CSimpleSymbol( '+' ) );
+        Concatenate( &CLineOfSymbols( height, fobj->params[1] ) );
+        break;
+    case NT_MINUS:
+        Concatenate( &CLineOfSymbols( height, fobj->params[0] ) );
+        PushBack( new CSimpleSymbol( '-' ) );
+        Concatenate( &CLineOfSymbols( height, fobj->params[1] ) );
+        break;
+    case NT_MULTCM:
+        Concatenate( &CLineOfSymbols( height, fobj->params[0] ) );
+        PushBack( new CSimpleSymbol( '*' ) );
+        Concatenate( &CLineOfSymbols( height, fobj->params[1] ) );
+    case NT_DIV:
+        CFractionSymbol frac( height );
+        frac.GetUpperLine() = CLineOfSymbols( height, fobj->params[0] );
+        frac.GetLowerLine() = CLineOfSymbols( height, fobj->params[1] );
+        PushBack( &frac );
+    }
 }
 
 CLineOfSymbols& CLineOfSymbols::operator=( const CLineOfSymbols& src )

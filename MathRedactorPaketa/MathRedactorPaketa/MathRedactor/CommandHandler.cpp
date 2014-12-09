@@ -70,7 +70,8 @@ STDMETHODIMP CCommandHandler::Execute( UINT nCmdId, UI_EXECUTIONVERB verb, const
 			editWindow->ExportSelected();
 			break;
 		case ID_CMD_IMPORT:
-			::MessageBox( 0, L"Здесь функция импорта", L"TODO", MB_OK );
+            editWindow->ImportSelected();
+			//::MessageBox( 0, L"Здесь функция импорта", L"TODO", MB_OK );
 			break;
 		case ID_CMD_CHECK:
 			editWindow->CheckValidity();

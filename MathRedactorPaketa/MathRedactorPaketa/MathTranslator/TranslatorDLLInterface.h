@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <string>
+#include "MathFormObj.h"
 
 // Поддерживаемые форматы конвентора.
 enum TSupportedFormats {
@@ -16,3 +17,5 @@ enum TSupportedFormats {
 #endif
 
 void MATHTRANSLATORDLL_API ConvertFormula( std::string inputFile, TSupportedFormats inputFormat, TSupportedFormats outputFormat, std::string outputFile );
+shared_ptr<MathObj> MATHTRANSLATORDLL_API ConvertToTree( std::string inputFileName, TSupportedFormats inputFormat );
+

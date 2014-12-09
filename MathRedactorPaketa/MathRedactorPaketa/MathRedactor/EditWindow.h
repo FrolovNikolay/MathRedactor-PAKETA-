@@ -75,6 +75,8 @@ public:
 	void CheckValidity() const;
 	// Экспортировать выделенную часть ввода.
 	void ExportSelected() const;
+    // Импортировать формулу из файла
+    void ImportSelected() const;
 
 	// Отправляет родительскому окну сообщение о закрытии
 	void SendClose() const { ::SendMessage( parentHandle, WM_CLOSE, 0, 0 ); }
@@ -225,6 +227,9 @@ private:
 
 	// Запись в файл выделенных символов.
 	bool writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) const;
+
+    // Чтение из выбранного файла для импорта формулы.
+    bool readSelectedFromFile( LPWSTR fileName, int fileExtentionPos ) const;
 
 	// Стандартная процедура обработки сообщений окном.
 	static LRESULT __stdcall windowProcedure( HWND, UINT, WPARAM, LPARAM );

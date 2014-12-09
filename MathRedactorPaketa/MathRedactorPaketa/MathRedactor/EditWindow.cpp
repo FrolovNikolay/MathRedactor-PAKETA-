@@ -293,6 +293,29 @@ void CEditWindow::ExportSelected() const
 	}
 }
 
+// Импортировать формулу из файла.
+void CEditWindow::ImportSelected() const 
+{
+    OPENFILENAME openFileName;
+    WCHAR szFileName[MAX_PATH] = L"";
+    ::ZeroMemory( &openFileName, sizeof( openFileName ) );
+    openFileName.lStructSize = sizeof( OPENFILENAME );
+    openFileName.hwndOwner = windowHandle;
+    openFileName.lpstrFilter = reinterpret_cast<LPCWSTR>( L"Latex File (*.tex)\0*.tex\0MathMl File (*.mml)\0*.mml\0OpenMath File (*.xml)\0*.xml\0" );
+    openFileName.lpstrFile = reinterpret_cast<LPWSTR>( szFileName );
+    openFileName.nMaxFile = MAX_PATH;
+    openFileName.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+    openFileName.lpstrDefExt = reinterpret_cast<LPWSTR>( L"tex" );
+
+    if( ::GetOpenFileName( &openFileName ) ) {
+        if( !readSelectedFromFile( openFileName.lpstrFile, openFileName.nFileExtension ) ) {
+            ::MessageBox( 0, L"При импорте файла что-то пошло не так. Возможно, что файл некорректен.",
+                L"Непредвиденная ошибка.", MB_OK | MB_ICONWARNING );
+        }
+    }
+}
+
+
 // Передать плоттеру содержимое и сообщить родительскому окну о закрытии.
 void CEditWindow::SendAccept() const
 {
@@ -971,6 +994,27 @@ bool CEditWindow::writeSelectedInFile( LPWSTR fileName, int fileExtentionPos ) c
 	}
 	return outputString.size() == countBytes;
 }
+
+// Чтение из выбранного файла для импорта формулы.
+bool CEditWindow::readSelectedFromFile( LPWSTR fileName, int fileExtentionPos ) const {
+    TSupportedFormats format = SF_LATEX;
+    if( fileName + fileExtentionPos == std::wstring( L"xml" ) ) {
+        format = SF_OPENMATH;
+    }
+    else if( fileName + fileExtentionPos == std::wstring( L"mml" ) ) {
+        format = SF_MATHML;
+    }
+
+    std::wstring input( fileName );
+    std::string inputAsString( input.begin( ), input.end( ) );
+    shared_ptr<MathObj> tree = ConvertToTree( inputAsString, format );
+
+    CLineOfSymbols tmp( simpleSymbolHeight, tree );
+
+    return true;
+}
+
+
 
 // Стандартная процедура обработки сообщений окном.
 LRESULT __stdcall CEditWindow::windowProcedure( HWND windowHandle, UINT message, WPARAM wParam, LPARAM lParam )

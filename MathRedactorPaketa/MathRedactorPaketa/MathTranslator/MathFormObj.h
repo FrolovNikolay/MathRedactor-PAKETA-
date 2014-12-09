@@ -82,8 +82,8 @@ public:
 	FormulaObj();
 	FormulaObj(TNodeType);
 
-	TNodeType GetType();
-	void SetType(TNodeType);
+    TNodeType GetType() { return type; }
+    void SetType( TNodeType t ) { type = t; }
 };
 
 class ParamObj : public MathObj {
@@ -94,7 +94,7 @@ public:
 	ParamObj(std::string);
 	void SetVal(std::string s){ val = s; }
 
-	std::string GetVal();
+    std::string GetVal() { return val; }
 };
 
 
