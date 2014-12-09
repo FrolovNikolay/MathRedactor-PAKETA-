@@ -44,7 +44,7 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
     }
 
 
-    CFractionSymbol frac( height );
+    
     switch( fobj->GetType( ) )
     {
         
@@ -66,13 +66,16 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
         PushBack( new CSimpleSymbol( '*' ) );
         Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
         break;
-    case NT_DIV:
-        frac.GetUpperLine() = CLineOfSymbols( height, fobj->params[0] );
-        frac.GetUpperLine().parent = this;
-        frac.GetLowerLine() = CLineOfSymbols( height, fobj->params[1] );
-        frac.GetLowerLine().parent = this;
-        PushBack( &frac );
-        break;
+	case NT_DIV:
+	{
+		CFractionSymbol* frac = new CFractionSymbol( height );
+		frac->GetUpperLine() = *( new CLineOfSymbols( height, fobj->params[0] ) );
+		frac->GetUpperLine().parent = this;
+		frac->GetLowerLine() = *( new CLineOfSymbols( height, fobj->params[1] ) );
+		frac->GetLowerLine().parent = this;
+		PushBack( frac );
+		break;
+	}
 	case NT_PROD:
 	case NT_SUM:
 	{
@@ -80,13 +83,13 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
 		if( fobj->GetType() == NT_PROD ) {
 			sign = bigPiSymbol;
 		}
-		CSigmaSymbol operation( height, sign );
-		operation.GetLowerLine() = CLineOfSymbols( height, fobj->params[0] );
-		operation.GetLowerLine().parent = this;
-		operation.GetUpperLine() = CLineOfSymbols( height, fobj->params[1] );
-		operation.GetUpperLine().parent = this;
-		PushBack( &operation );
-		Concatenate( &CLineOfSymbols( height, fobj->params[2] ) );
+		CSigmaSymbol* operation = new CSigmaSymbol( height, sign );
+		operation->GetLowerLine() = *( new CLineOfSymbols( height, fobj->params[0] ) );
+		operation->GetLowerLine().parent = this;
+		operation->GetUpperLine() = *( new CLineOfSymbols( height, fobj->params[1] ) );
+		operation->GetUpperLine().parent = this;
+		PushBack( operation );
+		Concatenate( new CLineOfSymbols( height, fobj->params[2] ) );
 		break;
 	}
 	case NT_SIN:
@@ -111,22 +114,20 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
 		default:
 			assert( false );
 		}
-		CFunctionSymbol func( height, name );
-		func.GetArgumentLine() = CLineOfSymbols( height, fobj->params[0] );
-		func.GetArgumentLine().parent = this;
-		PushBack( &func );
+		CFunctionSymbol* func = new CFunctionSymbol( height, name );
+		func->GetArgumentLine() = CLineOfSymbols( height, fobj->params[0] );
+		func->GetArgumentLine().parent = this;
+		PushBack( func );
 		break;
 	}
 	case NT_ROOT:
 	{
-		CRootSymbol root( height );
-		root.GetRadicandLine() = CLineOfSymbols( height, fobj->params[0] );
-		root.GetRadicandLine().parent = this;
-		if( fobj->params.size() > 1 ) {
-			root.GetExponentLine() = CLineOfSymbols( height, fobj->params[1] );
-		}
-		root.GetExponentLine().parent = this;
-		PushBack( &root );
+		CRootSymbol* root = new CRootSymbol( height );
+		root->GetRadicandLine() = *( new CLineOfSymbols( height, fobj->params[1] ) );
+		root->GetExponentLine() = *( new CLineOfSymbols( height, fobj->params[0] ) );
+		root->GetRadicandLine().parent = this;
+		root->GetExponentLine().parent = this;
+		PushBack( root );
 		break;
 	}
     default:
