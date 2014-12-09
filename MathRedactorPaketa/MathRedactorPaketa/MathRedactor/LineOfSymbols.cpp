@@ -1,6 +1,9 @@
 ﻿#include "LineOfSymbols.h"
 #include "SimpleSymbol.h"
 #include "FractionSymbol.h"
+#include "SigmaSymbol.h"
+#include "RootSymbol.h"
+#include "FunctionSymbol.h"
 #include <TranslatorDLLInterface.h>
 #include <assert.h>
 #include <typeinfo>
@@ -70,6 +73,62 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
         frac.GetLowerLine().parent = this;
         PushBack( &frac );
         break;
+	case NT_PROD:
+	case NT_SUM:
+	{
+		wchar_t sign = bigSigmaSymbol;
+		if( fobj->GetType() == NT_PROD ) {
+			sign = bigPiSymbol;
+		}
+		CSigmaSymbol operation( height, sign );
+		operation.GetLowerLine() = CLineOfSymbols( height, fobj->params[0] );
+		operation.GetLowerLine().parent = this;
+		operation.GetUpperLine() = CLineOfSymbols( height, fobj->params[1] );
+		operation.GetUpperLine().parent = this;
+		PushBack( &operation );
+		Concatenate( &CLineOfSymbols( height, fobj->params[2] ) );
+		break;
+	}
+	case NT_SIN:
+	case NT_COS:
+	case NT_TAN:
+	case NT_COT:
+	{
+		wchar_t* name = L"";
+		switch( fobj->GetType() ) {
+		case NT_SIN:
+			name = L"sin";
+			break;
+		case NT_COS:
+			name = L"cos";
+			break;
+		case NT_TAN:
+			name = L"tan";
+			break;
+		case NT_COT:
+			name = L"ctg";
+			break;
+		default:
+			assert( false );
+		}
+		CFunctionSymbol func( height, name );
+		func.GetArgumentLine() = CLineOfSymbols( height, fobj->params[0] );
+		func.GetArgumentLine().parent = this;
+		PushBack( &func );
+		break;
+	}
+	case NT_ROOT:
+	{
+		CRootSymbol root( height );
+		root.GetRadicandLine() = CLineOfSymbols( height, fobj->params[0] );
+		root.GetRadicandLine().parent = this;
+		if( fobj->params.size() > 1 ) {
+			root.GetExponentLine() = CLineOfSymbols( height, fobj->params[1] );
+		}
+		root.GetExponentLine().parent = this;
+		PushBack( &root );
+		break;
+	}
     default:
         // Будем так помечать неизвестные структуры в файле.
         PushBack( new CSimpleSymbol( '?' ) );
