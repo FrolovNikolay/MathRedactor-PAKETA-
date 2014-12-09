@@ -53,19 +53,25 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
         Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
         break;
     case NT_PLUS:
+		PushBack( new CSimpleSymbol( '(' ) );
         Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
         PushBack( new CSimpleSymbol( '+' ) );
         Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
+		PushBack( new CSimpleSymbol( ')' ) );
         break;
-    case NT_MINUS:
+	case NT_MINUS:
+		PushBack( new CSimpleSymbol( '(' ) );
         Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
         PushBack( new CSimpleSymbol( '-' ) );
-        Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
+		Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
+		PushBack( new CSimpleSymbol( ')' ) );
         break;
-    case NT_MULTCM:
+	case NT_MULTCM:
+		PushBack( new CSimpleSymbol( '(' ) );
         Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
         PushBack( new CSimpleSymbol( '*' ) );
-        Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
+		Concatenate( new CLineOfSymbols( height, fobj->params[1] ) );
+		PushBack( new CSimpleSymbol( ')' ) );
         break;
 	case NT_DIV:
 	{
