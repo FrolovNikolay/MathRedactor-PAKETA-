@@ -4,6 +4,7 @@
 #include "SigmaSymbol.h"
 #include "RootSymbol.h"
 #include "FunctionSymbol.h"
+#include "IndexSymbol.h"
 #include <TranslatorDLLInterface.h>
 #include <assert.h>
 #include <typeinfo>
@@ -128,6 +129,15 @@ CLineOfSymbols::CLineOfSymbols( int _simpleSymbolHeight, std::shared_ptr<MathObj
 		root->GetRadicandLine().parent = this;
 		root->GetExponentLine().parent = this;
 		PushBack( root );
+		break;
+	}
+	case NT_POW:
+	{
+		CIndexSymbol* index = new CIndexSymbol( height, CIndexSymbol::ITUpper );
+		Concatenate( new CLineOfSymbols( height, fobj->params[0] ) );
+		index->GetLine() = *( new CLineOfSymbols( index->GetLine().GetHeight(), fobj->params[1] ) );
+		index->GetLine().parent = this;
+		PushBack( index );
 		break;
 	}
     default:
