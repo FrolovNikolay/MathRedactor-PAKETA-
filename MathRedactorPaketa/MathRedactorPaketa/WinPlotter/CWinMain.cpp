@@ -70,6 +70,7 @@ LRESULT __stdcall CWinMain::mouseProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
 	return CallWindowProc( defMouseProc, hWnd, uMsg, wParam, lParam );
 }
 
+
 /*
 обработчик главного окна
 */
@@ -128,6 +129,7 @@ void CWinMain::OnCreate( HWND hWnd ) {
 
 	hPlotter = winPlotter.create( hInstance, hWnd );
 	hRedactor = winRedactor.Create( hInstance, hWnd );
+    
 	
 	if ( hPlotter == 0 || hRedactor == 0 ) {
 		MessageBox( 0, L"Не удалось создать дочернее окно", L"Ошибка", MB_OK | MB_ICONERROR );
@@ -135,8 +137,10 @@ void CWinMain::OnCreate( HWND hWnd ) {
 	}
 	winPlotter.show( SW_SHOW );
 	winRedactor.Show( SW_HIDE );
+
 	SetWindowPos( hPlotter, HWND_BOTTOM, 0, 0, width, height, 0 );
 	SetWindowPos( hRedactor, HWND_BOTTOM, 0, 0, width, height, 0 );
+
 	CWinMain::defMouseProc = ( WNDPROC )SetWindowLong( hPlotter, GWL_WNDPROC, ( LONG )CWinMain::mouseProc );
 }
 
@@ -160,6 +164,15 @@ LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
 		case ID_PARAMS:
 			ShowParamForm();
 			break;
+        case ID_CMD_COPY:
+            if( ::IsWindowVisible( hRedactor ) ) {
+                ::MessageBox( 0, L"Здесь функция копирования", L"TODO", MB_OK );
+            }
+            break;
+        case ID_CMD_PASTE:
+            if( ::IsWindowVisible( hRedactor ) ) {
+                ::MessageBox( 0, L"Здесь функция вставки", L"TODO", MB_OK );
+            }
 	}
 	return DefWindowProc( handle, WM_COMMAND, wParam, lParam );
 }

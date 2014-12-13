@@ -20,9 +20,14 @@ int __stdcall wWinMain( HINSTANCE hInstance, HINSTANCE previnstance, LPWSTR comm
 	window.show( nCmdShow );
 
 	MSG msg;
-	while( ::GetMessage( &msg, 0, 0, 0 ) ) {
-		::TranslateMessage( &msg );
-		::DispatchMessage( &msg );
+    HACCEL hAccel = LoadAccelerators( hInstance, MAKEINTRESOURCE( IDR_ACCELERATOR1 ) );
+
+    while( ::GetMessage( &msg, 0, 0, 0 ) ) {
+        if( !( hAccel && TranslateAccelerator( hWnd, hAccel, &msg ) ) )
+        {
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+        }
 	}
 
 	return EXIT_SUCCESS;
