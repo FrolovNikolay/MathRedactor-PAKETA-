@@ -7,6 +7,7 @@
 #include "3DPoint.h"
 #include "CFormula.h"
 #include "FormulaParser.h"
+#include "TriangleIndex.h"
 #include <cassert>
 
 /*
@@ -20,7 +21,12 @@ public:
 	// getters
 	const std::vector< C3DPoint >& GetPoints() const { return points; }
 	const std::vector< std::pair< int, int > >& GetSegments() const { return segments; }
+	const std::vector< CTriangleIndex >& GetTriangles() const { return triangles; }
+	double GetMaxZ() const { return maxZ; }
+	double GetMinZ() const { return minZ; }
 private:
 	std::vector< C3DPoint > points;
 	std::vector< std::pair< int, int > > segments;
+	std::vector< CTriangleIndex > triangles;
+	double maxZ, minZ;
 };

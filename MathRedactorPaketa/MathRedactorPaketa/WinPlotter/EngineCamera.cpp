@@ -2,6 +2,33 @@
 #include <cmath>
 #include <set>
 
+
+namespace EngineCamera
+{
+	double Determinant( const C3DPoint& first, const C3DPoint& second, const C3DPoint& third )
+	{
+		double det = first.X * ( second.Y * third.Z - second.Z * third.Y );
+		det -= second.X * ( first.Y * third.Z - first.Z * third.Y );
+		det += third.X * ( first.Y * second.Z - first.Z * second.Y );
+		return det;
+	}
+
+	bool IsCoveredByTriangle( const C3DPoint& first, const C3DPoint& second, const C3DPoint& third, const C3DPoint& looking )
+	{
+		double x, y, z;
+		double det = Determinant( first, second, third );
+		if( det == 0. ) {
+			return false;
+		}
+
+		x = Determinant( looking, second, third ) / det;
+		y = Determinant( first, looking, third ) / det;
+		z = Determinant( first, second, looking ) / det;
+
+		return x > 0. && y > 0. && z > 0. && x + y + z > 1.;
+	}
+}
+
 // Ближняя и дальная плоскости отсечения (координаты по Z)
 const double CEngineCamera::NearZ = 1;
 const double CEngineCamera::FarZ = 100;
@@ -101,12 +128,26 @@ void CEngineCamera::transform( const C3DModel& object )
 
 void CEngineCamera::filter()
 {
-	// TODO: удаление (и модификация) элементов внутренней структуры
+	std::vector<bool> pointNumbersForErase( cameraModel.Points.size(), false ); // индексы удаляемых точек
+
+	// проверяем, лежит ли точка за треугольником
+	for( auto triangle = cameraModel.Triangles.begin(); triangle != cameraModel.Triangles.end(); triangle++ ) {
+		int counter = 0;
+		for( auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++ ) {
+			C3DPoint first = cameraModel.Points[triangle->First];
+			C3DPoint second = cameraModel.Points[triangle->Second];
+			C3DPoint third = cameraModel.Points[triangle->Third];
+			// Если точка находится вне области видимости
+			if( EngineCamera::IsCoveredByTriangle( first, second, third, *point ) ) {
+				pointNumbersForErase[counter] = true;
+			}
+			counter += 1;
+		}
+	}
 
 	// В первом приближении мы просто будем удалять те отрезки и треугольники, у которых хотя бы одна вершина попадает
 	// вне области видимости камеры 
 	
-	std::vector<bool> pointNumbersForErase( cameraModel.Points.size(), false ); // индексы удаляемых точек
 	int counter = 0;
 	for( auto point = cameraModel.Points.begin(); point != cameraModel.Points.end(); point++ ) {
 		// Если точка находится вне области видимости
@@ -119,8 +160,8 @@ void CEngineCamera::filter()
 	// Теперь мы удаляем все объекты (индексы), которые содержат хотя бы одну точку из отсечённых
 	auto segment = cameraModel.Segments.begin();
 	while( segment != cameraModel.Segments.end() ) {
-		// Если попадает под условие (один из концов находится среди удаляемых точек), то удаляем
-		if (pointNumbersForErase[segment->First] &&	pointNumbersForErase[segment->Second] ) {
+		// Если попадает под условие (оба конца находятся среди удаляемых точек), то удаляем
+		if (pointNumbersForErase[segment->First] ||	pointNumbersForErase[segment->Second] ) {
 			segment = cameraModel.Segments.erase( segment );
 		}
 		// Иначе переходим к следующему элементу
@@ -132,11 +173,12 @@ void CEngineCamera::filter()
 	// Аналогично и для треугольников
 	auto triangle = cameraModel.Triangles.begin();
 	while( triangle != cameraModel.Triangles.end() ) {
-		// Если попадает под условие (одна из вершин треугольника попадает в точки), то удаляем
-		if( pointNumbersForErase[triangle->First] &&
-			pointNumbersForErase[triangle->Second] &&
-			pointNumbersForErase[triangle->Third] )
-		{
+		int check = 0;
+		if( pointNumbersForErase[triangle->First] ) check++;
+		if( pointNumbersForErase[triangle->Second] ) check++;
+		if( pointNumbersForErase[triangle->Third] ) check++;
+		// Если попадает под условие (хоть одна вершина треугольника попадает в точки), то удаляем
+		if( check > 0 ) {
 			triangle = cameraModel.Triangles.erase( triangle );
 		}
 		// Иначе переходим к следующему элементу

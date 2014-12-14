@@ -7,6 +7,7 @@ class CWinPlotter {
 public:
 	// Трёхмерный примитив, который будет рисоваться на экране
 	C3DModel testObject;
+	double maxZ, minZ;
 
 	static bool registerClass( HINSTANCE hInstance );
 	HWND create( HINSTANCE hInctance, HWND parent );

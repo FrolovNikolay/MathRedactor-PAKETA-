@@ -35,11 +35,14 @@ bool CGraphBuilder::buildPointGrid( const CFormula& formula, std::map< char, std
 					argToCount[vars[1]] = args[vars[1]].first + j * eps;
 					auto result = formula.Calculate( argToCount );
 					points.push_back( C3DPoint( result['x'], result['y'], result['z'] ) );
-					if( j > 0 ) { // соединили соседние точки на одной оси
-						segments.push_back( std::make_pair( points.size() - 1, points.size() - 2 ) );
-					}
-					if( i > 0 ) { // соединили соседние точки на одной оси
-						segments.push_back( std::make_pair( points.size() - 1, points.size() - secondAxisSize - 1 ) );
+					if( points.size() == 1 ) {
+						maxZ = minZ = result['z'];
+					} 
+					maxZ = std::max( maxZ, result['z'] );
+					minZ = std::min( minZ, result['z'] );
+					if( j > 0 && i > 0 ) { 
+						triangles.push_back( CTriangleIndex( points.size() - 1, points.size() - 2, points.size() - secondAxisSize - 1 ) );
+						triangles.push_back( CTriangleIndex( points.size() - 2, points.size() - secondAxisSize - 2, points.size() - secondAxisSize - 1 ) );
 					}
 				}
 			}

@@ -335,6 +335,7 @@ void CWinMain::buildPlot()
 
 		const std::vector< C3DPoint >& points = builder.GetPoints();
 		const std::vector< std::pair< int, int > >& segmentsIds = builder.GetSegments();
+		const std::vector< CTriangleIndex >& triangles = builder.GetTriangles();
 
 		for( int j = 0; j < static_cast< int >( points.size() ); j++ ) {
 			winPlotter.testObject.AddPoint( points[j] );
@@ -342,6 +343,12 @@ void CWinMain::buildPlot()
 		for( int j = 0; j < static_cast< int >( segmentsIds.size() ); j++ ) {
 			winPlotter.testObject.AddSegment( segmentsIds[j].first, segmentsIds[j].second );
 		}
+		for( int j = 0; j < static_cast< int >( triangles.size() ); j++ ) {
+			winPlotter.testObject.AddTriangle( triangles[j].First, triangles[j].Second, triangles[j].Third );
+		}
+		winPlotter.maxZ = builder.GetMaxZ();
+		winPlotter.minZ = builder.GetMinZ();
+
 		winPlotter.moveX( 0 );
 	}
 }

@@ -4,7 +4,38 @@
 #include <fstream>
 
 #include "3DPoint.h"
+#pragma comment (lib, "Msimg32.lib")
 
+
+namespace Color
+{
+	COLOR16 GetRed( double z, double max )
+	{
+		if( 2 * z > max ) {
+			return (2 * z / max - 1) * 0x00ff00;
+		} else {
+			return 0;
+		}
+	}
+
+	COLOR16 GetGreen( double z, double max )
+	{
+		if( 2 * z > max ) {
+			return ( 2 - 2 * z / max ) * 0x00ff00;
+		} else {
+			return ( 2 * z / max ) * 0x00ff00;
+		}
+	}
+
+	COLOR16 GetBlue( double z, double max )
+	{
+		if( 2 * z < max ) {
+			return ( 1 - 2 * z / max ) * 0x00ff00;
+		} else {
+			return 0;
+		}
+	}
+}
 
 LRESULT __stdcall CWinPlotter::windowProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -146,22 +177,27 @@ void CWinPlotter::PaintObject()
 			static_cast< int >( renderedObject.Points[segment->Second].X ),
 			static_cast< int >( renderedObject.Points[segment->Second].Y ) );
 	}
+
 	// Треугольники
-	for( auto triangle = renderedObject.Triangles.begin(); triangle != renderedObject.Triangles.end(); triangle++ ) {
-		MoveToEx( currentDC,
-			static_cast< int >( renderedObject.Points[triangle->First].X ),
-			static_cast< int >( renderedObject.Points[triangle->First].Y ),
-			0 );
-		LineTo( currentDC,
-			static_cast< int >( renderedObject.Points[triangle->Second].X ),
-			static_cast< int >( renderedObject.Points[triangle->Second].Y ) );
-		LineTo( currentDC,
-			static_cast< int >( renderedObject.Points[triangle->Third].X ),
-			static_cast< int >( renderedObject.Points[triangle->Third].Y ) );
-		LineTo( currentDC,
-			static_cast< int >( renderedObject.Points[triangle->First].X ),
-			static_cast< int >( renderedObject.Points[triangle->First].Y ) );
+	TRIVERTEX* vertex = new TRIVERTEX[renderedObject.Points.size()];
+	GRADIENT_TRIANGLE* gTriangle = new GRADIENT_TRIANGLE[renderedObject.Triangles.size()];
+
+	for( int i = 0; i < renderedObject.Points.size(); i++ ) {
+		vertex[i].x = renderedObject.Points[i].X;
+		vertex[i].y = renderedObject.Points[i].Y;
+		vertex[i].Red = Color::GetRed( testObject.Points[i].Z - minZ, maxZ - minZ );
+		vertex[i].Green = Color::GetGreen( testObject.Points[i].Z - minZ, maxZ - minZ );
+		vertex[i].Blue = Color::GetBlue( testObject.Points[i].Z - minZ, maxZ - minZ );
+		vertex[i].Alpha = 0x0000;
 	}
+
+	for( int i = 0; i < renderedObject.Triangles.size(); i++ ) {
+		gTriangle[i].Vertex1 = renderedObject.Triangles[i].First;
+		gTriangle[i].Vertex2 = renderedObject.Triangles[i].Second;
+		gTriangle[i].Vertex3 = renderedObject.Triangles[i].Third;	
+	}
+
+	GradientFill( currentDC, vertex, renderedObject.Points.size(), gTriangle, renderedObject.Triangles.size(), GRADIENT_FILL_TRIANGLE );
 
 	// Кисть для осей координат
 	HPEN axisPen = ::CreatePen( PS_SOLID, 1, RGB( 41, 128, 185 ) );

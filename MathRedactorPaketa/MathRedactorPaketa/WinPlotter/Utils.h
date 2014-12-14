@@ -4,6 +4,7 @@
 #pragma once
 #include <sstream>
 #include <Windows.h>
+
 namespace WinPlotter
 {
 	void SetParamText( HWND hWnd, int ID, char c )
