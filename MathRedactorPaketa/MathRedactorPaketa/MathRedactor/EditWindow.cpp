@@ -23,6 +23,7 @@ CEditWindow::CEditWindow()
 		, symbolSelector( finder, content )
 		, drawer( content, symbolSelector, horizontalScrollUnit, verticalScrollUnit, simpleSymbolHeight )
 		, currentFunctionType( FT_Undefined )
+        , buffer( simpleSymbolHeight )
 {
 	SetFunctionType( FT_YfromX );
 	windowHandle = 0;
@@ -313,6 +314,37 @@ void CEditWindow::ImportSelected()
                 L"Непредвиденная ошибка.", MB_OK | MB_ICONWARNING );
         }
     }
+}
+
+// Копировать выделенную часть в буффер
+void CEditWindow::Copy()
+{
+    buffer.Clear();
+
+    CItemSelector::CSymbolInterval selectedInterval = symbolSelector.GetSelectionInfo( );
+    CSymbolPosition start = selectedInterval.first;
+    CSymbolPosition end = selectedInterval.second;
+    for( int i = start.Index; i <= end.Index; ++i ) {
+        buffer.PushBack( ( *start.CurrentLine )[i]->Clone( &buffer ) );
+    }
+}
+
+void CEditWindow::Paste() {
+
+    // Если были выделенны символы, то удаляем их и отображаем каретку.
+    if( symbolSelector.HasSelection( ) ) {
+        removeSelectedItems( );
+        symbolSelector.ResetSelection( );
+        ShowCaret( );
+    }
+
+    CLineOfSymbols* currentLine = GetCaretLine();
+    for( int i = 0; i < buffer.Length(); i++ ){
+        currentLine->Insert( caret.GetIndex( ) + i, buffer[i]->Clone( currentLine ) );
+    }
+    recalculateHorzScrollParams( );
+    recalculateVertScrollParams( );
+    ::RedrawWindow( windowHandle, 0, 0, RDW_INVALIDATE | RDW_ERASE );
 }
 
 

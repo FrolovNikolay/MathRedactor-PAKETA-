@@ -28,6 +28,11 @@ public:
 	// Возвращает строку для Plottera
 	std::string CalculateStringForPlotter() const { return editWindow->CalculateStringForPlotter(); }
 
+    // Копировать выделенную часть в буффер
+    void Copy() { editWindow->Copy();  }
+    // Вставить в указанное место из буффера
+    void Paste() { editWindow->Paste(); }
+
 	// реализация IUnknown
 	// добавить ссылку
 	STDMETHOD_( ULONG, AddRef() );

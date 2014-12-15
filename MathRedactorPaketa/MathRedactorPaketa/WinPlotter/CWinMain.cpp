@@ -166,12 +166,12 @@ LRESULT CWinMain::OnCommand( WPARAM wParam, LPARAM lParam )
 			break;
         case ID_CMD_COPY:
             if( ::IsWindowVisible( hRedactor ) ) {
-                ::MessageBox( 0, L"Здесь функция копирования", L"TODO", MB_OK );
+                winRedactor.Copy();
             }
             break;
         case ID_CMD_PASTE:
             if( ::IsWindowVisible( hRedactor ) ) {
-                ::MessageBox( 0, L"Здесь функция вставки", L"TODO", MB_OK );
+                winRedactor.Paste();
             }
 	}
 	return DefWindowProc( handle, WM_COMMAND, wParam, lParam );

@@ -77,6 +77,10 @@ public:
 	void ExportSelected() const;
     // Импортировать формулу из файла
     void ImportSelected();
+    // Копировать выделенную часть в буффер
+    void Copy();
+    // Вставить в указанное место из буффера
+    void Paste();
 
 	// Отправляет родительскому окну сообщение о закрытии
 	void SendClose() const { ::SendMessage( parentHandle, WM_CLOSE, 0, 0 ); }
@@ -160,6 +164,7 @@ private:
 
 	// Хэндл родителя.
 	HWND parentHandle;
+
 	// Имя класса окна.
 	static const wchar_t* className;
 	
@@ -168,6 +173,9 @@ private:
 
 	// Содержимое редактора (массив строк).
 	std::vector<CLineOfSymbols> content;
+
+    // Сохраненная строка при вызове копирования
+    CLineOfSymbols buffer;
 
 	// Константы, связанные со скроллированием.
 	const int horizontalScrollUnit;

@@ -30,6 +30,9 @@ public:
 	// Родителя устанавливает тот, кто создает строку.
 	void SetParent( CLineOfSymbols* _parent ) { parent = _parent; }
 
+    // Получить родителя
+    const CLineOfSymbols* GetParent() const { return parent; }
+
 	// Нарисовать строку в Device Context, начиная с позиции (startX, startY) - левый верхний угол строки.
 	void Draw( HDC displayHandle, int posX, int posY ) const;
 	// Рассчитать ширину строки (линейно по количеству символов в строке, включая символы в сложных символах).
@@ -48,6 +51,9 @@ public:
 
 	// Убирает символ с текущей позиции.
 	void Delete( int index );
+
+    // Очищает строку
+    void Clear() { arrayOfSymbolPtrs.clear(); }
 
 	// Возвращает длину строки.
 	int Length() const { return static_cast<int>( arrayOfSymbolPtrs.size() ); }
